@@ -20,7 +20,7 @@
 
                     <!-- CTA Buttons -->
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="#download"
+                        <!-- <a href="#download"
                             class="btn-primary text-lg px-8 py-4 inline-flex items-center justify-center group">
                             <svg class="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" fill="currentColor"
                                 viewBox="0 0 20 20">
@@ -28,7 +28,24 @@
                                     d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
                             </svg>
                             Download App
-                        </a>
+                        </a> -->
+
+                        <button
+                            class="btn-primary text-white px-6 py-3 rounded-lg flex items-center space-x-3 relative hover:bg-black/30 transition-colors border-2 border-white/20 group">
+                            <svg class="w-8 h-8 group-hover:scale-110 transition-transform" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
+                            </svg>
+                            <div class="text-left">
+                                <div class="text-xs opacity-75">Download</div>
+                                <div class="text-lg font-semibold">Mobile App</div>
+                            </div>
+                            <div
+                                class="absolute -top-2 -right-2 bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+                                Soon
+                            </div>
+                        </button>
+
 
                         <a href="https://forms.google.com/waitlist" target="_blank"
                             class="btn-secondary text-lg px-8 py-4 inline-flex items-center justify-center group">

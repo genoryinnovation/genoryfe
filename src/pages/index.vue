@@ -131,7 +131,7 @@
     </section>
     
     <!-- Community/Trust Section -->
-    <section class="bg-white">
+    <section class="bg-white hidden" >
       <div class="max-w-7xl mx-auto section-padding">
         <div class="text-center mb-16">
           <h2 class="text-3xl md:text-4xl font-bold text-accent-900 mb-6">
