@@ -22,6 +22,7 @@
               Works</a>
             <a href="#download" class="text-accent-700 hover:text-primary-500 font-medium transition-colors">Download
               App</a>
+            <router-link to="/app/partner/onboarding" class="text-accent-700 hover:text-primary-500 font-medium transition-colors">Become a Partner</router-link>
             <a href="#contact" class="text-accent-700 hover:text-primary-500 font-medium transition-colors">Contact</a>
             <a href="https://forms.google.com/waitlist" target="_blank" class="btn-primary">
               Join Waitlist
