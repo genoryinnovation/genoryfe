@@ -48,7 +48,7 @@
                         </button>
 
 
-                        <a href="https://forms.google.com/waitlist" target="_blank"
+                        <a href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank"
                             class="btn-secondary text-lg px-8 py-4 inline-flex items-center justify-center group">
                             <svg class="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">

@@ -23,7 +23,7 @@
           We're putting the finishing touches on the Genory mobile app. Join our waitlist to be notified when it's ready!
         </p>
         <a 
-          href="https://forms.google.com/waitlist" 
+          href="https://forms.gle/sPs2phRxP5KhGLuRA" 
           target="_blank"
           class="bg-white text-primary-600 hover:bg-primary-50 px-8 py-3 rounded-lg font-semibold transition-colors duration-200 inline-flex items-center group"
         >

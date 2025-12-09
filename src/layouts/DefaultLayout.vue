@@ -24,7 +24,7 @@
               App</a>
             <router-link to="/app/partner/onboarding" class="text-accent-700 hover:text-primary-500 font-medium transition-colors">Become a Partner</router-link>
             <a href="#contact" class="text-accent-700 hover:text-primary-500 font-medium transition-colors">Contact</a>
-            <a href="https://forms.google.com/waitlist" target="_blank" class="btn-primary">
+            <a href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank" class="btn-primary">
               Join Waitlist
             </a>
           </div>
@@ -52,7 +52,7 @@
             App</a>
           <a href="#contact" class="block px-3 py-2 text-accent-700 hover:text-primary-500 font-medium">Contact</a>
           <div class="px-3 py-2">
-            <a href="https://forms.google.com/waitlist" target="_blank" class="btn-primary w-full text-center block">
+            <a href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank" class="btn-primary w-full text-center block">
               Join Waitlist
             </a>
           </div>
