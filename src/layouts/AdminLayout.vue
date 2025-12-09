@@ -252,7 +252,14 @@ const ProductsIcon = {
   }
 };
 
-const menuItems = [
+interface MenuItem {
+  to: string;
+  label: string;
+  icon: any;
+  badge?: string | null;
+}
+
+const menuItems: MenuItem[] = [
   { to: '/admin', label: 'Dashboard', icon: DashboardIcon },
   { to: '/admin/partners', label: 'Partners', icon: PartnersIcon },
   { to: '/admin/orders', label: 'Orders', icon: OrdersIcon, badge: null },

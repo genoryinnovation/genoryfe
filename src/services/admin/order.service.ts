@@ -21,6 +21,8 @@ export interface Order {
     price: number;
     lineTotal: number;
   }>;
+  subtotal?: number;
+  deliveryFee?: number;
   totalAmount: number;
   currency: string;
   paymentMethod: string;
