@@ -4,42 +4,87 @@
     <HeroSection />
     
     <!-- Features Section -->
-    <section id="features" class="bg-white">
-      <div class="max-w-7xl mx-auto section-padding">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-accent-900 mb-6">
+    <section id="features" class="bg-white relative overflow-hidden">
+      <!-- Decorative elements -->
+      <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-primary-50 rounded-full blur-3xl opacity-50"></div>
+        <div class="absolute top-1/2 right-0 w-64 h-64 bg-secondary-50 rounded-full blur-3xl opacity-50"></div>
+      </div>
+
+      <div class="max-w-7xl mx-auto section-padding relative z-10">
+        <div class="text-center mb-20">
+          <h2 class="text-3xl md:text-5xl font-bold text-accent-900 mb-6 tracking-tight">
             Why Choose Genory?
           </h2>
-          <p class="text-xl text-accent-700 max-w-3xl mx-auto">
-            Experience the future of grocery shopping with our innovative features designed to save you time, money, and effort.
+          <p class="text-xl text-accent-600 max-w-3xl mx-auto leading-relaxed">
+            Experience a smarter way to shop for food. We combine technology, logistics, and financial tools to bring you the best value.
           </p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <FeatureCard
-            icon="cart"
-            title="Smart Grocery Bundles"
-            description="Curated grocery packages tailored to your household needs and preferences. Never run out of essentials again."
-            badge="Popular"
-          />
+          <!-- 1. Smart Food Marketplace -->
+          <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:-translate-y-2 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary-50 to-transparent rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-150 duration-500"></div>
+            
+            <div class="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-primary-500 transition-colors duration-300 relative z-10">
+              <svg class="w-8 h-8 text-primary-600 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m-2.4 0L3 3m0 0h2m0 0l2 9m8 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+              </svg>
+            </div>
+            
+            <h3 class="text-xl font-bold text-accent-900 mb-4 group-hover:text-primary-600 transition-colors">Smart Food Marketplace</h3>
+            <p class="text-accent-600 leading-relaxed">
+              Browse and buy fresh farm produce and food items at affordable prices.
+            </p>
+          </div>
           
-          <FeatureCard
-            icon="coins"
-            title="Earn Tokens & Rewards"
-            description="Get rewarded for every purchase with Genory tokens. Redeem for discounts, exclusive deals, and more."
-          />
+          <!-- 2. Smart food subscription -->
+          <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:-translate-y-2 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-50 to-transparent rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-150 duration-500"></div>
+            
+            <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-green-500 transition-colors duration-300 relative z-10">
+              <svg class="w-8 h-8 text-green-600 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            
+            <h3 class="text-xl font-bold text-accent-900 mb-4 group-hover:text-green-600 transition-colors">Smart Food Subscription</h3>
+            <p class="text-accent-600 leading-relaxed">
+              Weekly or monthly food bundles tailored for individuals, families, or staff.
+            </p>
+          </div>
           
-          <FeatureCard
-            icon="lock"
-            title="Food Lock Savings"
-            description="Lock in today's prices for future purchases. Protect yourself from inflation while building your savings."
-          />
+          <!-- 3. HR Integration System -->
+          <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:-translate-y-2 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-50 to-transparent rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-150 duration-500"></div>
+            
+            <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-purple-500 transition-colors duration-300 relative z-10">
+              <svg class="w-8 h-8 text-purple-600 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            
+            <h3 class="text-xl font-bold text-accent-900 mb-4 group-hover:text-purple-600 transition-colors">HR Integration System</h3>
+            <p class="text-accent-600 leading-relaxed">
+              Food access solutions that reduce hunger and stress before salary dates. (Buy-Before-Payday Access)
+            </p>
+          </div>
           
-          <FeatureCard
-            icon="truck"
-            title="Instant Delivery Tracking"
-            description="Real-time tracking from order to doorstep. Know exactly when your groceries will arrive."
-          />
+          <!-- 4. Smart wallet systems -->
+          <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:-translate-y-2 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-150 duration-500"></div>
+            
+            <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-blue-500 transition-colors duration-300 relative z-10">
+              <svg class="w-8 h-8 text-blue-600 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            
+            <h3 class="text-xl font-bold text-accent-900 mb-4 group-hover:text-blue-600 transition-colors">Smart Wallet Systems</h3>
+            <p class="text-accent-600 leading-relaxed">
+              Use Genory’s Smart Wallet to buy food with your bank wallet, tokens, or gift cards—fast, secure, and seamless.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -49,68 +94,71 @@
       <div class="max-w-7xl mx-auto section-padding">
         <div class="text-center mb-16">
           <h2 class="text-3xl md:text-4xl font-bold text-accent-900 mb-6">
-            How Genory Works
+            Get started in minutes and transform the way you buy food in Nigeria.
           </h2>
           <p class="text-xl text-accent-700 max-w-3xl mx-auto">
-            Get started in minutes and transform your grocery shopping experience forever.
+            Fast, simple, and designed to help you save more every day.
           </p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 relative">
+          <!-- Connecting Line (Desktop) -->
+          <div class="hidden md:block absolute top-10 left-0 w-full h-0.5 bg-gray-100 -z-10"></div>
+
           <!-- Step 1 -->
-          <div class="text-center">
-            <div class="relative mb-6">
-              <div class="w-20 h-20 bg-primary-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="text-center group relative">
+            <div class="relative mb-8 inline-block">
+              <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-blue-200 group-hover:scale-110 transition-transform duration-300">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
-              <div class="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-sm font-bold text-accent-900">1</div>
+              <div class="absolute -top-2 -right-4 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-sm font-bold text-accent-900 border-2 border-white shadow-sm">1</div>
             </div>
             <h3 class="text-xl font-bold text-accent-900 mb-3">Sign Up</h3>
-            <p class="text-accent-700">Create your free Genory account in under 2 minutes. No credit card required.</p>
+            <p class="text-accent-600 text-sm leading-relaxed">Create your free Genory account in less than 2 minutes. No stress, no paperwork — just enter your details and you’re in.</p>
           </div>
           
           <!-- Step 2 -->
-          <div class="text-center">
-            <div class="relative mb-6">
-              <div class="w-20 h-20 bg-primary-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="text-center group relative">
+            <div class="relative mb-8 inline-block">
+              <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-blue-200 group-hover:scale-110 transition-transform duration-300">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
               </div>
-              <div class="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-sm font-bold text-accent-900">2</div>
+              <div class="absolute -top-2 -right-4 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-sm font-bold text-accent-900 border-2 border-white shadow-sm">2</div>
             </div>
-            <h3 class="text-xl font-bold text-accent-900 mb-3">Add Essentials</h3>
-            <p class="text-accent-700">Select your household essentials and set up your personalized grocery bundles.</p>
+            <h3 class="text-xl font-bold text-accent-900 mb-3">Add Your Essentials</h3>
+            <p class="text-accent-600 text-sm leading-relaxed">Pick your everyday food items — rice, yam, veggies, proteins, and more — or select from our affordable bundles. Everything fresh, everything budget-friendly.</p>
           </div>
           
           <!-- Step 3 -->
-          <div class="text-center">
-            <div class="relative mb-6">
-              <div class="w-20 h-20 bg-primary-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="text-center group relative">
+            <div class="relative mb-8 inline-block">
+              <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-blue-200 group-hover:scale-110 transition-transform duration-300">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <div class="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-sm font-bold text-accent-900">3</div>
+              <div class="absolute -top-2 -right-4 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-sm font-bold text-accent-900 border-2 border-white shadow-sm">3</div>
             </div>
-            <h3 class="text-xl font-bold text-accent-900 mb-3">Lock Savings</h3>
-            <p class="text-accent-700">Lock in current prices for future purchases and watch your savings grow.</p>
+            <h3 class="text-xl font-bold text-accent-900 mb-3">Your Market Run, Done Fast</h3>
+            <p class="text-accent-600 text-sm leading-relaxed">Your Fresh food picks , straight to your doorstep. Directly from Nigerian farms, handled with care, and delivered in under 12 hours(Same day delivery ) — clean, fresh, and affordable.</p>
           </div>
           
           <!-- Step 4 -->
-          <div class="text-center">
-            <div class="relative mb-6">
-              <div class="w-20 h-20 bg-primary-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="text-center group relative">
+            <div class="relative mb-8 inline-block">
+              <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-blue-200 group-hover:scale-110 transition-transform duration-300">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div class="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-sm font-bold text-accent-900">4</div>
+              <div class="absolute -top-2 -right-4 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-sm font-bold text-accent-900 border-2 border-white shadow-sm">4</div>
             </div>
-            <h3 class="text-xl font-bold text-accent-900 mb-3">Earn Rewards</h3>
-            <p class="text-accent-700">Earn tokens with every purchase and unlock exclusive rewards and discounts.</p>
+            <h3 class="text-xl font-bold text-accent-900 mb-3">Earn Up to 10%</h3>
+            <p class="text-accent-600 text-sm leading-relaxed">Get rewards on every order and earn up to 10% by helping others buy from Genory — savings for them, value for you.</p>
           </div>
         </div>
         
@@ -226,10 +274,10 @@
       <div class="max-w-7xl mx-auto section-padding">
         <div class="max-w-4xl mx-auto text-center">
           <h2 class="text-3xl md:text-4xl font-bold text-accent-900 mb-6">
-            Ready to Transform Your Grocery Shopping?
+            The Smartest Way to Shop for Food in Africa
           </h2>
           <p class="text-xl text-accent-700 mb-8">
-            Join our waitlist to be among the first to experience the future of grocery shopping in Nigeria.
+            Join our waitlist and be part of Africa's first smart food ecosystem, delivering fresh, high-quality groceries. Fast and seamlessly convenience.
           </p>
           
           <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -264,7 +312,7 @@
                 </svg>
               </div>
               <h3 class="font-semibold text-accent-900 mb-2">Email</h3>
-              <p class="text-accent-700">hello@genory.com</p>
+              <p class="text-accent-700">info@genory.co</p>
             </div>
             
             <div>
@@ -274,7 +322,7 @@
                 </svg>
               </div>
               <h3 class="font-semibold text-accent-900 mb-2">Phone</h3>
-              <p class="text-accent-700">+234 (0) 810 000 0000</p>
+              <p class="text-accent-700">+2348143003554, +2348134649622</p>
             </div>
             
             <div>
@@ -285,7 +333,7 @@
                 </svg>
               </div>
               <h3 class="font-semibold text-accent-900 mb-2">Location</h3>
-              <p class="text-accent-700">Lagos, Nigeria</p>
+              <p class="text-accent-700">No 4, Akintunde Street, Ojodu Berger Busstop, Lagos Nigeria</p>
             </div>
           </div>
         </div>
@@ -297,7 +345,7 @@
 <script setup lang="ts">
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import HeroSection from '@/components/HeroSection.vue'
-import FeatureCard from '@/components/FeatureCard.vue'
+
 import DownloadSection from '@/components/DownloadSection.vue'
 </script>
 

@@ -7,16 +7,17 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
                 <!-- Text content -->
                 <div class="text-center lg:text-left lg:col-span-2">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-accent-900 leading-tight mb-6">
-                        Shop Smart.
-                        <span class="text-primary-500">Save More.</span>
-                        <span class="block">Earn Effortlessly.</span>
-                    </h1>
-
-                    <p class="text-xl text-accent-700 mb-8 max-w-2xl">
-                        Join thousands of Nigerians using Genory to buy groceries, lock food savings, and earn tokens
-                        with every purchase. The smartest way to manage your household needs.
-                    </p>
+                    <div class="relative h-[300px] mb-8">
+                        <TransitionGroup name="fade" tag="div" class="absolute inset-0 flex flex-col justify-center">
+                            <div v-for="(slide, index) in slides" :key="index" v-show="currentSlide === index" class="w-full">
+                                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-accent-900 leading-tight mb-6" v-html="slide.headline">
+                                </h1>
+                                <p class="text-xl text-accent-700 max-w-2xl mx-auto lg:mx-0">
+                                    {{ slide.subheadline }}
+                                </p>
+                            </div>
+                        </TransitionGroup>
+                    </div>
 
                     <!-- CTA Buttons -->
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -383,8 +384,57 @@
 </template>
 
 <script setup lang="ts">
-// Hero section component
+import { ref, onMounted, onUnmounted } from 'vue';
+
+const currentSlide = ref(0);
+const slides = [
+    {
+        headline: `Shop Smart. <span class="text-primary-500">Save More.</span> <span class="block">Earn Effortlessly.</span>`,
+        subheadline: `Genory connects Nigerians to fresh farm food through smart technology and eﬃcient logistics, reducing food costs and making quality food accessible every day — because no one should go hungry.`
+    },
+    {
+        headline: `<span class="text-primary-500">Buy Fresh.</span> <span class="text-red-500">Fast Delivery.</span> <span class="block text-primary-500">ENJOY upto 30% more.</span>`,
+        subheadline: `Say goodbye to long market trips. Genory brings the best farm produce to you the same day, while letting you enjoy up to 30% more in value. Fresh, fast, and designed for your convenience.`
+    },
+    {
+        headline: `NO hustle. NO worries. <span class="block">stay relax before <span class="text-blue-600">payday</span>.</span>`,
+        subheadline: `Genory makes it easy for employees to care for their families by delivering fresh, farm-quality food straight to their door—fast, reliable, and stress-free. We help companies keep employees energized and focused while families stay nourished, giving HR teams peace of mind knowing staff welfare is taken care of—all before payday.`
+    }
+];
+
+let intervalId: any;
+
+onMounted(() => {
+    intervalId = setInterval(() => {
+        currentSlide.value = (currentSlide.value + 1) % slides.length;
+    }, 5000);
+});
+
+onUnmounted(() => {
+    if (intervalId) clearInterval(intervalId);
+});
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: all 0.5s ease;
+    position: absolute;
+    width: 100%;
+}
+
+.fade-enter-from {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.fade-leave-to {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+</style>
+
+
 
 <style scoped>
 .bg-grid-pattern {
