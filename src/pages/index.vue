@@ -165,7 +165,7 @@
         <!-- CTA -->
         <div class="text-center mt-16">
           <a 
-            href="https://forms.google.com/waitlist" 
+            href="https://forms.gle/sPs2phRxP5KhGLuRA" 
             target="_blank"
             class="btn-primary text-lg px-8 py-4 inline-flex items-center group"
           >
@@ -282,7 +282,7 @@
           
           <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <a 
-              href="https://forms.google.com/waitlist" 
+              href="https://forms.gle/sPs2phRxP5KhGLuRA" 
               target="_blank"
               class="btn-primary text-lg px-8 py-4 inline-flex items-center justify-center group"
             >
