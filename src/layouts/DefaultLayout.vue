@@ -7,8 +7,8 @@
           <!-- Logo -->
           <div class="flex items-center">
             <router-link to="/" class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-                <span class="text-white font-bold text-lg">G</span>
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                <img src="/logo.png" alt="Genory Logo" class="w-full h-full object-cover" />
               </div>
               <span class="text-xl font-bold text-accent-900">Genory</span>
             </router-link>
@@ -72,8 +72,8 @@
           <!-- Logo and description -->
           <div class="md:col-span-2">
             <div class="flex items-center space-x-2 mb-4">
-              <div class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-                <span class="text-white font-bold text-lg">G</span>
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                <img src="/logo.png" alt="Genory Logo" class="w-full h-full object-cover" />
               </div>
               <span class="text-xl font-bold">Genory</span>
             </div>
