@@ -31,10 +31,22 @@ export interface PartnerListResponse {
   };
 }
 
+export interface PartnerStats {
+  totalPartners: number;
+  activePartners: number;
+  totalEmployees: number;
+  industries: { name: string; count: number }[];
+}
+
 export class PartnerService {
-  static async getPartners(page = 1, limit = 10, search = ''): Promise<PartnerListResponse> {
+  static async getStats(): Promise<PartnerStats> {
+    const response = await api.get('/admin/partners/stats');
+    return response.data.data;
+  }
+
+  static async getPartners(params: any = { page: 1, limit: 10 }): Promise<PartnerListResponse> {
     const response = await api.get<PartnerListResponse>('/admin/partners', {
-      params: { page, limit, search },
+      params,
     });
     return response.data;
   }
