@@ -120,3 +120,8 @@
 <script setup lang="ts">
 // Partner List Logic
 </script>
+
+<route lang="yaml">
+meta:
+  layout: admin
+</route>

@@ -120,3 +120,8 @@ const createPartner = async () => {
   }, 1000);
 };
 </script>
+
+<route lang="yaml">
+meta:
+  layout: admin
+</route>
