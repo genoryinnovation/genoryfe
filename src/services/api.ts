@@ -26,9 +26,16 @@ api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
     if (error.response && error.response.status === 401) {
-      // Clear token and redirect to login if unauthorized
-      localStorage.removeItem('admin_token');
-      window.location.href = '/admin/login';
+      // Don't redirect if we're already on a login page or if it's a login attempt
+      const isLoginRequest = error.config?.url?.includes('/auth/login');
+      const isLoginPage = window.location.pathname.includes('/login');
+
+      if (!isLoginRequest && !isLoginPage) {
+        // Clear token and redirect to login if unauthorized
+        localStorage.removeItem('admin_token');
+        localStorage.removeItem('admin_user');
+        window.location.href = '/admin/login';
+      }
     }
     return Promise.reject(error);
   }

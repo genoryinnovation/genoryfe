@@ -349,6 +349,11 @@ import HeroSection from '@/components/HeroSection.vue'
 import DownloadSection from '@/components/DownloadSection.vue'
 </script>
 
+<route lang="yaml">
+meta:
+  layout: false
+</route>
+
 <style scoped>
 /* Page-specific styles */
 </style>

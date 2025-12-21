@@ -1,1 +1,0 @@
-import{a as e}from"./api-Csnh6SWI.js";class s{static async login(t){return(await e.post("/admin/auth/login",t)).data}static logout(){localStorage.removeItem("admin_token"),localStorage.removeItem("admin_user")}static getToken(){return localStorage.getItem("admin_token")}static getUser(){const t=localStorage.getItem("admin_user");return t?JSON.parse(t):null}}export{s as A};

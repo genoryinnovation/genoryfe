@@ -1,0 +1,1 @@
+import{a as e}from"./api-Cc7xRAfh.js";class c{static async getUsers(s=1,a=10,t="",r=""){return(await e.get("/admin/users",{params:{page:s,limit:a,search:t,status:r}})).data}static async getUser(s){return(await e.get(`/admin/users/${s}`)).data}static async getUserStats(){return(await e.get("/admin/users/stats")).data}}export{c as U};

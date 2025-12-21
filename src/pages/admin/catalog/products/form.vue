@@ -243,3 +243,8 @@ onMounted(async () => {
   }
 });
 </script>
+
+<route lang="yaml">
+meta:
+  layout: admin
+</route>

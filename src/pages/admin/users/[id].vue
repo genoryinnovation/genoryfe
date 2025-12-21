@@ -345,3 +345,8 @@ onMounted(() => {
   fetchUser();
 });
 </script>
+
+<route lang="yaml">
+meta:
+  layout: admin
+</route>
