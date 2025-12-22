@@ -44,12 +44,26 @@ const tabs = [
   { id: 'config', name: 'Configuration', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' },
 ];
 
-const ensurePaymentSettings = (partnerObj: any) => {
+const ensurePartnerFields = (partnerObj: any) => {
   if (!partnerObj.paymentSettings) {
     partnerObj.paymentSettings = {
       dailyLimit: 0,
       monthlyLimit: 0,
       negativeBalanceLimit: 0
+    };
+  }
+  if (!partnerObj.planType) partnerObj.planType = 'prepaid';
+  if (!partnerObj.billingCycleSettings) {
+    partnerObj.billingCycleSettings = {
+      billingDay: 'last',
+      gracePeriodDays: 5
+    };
+  }
+  if (!partnerObj.earningsSettings) {
+    partnerObj.earningsSettings = {
+      enabled: false,
+      percentage: 0,
+      bearer: 'platform'
     };
   }
 };
@@ -61,7 +75,7 @@ const fetchData = async () => {
       const resp = await PartnerService.getPartnerOverview(partnerId);
       overview.value = resp.data;
       partner.value = resp.data.partner;
-      ensurePaymentSettings(partner.value);
+      ensurePartnerFields(partner.value);
     } else if (activeTab.value === 'employees') {
       const resp = await UserService.getUsers({ hrCompany: partnerId, page: empPage.value, limit: 10 });
       employees.value = resp.data.users;
@@ -86,7 +100,7 @@ const fetchData = async () => {
         const resp = await PartnerService.getPartner(partnerId);
         partner.value = resp.data;
       }
-      ensurePaymentSettings(partner.value);
+      ensurePartnerFields(partner.value);
     }
   } catch (error) {
     console.error('Failed to fetch data', error);
@@ -104,7 +118,10 @@ const handleSaveConfig = async () => {
       industry: partner.value.industry,
       registrationNumber: partner.value.registrationNumber,
       isActive: partner.value.isActive,
-      paymentSettings: partner.value.paymentSettings
+      paymentSettings: partner.value.paymentSettings,
+      planType: partner.value.planType,
+      billingCycleSettings: partner.value.billingCycleSettings,
+      earningsSettings: partner.value.earningsSettings
     };
     await PartnerService.updatePartner(partnerId, payload);
     alertMessage.value = 'Configuration updated successfully';
@@ -443,6 +460,72 @@ const formatCurrency = (amount: number) => {
             <div class="space-y-1"><label class="text-xs font-bold text-slate-500 uppercase">Daily Limit</label><input type="number" v-model="partner.paymentSettings.dailyLimit" class="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-bold" /></div>
             <div class="space-y-1"><label class="text-xs font-bold text-slate-500 uppercase">Monthly Limit</label><input type="number" v-model="partner.paymentSettings.monthlyLimit" class="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-bold" /></div>
             <div class="space-y-1"><label class="text-xs font-bold text-slate-500 uppercase">Overdraft Limit</label><input type="number" v-model="partner.paymentSettings.negativeBalanceLimit" class="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-bold" /></div>
+          </div>
+        </div>
+
+        <!-- Billing & Plan -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="p-6 border-b border-slate-100 bg-slate-50/50 font-bold text-slate-900">Billing & Plan Configuration</div>
+          <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-slate-500 uppercase">Billing Plan</label>
+              <select v-model="partner.planType" class="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-bold">
+                <option value="prepaid">Prepaid (Wallet Based)</option>
+                <option value="postpaid">Postpaid (Cycle Based)</option>
+              </select>
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-slate-500 uppercase">Billing Day</label>
+              <select v-model="partner.billingCycleSettings.billingDay" class="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-bold">
+                <option value="last">Last Day of Month</option>
+                <option v-for="day in 28" :key="day" :value="day">{{ day }}th of Month</option>
+              </select>
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-slate-500 uppercase">Grace Period (Days)</label>
+              <input type="number" v-model="partner.billingCycleSettings.gracePeriodDays" class="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-bold" />
+            </div>
+          </div>
+          <div class="px-6 pb-6 text-xs text-slate-500 italic">
+            * Postpaid accounts accumulate spending and must be settled within the grace period after the billing day.
+          </div>
+        </div>
+
+        <!-- Earnings Configuration -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="p-6 border-b border-slate-100 bg-slate-50/50 font-bold text-slate-900 flex items-center justify-between">
+            <span>Earnings Configuration</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" v-model="partner.earningsSettings.enabled" class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-600"></div>
+            </label>
+          </div>
+          <div v-if="partner.earningsSettings.enabled" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-in-from-top-2 duration-200">
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-slate-500 uppercase">Earnings Percentage (%)</label>
+              <div class="relative">
+                <input type="number" v-model="partner.earningsSettings.percentage" step="0.1" class="w-full pl-4 pr-8 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-bold" />
+                <span class="absolute right-3 top-2 text-slate-400 font-bold">%</span>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-slate-500 uppercase">Cost Bearer</label>
+              <select v-model="partner.earningsSettings.bearer" class="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-bold">
+                <option value="platform">Platform (Deducted from Revenue)</option>
+                <option value="customer">Customer (Added as Fee)</option>
+              </select>
+            </div>
+            <div class="md:col-span-2 p-4 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-600">
+              <p v-if="partner.earningsSettings.bearer === 'platform'">
+                <span class="font-bold text-primary-700">Platform Model:</span> The partner earns <span class="font-bold">{{ partner.earningsSettings.percentage }}%</span> of each order. This amount is deducted from the platform's revenue.
+              </p>
+              <p v-else>
+                <span class="font-bold text-primary-700">Customer Model:</span> A <span class="font-bold">{{ partner.earningsSettings.percentage }}%</span> service fee is added to the customer's total order amount, which is then credited to the partner.
+              </p>
+            </div>
+          </div>
+          <div v-else class="p-6 text-sm text-slate-500 italic">
+            Earnings are currently disabled for this partner. Enable to configure commission parameters.
           </div>
         </div>
 

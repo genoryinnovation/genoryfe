@@ -38,7 +38,7 @@
                   </div>
                   <div>
                     <p class="font-bold text-slate-900">{{ getMonthName(report._id.month) }} {{ report._id.year }}</p>
-                    <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Monthly Cycle</p>
+                    <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{{ report.planType }} billing cycle</p>
                   </div>
                 </div>
               </td>
@@ -54,9 +54,17 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="[
                   'px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest',
-                  report.isCleared ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                  report.status === 'settled' ? 'bg-emerald-100 text-emerald-800' : 
+                  report.status === 'overdue' ? 'bg-rose-100 text-rose-800' :
+                  report.status === 'due' ? 'bg-amber-100 text-amber-800' :
+                  'bg-slate-100 text-slate-600'
                 ]">
-                  {{ report.isCleared ? 'Settled' : 'Unpaid' }}
+                  {{ 
+                    report.status === 'settled' ? 'Settled' : 
+                    report.status === 'overdue' ? 'Overdue' :
+                    report.status === 'due' ? 'Payment Due' :
+                    'Open Cycle'
+                  }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right space-x-2">
@@ -71,13 +79,17 @@
                 </button>
                 <button 
                   @click="handleReconcile(report)"
-                  :disabled="report.isCleared"
+                  :disabled="report.status === 'settled' || report.status === 'open'"
                   :class="[
                     'inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg transition-colors',
-                    report.isCleared ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-primary-600 text-white hover:bg-primary-700'
+                    (report.status === 'settled' || report.status === 'open') ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-primary-600 text-white hover:bg-primary-700'
                   ]"
                 >
-                  {{ report.isCleared ? 'Already Settled' : 'Trigger Payment' }}
+                  {{ 
+                    report.status === 'settled' ? 'Settled' : 
+                    report.status === 'open' ? 'Cycle Open' : 
+                    'Trigger Payment' 
+                  }}
                 </button>
               </td>
             </tr>

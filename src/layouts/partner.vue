@@ -43,11 +43,18 @@
           <span>Order Approvals</span>
         </router-link>
 
-        <router-link to="/partner/wallet" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all" :class="[$route.path.startsWith('/partner/wallet') ? 'bg-primary-50 text-primary-600 font-bold' : 'text-slate-600 hover:bg-slate-50']">
+        <router-link to="/partner/funding" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all" :class="[$route.path.startsWith('/partner/funding') ? 'bg-primary-50 text-primary-600 font-bold' : 'text-slate-600 hover:bg-slate-50']">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
           </svg>
-          <span>Wallet & Funding</span>
+          <span>{{ planType === 'postpaid' ? 'Spending & Ledger' : 'Wallet & Funding' }}</span>
+        </router-link>
+
+        <router-link to="/partner/earnings" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all" :class="[$route.path.startsWith('/partner/earnings') ? 'bg-primary-50 text-emerald-600 font-bold' : 'text-slate-600 hover:bg-slate-50']">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Earnings</span>
         </router-link>
 
         <router-link to="/partner/reports" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all" :class="[$route.path.startsWith('/partner/reports') ? 'bg-primary-50 text-primary-600 font-bold' : 'text-slate-600 hover:bg-slate-50']">
@@ -111,13 +118,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { AuthService } from '../services/admin/auth.service';
+import { PartnerPortalService } from '../services/partner-portal.service';
 
 const router = useRouter();
+const planType = ref<string>('prepaid');
 
-onMounted(() => {
+onMounted(async () => {
   const token = AuthService.getToken();
   if (!token) {
     router.push('/login');
@@ -125,9 +134,16 @@ onMounted(() => {
   }
   
   const user = AuthService.getUser();
-  
   if (!user?.partner) {
      router.push('/admin');
+     return;
+  }
+
+  try {
+    const stats = await PartnerPortalService.getStats();
+    planType.value = stats.planType;
+  } catch (e) {
+    console.error('Failed to fetch plan type in layout', e);
   }
 });
 

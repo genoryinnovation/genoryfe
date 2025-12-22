@@ -2,8 +2,15 @@
   <div class="space-y-6">
     <!-- Welcome Header -->
     <div class="bg-gradient-to-r from-primary-600 to-indigo-600 rounded-2xl p-8 text-white shadow-xl">
-      <h1 class="text-3xl font-bold">Welcome back, {{ adminName }}!</h1>
-      <p class="mt-2 text-primary-100 opacity-90">Here's what's happening with your company account today.</p>
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold">Welcome back, {{ adminName }}!</h1>
+          <p class="mt-2 text-primary-100 opacity-90">Here's what's happening with your company account today.</p>
+        </div>
+        <div v-if="stats.planType" :class="['px-4 py-1.5 rounded-full text-xs font-black border uppercase tracking-widest', stats.planType === 'postpaid' ? 'bg-amber-400/20 border-amber-400 text-amber-200' : 'bg-emerald-400/20 border-emerald-400 text-emerald-100']">
+          {{ stats.planType }} billing
+        </div>
+      </div>
       
       <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-white/10 backdrop-blur-md rounded-xl p-4">
@@ -14,13 +21,33 @@
           <p class="text-xs text-primary-100 uppercase tracking-wider font-semibold">Pending Orders</p>
           <p class="text-2xl font-bold mt-1">{{ stats.pendingOrders }}</p>
         </div>
-        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10">
-          <p class="text-[10px] text-primary-100 uppercase tracking-widest font-bold">Wallet Balance</p>
-          <p class="text-2xl font-black mt-1 text-white">₦{{ stats.walletBalance.toLocaleString() }}</p>
+        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 relative group">
+          <p class="text-[10px] text-primary-100 uppercase tracking-widest font-bold">
+            {{ stats.planType === 'postpaid' ? 'Monthly Utilization' : 'Wallet Balance' }}
+          </p>
+          <p class="text-2xl font-black mt-1 text-white">
+            ₦{{ (stats.planType === 'postpaid' ? Math.abs(stats.walletBalance) : stats.walletBalance).toLocaleString() }}
+          </p>
+          <!-- Additional info for Postpaid -->
+          <div v-if="stats.planType === 'postpaid' && stats.paymentSettings?.monthlyLimit" class="mt-2 flex items-center justify-between">
+            <div class="h-1.5 bg-white/20 rounded-full flex-1 mr-3 overflow-hidden">
+              <div 
+                class="h-full bg-white rounded-full transition-all duration-1000" 
+                :style="{ width: `${Math.min(100, (Math.abs(stats.walletBalance) / stats.paymentSettings.monthlyLimit) * 100)}%` }"
+              ></div>
+            </div>
+            <span class="text-[9px] font-bold text-primary-200">
+              Limit: ₦{{ stats.paymentSettings.monthlyLimit.toLocaleString() }}
+            </span>
+          </div>
         </div>
         <div class="bg-primary-500/50 backdrop-blur-md rounded-xl p-4 border border-white/20 ring-4 ring-white/5">
           <p class="text-[10px] text-white uppercase tracking-widest font-black">This Month's Spend</p>
           <p class="text-2xl font-black mt-1 text-white">₦{{ stats.monthSpend.toLocaleString() }}</p>
+        </div>
+        <div v-if="stats.earningsSettings?.enabled" class="bg-emerald-500/20 backdrop-blur-md rounded-xl p-4 border border-emerald-300/30">
+          <p class="text-xs text-emerald-100 uppercase tracking-wider font-semibold">Total Earnings</p>
+          <p class="text-2xl font-black mt-1 text-white">₦{{ stats.earningsBalance.toLocaleString() }}</p>
         </div>
       </div>
     </div>
@@ -73,11 +100,25 @@
               </svg>
               Add New Employee
             </button>
-            <button @click="$router.push('/partner/wallet')" class="w-full flex items-center px-4 py-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors text-slate-700 font-medium">
+            <button 
+              v-if="stats.planType !== 'postpaid'"
+              @click="$router.push('/partner/wallet')" 
+              class="w-full flex items-center px-4 py-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors text-slate-700 font-medium"
+            >
               <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Fund Company Wallet
+            </button>
+            <button 
+              v-else
+              @click="$router.push('/partner/reports')" 
+              class="w-full flex items-center px-4 py-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors text-slate-700 font-medium"
+            >
+              <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2m3 2h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              View Billing Reports
             </button>
           </div>
         </div>
@@ -101,12 +142,16 @@ import { AuthService } from '../../services/admin/auth.service';
 import { PartnerPortalService } from '../../services/partner-portal.service';
 
 const adminName = ref('Admin');
-const stats = ref({
+const stats = ref<any>({
   employeeCount: 0,
   pendingOrders: 0,
   walletBalance: 0,
   todaySpend: 0,
-  monthSpend: 0
+  monthSpend: 0,
+  planType: 'prepaid',
+  paymentSettings: null,
+  earningsSettings: null,
+  earningsBalance: 0
 });
 const recentOrders = ref<any[]>([]);
 const loading = ref(true);

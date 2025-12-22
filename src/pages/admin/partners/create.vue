@@ -79,6 +79,55 @@
             </div>
           </div>
         </div>
+        
+        <!-- Billing & Plan (New) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center space-x-3">
+            <div class="p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-900">Billing & Plan</h3>
+          </div>
+          
+          <div class="p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="planType" class="block text-sm font-medium text-slate-700 mb-2">Active Plan</label>
+                <select
+                  id="planType"
+                  v-model="form.planType"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-bold"
+                >
+                  <option value="prepaid">Prepaid (Wallet Based)</option>
+                  <option value="postpaid">Postpaid (Cycle Based)</option>
+                </select>
+              </div>
+              <div>
+                <label for="billingDay" class="block text-sm font-medium text-slate-700 mb-2">Billing Day</label>
+                <select
+                  id="billingDay"
+                  v-model="form.billingDay"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-bold"
+                >
+                  <option value="last">Last Day of Month</option>
+                  <option v-for="day in 28" :key="day" :value="day">{{ day }}th of Month</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label for="gracePeriod" class="block text-sm font-medium text-slate-700 mb-2">Grace Period (Days)</label>
+              <input
+                type="number"
+                id="gracePeriod"
+                v-model="form.gracePeriodDays"
+                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-bold"
+                placeholder="e.g. 5"
+              />
+            </div>
+          </div>
+        </div>
 
         <!-- Primary Admin Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
@@ -220,13 +269,22 @@ const form = reactive({
   adminFirstName: '',
   adminLastName: '',
   adminEmail: '',
+  planType: 'prepaid',
+  billingDay: 'last',
+  gracePeriodDays: 5,
 });
 
 const createPartner = async () => {
   loading.value = true;
   try {
-    await PartnerService.createPartner(form);
-    // In a real app, use a toast notification
+    const payload = {
+      ...form,
+      billingCycleSettings: {
+        billingDay: form.billingDay,
+        gracePeriodDays: form.gracePeriodDays
+      }
+    };
+    await PartnerService.createPartner(payload);
     alert('Partner created successfully! Admin credentials have been sent.');
     router.push('/admin/partners');
   } catch (error: any) {
