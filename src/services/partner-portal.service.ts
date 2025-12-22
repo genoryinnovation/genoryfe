@@ -186,6 +186,11 @@ export class PartnerPortalService {
     return response.data.data;
   }
 
+  static async requeryTransaction(id: string) {
+    const response = await api.post(`/admin/partner-portal/wallet/transactions/${id}/requery`);
+    return response.data.data;
+  }
+
   /**
    * Settings
    */

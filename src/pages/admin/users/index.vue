@@ -210,11 +210,11 @@ let debounceTimeout: any;
 const fetchUsers = async () => {
   try {
     const [listRes, statsRes] = await Promise.all([
-      UserService.getUsers(
-        pagination.value.page,
-        pagination.value.limit,
-        search.value
-      ),
+      UserService.getUsers({
+        page: pagination.value.page,
+        limit: pagination.value.limit,
+        search: search.value
+      }),
       UserService.getUserStats(),
     ]);
     users.value = listRes.data.users;
