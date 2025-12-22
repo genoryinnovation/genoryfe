@@ -12,6 +12,11 @@ export interface Partner {
     monthlyLimit: number;
     negativeBalanceLimit: number;
   };
+  earningsSettings?: {
+    enabled: boolean;
+    percentage: number;
+    bearer: 'customer' | 'platform';
+  };
   createdAt: string;
 }
 

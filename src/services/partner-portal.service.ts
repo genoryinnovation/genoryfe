@@ -6,6 +6,8 @@ export interface PartnerStats {
   walletBalance: number;
   todaySpend: number;
   monthSpend: number;
+  planType: 'prepaid' | 'postpaid';
+  paymentSettings?: any;
 }
 
 export interface Employee {
@@ -172,13 +174,13 @@ export class PartnerPortalService {
   /**
    * Wallet
    */
-  static async getTransactions(params: any = { page: 1, limit: 10 }) {
+  static async getTransactions(params: any = { page: 1, limit: 10, walletType: 'operating' }) {
     const response = await api.get('/admin/partner-portal/wallet/transactions', { params });
-    return response.data as PaginatedResponse<any> & { balance: number };
+    return response.data as PaginatedResponse<any> & { balance: number, planType: string };
   }
 
-  static async getWalletStats() {
-    const response = await api.get('/admin/partner-portal/wallet/stats');
+  static async getWalletStats(walletType: 'operating' | 'earnings' = 'operating') {
+    const response = await api.get('/admin/partner-portal/wallet/stats', { params: { walletType } });
     return response.data.data as {
       totalTransactions: number;
       totalDeposits: number;
@@ -187,6 +189,7 @@ export class PartnerPortalService {
       deductionCount: number;
       netChange: number;
       balance: number;
+      planType: 'prepaid' | 'postpaid';
     };
   }
 

@@ -18,6 +18,11 @@ const settings = ref({
     monthlyLimit: 0,
     negativeBalanceLimit: 0
   },
+  planType: 'prepaid',
+  billingCycleSettings: {
+    billingDay: 'last',
+    gracePeriodDays: 5
+  },
   twoFactorEnabled: false
 });
 
@@ -67,6 +72,11 @@ const fetchSettings = async () => {
         dailyLimit: data.paymentSettings?.dailyLimit || 0,
         monthlyLimit: data.paymentSettings?.monthlyLimit || 0,
         negativeBalanceLimit: data.paymentSettings?.negativeBalanceLimit || 0
+      },
+      planType: data.planType || 'prepaid',
+      billingCycleSettings: {
+        billingDay: data.billingCycleSettings?.billingDay || 'last',
+        gracePeriodDays: data.billingCycleSettings?.gracePeriodDays || 5
       },
       twoFactorEnabled: data.twoFactorEnabled || false
     };
@@ -238,6 +248,34 @@ onMounted(fetchSettings);
           <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Overdraft Limit</label>
             <p class="text-xl font-black text-emerald-600">₦{{ settings.paymentSettings.negativeBalanceLimit.toLocaleString() }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Billing Plan (Read Only) -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-slate-900 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Billing Plan
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">Details about your active subscription and billing cycle.</p>
+          </div>
+          <span class="px-3 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full uppercase tracking-wider">Read Only</span>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Active Plan</label>
+            <p class="text-xl font-black text-slate-900 capitalize">{{ settings.planType }}</p>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Billing Cycle</label>
+            <p class="text-xl font-black text-slate-900">
+              {{ settings.billingCycleSettings.billingDay === 'last' ? 'Full Month' : `Every ${settings.billingCycleSettings.billingDay}th` }} 
+            </p>
           </div>
         </div>
       </div>
