@@ -3,9 +3,20 @@ import { ref, onMounted } from 'vue';
 import { PartnerPortalService } from '../../../services/partner-portal.service';
 
 const settings = ref({
+  name: '',
+  industry: '',
+  registrationNumber: '',
   paymentSettings: {
     autoApprovalEnabled: false,
     autoApprovalThreshold: 0,
+    approvalHours: {
+      start: '08:00',
+      end: '17:00',
+      days: [1, 2, 3, 4, 5]
+    },
+    dailyLimit: 0,
+    monthlyLimit: 0,
+    negativeBalanceLimit: 0
   },
   twoFactorEnabled: false
 });
@@ -17,12 +28,46 @@ const newPin = ref('');
 const alertMessage = ref('');
 const alertType = ref<'success' | 'error'>('success');
 
+
+const dayOptions = [
+  { value: 0, label: 'Sun' },
+  { value: 1, label: 'Mon' },
+  { value: 2, label: 'Tue' },
+  { value: 3, label: 'Wed' },
+  { value: 4, label: 'Thu' },
+  { value: 5, label: 'Fri' },
+  { value: 6, label: 'Sat' }
+];
+
+const toggleDay = (day: number) => {
+  const index = settings.value.paymentSettings.approvalHours.days.indexOf(day);
+  if (index === -1) {
+    settings.value.paymentSettings.approvalHours.days.push(day);
+  } else {
+    settings.value.paymentSettings.approvalHours.days.splice(index, 1);
+  }
+};
+
 const fetchSettings = async () => {
   try {
     loading.value = true;
     const data = await PartnerPortalService.getSettings();
     settings.value = {
-      paymentSettings: data.paymentSettings || { autoApprovalEnabled: false, autoApprovalThreshold: 0 },
+      name: data.name || '',
+      industry: data.industry || '',
+      registrationNumber: data.registrationNumber || '',
+      paymentSettings: {
+        autoApprovalEnabled: data.paymentSettings?.autoApprovalEnabled || false,
+        autoApprovalThreshold: data.paymentSettings?.autoApprovalThreshold || 0,
+        approvalHours: {
+          start: data.paymentSettings?.approvalHours?.start || '08:00',
+          end: data.paymentSettings?.approvalHours?.end || '17:00',
+          days: data.paymentSettings?.approvalHours?.days || [1, 2, 3, 4, 5]
+        },
+        dailyLimit: data.paymentSettings?.dailyLimit || 0,
+        monthlyLimit: data.paymentSettings?.monthlyLimit || 0,
+        negativeBalanceLimit: data.paymentSettings?.negativeBalanceLimit || 0
+      },
       twoFactorEnabled: data.twoFactorEnabled || false
     };
   } catch (error) {
@@ -105,20 +150,52 @@ onMounted(fetchSettings);
       {{ alertMessage }}
     </div>
 
-    <!-- Payment Settings -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 divide-y divide-slate-100">
-      <div class="p-6">
-        <h3 class="font-bold text-slate-900 flex items-center">
-          <svg class="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Approval Rules
-        </h3>
-        <div class="mt-6 space-y-6">
+    <!-- Configuration Sections -->
+    <div class="space-y-6">
+      <!-- Company Identity -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+          <h3 class="font-bold text-slate-900 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            Company Identity
+          </h3>
+          <p class="text-xs text-slate-500 mt-1">Manage your public company information.</p>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Company Name</label>
+            <input v-model="settings.name" type="text" class="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Industry</label>
+            <input v-model="settings.industry" type="text" class="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+          </div>
+          <div class="space-y-1 md:col-span-2">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Registration Number</label>
+            <input v-model="settings.registrationNumber" type="text" class="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm" placeholder="RC-1234567" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Approval Rules & Workflow -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+          <h3 class="font-bold text-slate-900 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Approval Policy
+          </h3>
+          <p class="text-xs text-slate-500 mt-1">Define how orders are reviewed and approved.</p>
+        </div>
+        <div class="p-6 space-y-8">
+          <!-- Auto-Approval -->
           <div class="flex items-center justify-between">
             <div>
-              <p class="font-medium text-slate-900">Auto-Approval</p>
-              <p class="text-sm text-slate-500">Automatically approve orders below a certain amount.</p>
+              <p class="font-bold text-slate-900">Auto-Approval</p>
+              <p class="text-xs text-slate-500">Automatically approve orders below a certain amount.</p>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" v-model="settings.paymentSettings.autoApprovalEnabled" class="sr-only peer">
@@ -126,39 +203,113 @@ onMounted(fetchSettings);
             </label>
           </div>
           
-          <div v-if="settings.paymentSettings.autoApprovalEnabled" class="flex items-center space-x-4 p-4 bg-slate-50 rounded-lg animate-in fade-in slide-in-from-top-2">
-            <span class="text-sm text-slate-600 font-medium">Approval Limit:</span>
+          <div v-if="settings.paymentSettings.autoApprovalEnabled" class="flex items-center space-x-4 p-4 bg-slate-50 rounded-2xl animate-in fade-in slide-in-from-top-2 border border-slate-100">
+            <span class="text-sm text-slate-600 font-bold">Limit per order:</span>
             <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">₦</span>
-              <input type="number" v-model="settings.paymentSettings.autoApprovalThreshold" class="pl-8 pr-4 py-2 border border-slate-200 rounded-lg w-32 focus:ring-2 focus:ring-primary-500 outline-none" />
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₦</span>
+              <input type="number" v-model="settings.paymentSettings.autoApprovalThreshold" class="pl-8 pr-4 py-2 border border-slate-200 rounded-xl w-32 focus:ring-2 focus:ring-primary-500 outline-none text-sm font-bold" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Spending Limits (Read Only) -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-slate-900 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Spending Limits
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">Platform-defined spending controls for your company.</p>
+          </div>
+          <span class="px-3 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full uppercase tracking-wider">Read Only</span>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Daily Limit</label>
+            <p class="text-xl font-black text-slate-900">₦{{ settings.paymentSettings.dailyLimit.toLocaleString() }}</p>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Monthly Limit</label>
+            <p class="text-xl font-black text-slate-900">₦{{ settings.paymentSettings.monthlyLimit.toLocaleString() }}</p>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Overdraft Limit</label>
+            <p class="text-xl font-black text-emerald-600">₦{{ settings.paymentSettings.negativeBalanceLimit.toLocaleString() }}</p>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Operational Hours -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+          <h3 class="font-bold text-slate-900 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Operational Hours
+          </h3>
+          <p class="text-xs text-slate-500 mt-1">Specify when approvals can be processed.</p>
+        </div>
+        <div class="p-6 space-y-6">
+          <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Start Time</label>
+              <input v-model="settings.paymentSettings.approvalHours.start" type="time" class="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm font-bold" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">End Time</label>
+              <input v-model="settings.paymentSettings.approvalHours.end" type="time" class="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm font-bold" />
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Active Days</label>
+            <div class="flex flex-wrap gap-2">
+              <button 
+                v-for="day in dayOptions" 
+                :key="day.value"
+                @click="toggleDay(day.value)"
+                :class="[
+                  'px-4 py-2 rounded-xl text-xs font-bold transition-all border',
+                  settings.paymentSettings.approvalHours.days.includes(day.value) ? 'bg-primary-600 border-primary-600 text-white' : 'bg-slate-50 border-slate-100 text-slate-500 hover:border-slate-300'
+                ]"
+              >
+                {{ day.label }}
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Security -->
-      <div class="p-6">
-        <h3 class="font-bold text-slate-900 flex items-center">
-          <svg class="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-          Security & PIN
-        </h3>
-        <div class="mt-6 space-y-6">
+      <!-- Security Section -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+          <h3 class="font-bold text-slate-900 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            Security & Authentication
+          </h3>
+          <p class="text-xs text-slate-500 mt-1">Configure access and protection for high-value actions.</p>
+        </div>
+        <div class="p-6 space-y-6">
           <div class="flex items-center justify-between">
             <div>
-              <p class="font-medium text-slate-900">Approval PIN</p>
-              <p class="text-sm text-slate-500">Required for every manual order approval.</p>
+              <p class="font-bold text-slate-900">Approval PIN</p>
+              <p class="text-xs text-slate-500">Required for every manual order approval.</p>
             </div>
-            <button @click="showPinModal = true" class="px-4 py-2 text-sm font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+            <button @click="showPinModal = true" class="px-4 py-2 text-xs font-bold border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
               Change PIN
             </button>
           </div>
 
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between pt-4 border-t border-slate-50">
             <div>
-              <p class="font-medium text-slate-900">Email 2FA</p>
-              <p class="text-sm text-slate-500">Enable two-factor authentication for high-value approvals.</p>
+              <p class="font-bold text-slate-900">Email 2FA</p>
+              <p class="text-xs text-slate-500">Enable two-factor authentication for sensitive approvals.</p>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" v-model="settings.twoFactorEnabled" class="sr-only peer">

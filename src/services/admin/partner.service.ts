@@ -7,6 +7,11 @@ export interface Partner {
   industry?: string;
   employeeCount?: number;
   isActive: boolean;
+  paymentSettings?: {
+    dailyLimit: number;
+    monthlyLimit: number;
+    negativeBalanceLimit: number;
+  };
   createdAt: string;
 }
 
@@ -14,7 +19,10 @@ export interface CreatePartnerDto {
   name: string;
   registrationNumber?: string;
   industry?: string;
-  employeeCount?: number;
+  employeeCount?: number | string;
+  adminFirstName: string;
+  adminLastName: string;
+  adminEmail: string;
 }
 
 export interface PartnerListResponse {
@@ -63,6 +71,18 @@ export class PartnerService {
 
   static async updatePartner(id: string, data: Partial<CreatePartnerDto>): Promise<any> {
     const response = await api.patch(`/admin/partners/${id}`, data);
+    return response.data;
+  }
+
+  static async getPartnerOverview(id: string): Promise<any> {
+    const response = await api.get(`/admin/partners/${id}/overview`);
+    return response.data;
+  }
+
+  static async getPartnerTransactions(id: string, params: any = { page: 1, limit: 10 }): Promise<any> {
+    const response = await api.get(`/admin/partners/${id}/transactions`, {
+      params,
+    });
     return response.data;
   }
 }

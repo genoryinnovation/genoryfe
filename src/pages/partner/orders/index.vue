@@ -155,7 +155,7 @@
               : 'Please provide a reason for rejecting this order request.' }}
           </p>
 
-          <div v-if="processAction === 'approve'" class="space-y-1">
+          <div v-if="processAction === 'approve' && !requireOtp" class="space-y-1">
             <label class="text-sm font-medium text-slate-700">Approval PIN</label>
             <input 
               v-model="pin" 
@@ -165,6 +165,19 @@
               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-center text-2xl tracking-widest"
               autofocus 
             />
+          </div>
+
+          <div v-if="requireOtp" class="space-y-1 animate-in slide-in-from-bottom-4 duration-300">
+            <label class="text-sm font-medium text-slate-700">Email Verification Code (OTP)</label>
+            <input 
+              v-model="otp" 
+              type="text" 
+              maxlength="6"
+              placeholder="000000"
+              class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-center text-2xl tracking-widest font-mono"
+              autofocus 
+            />
+            <p class="text-[10px] text-slate-500 text-center mt-2">Enter the 6-digit code sent to your email.</p>
           </div>
 
           <div class="space-y-1">
@@ -219,9 +232,11 @@ const showProcessModal = ref(false);
 const processAction = ref<'approve' | 'reject'>('approve');
 const selectedRequest = ref<any>(null);
 const pin = ref('');
+const otp = ref('');
 const notes = ref('');
 const processError = ref('');
 const processSuccess = ref('');
+const requireOtp = ref(false);
 
 // Pagination & Search
 const searchQuery = ref('');
@@ -275,6 +290,8 @@ const initiateApproval = (req: any) => {
   selectedRequest.value = req;
   processAction.value = 'approve';
   pin.value = '';
+  otp.value = '';
+  requireOtp.value = false;
   notes.value = '';
   showProcessModal.value = true;
 };
@@ -295,12 +312,20 @@ const handleProcess = async () => {
     processSuccess.value = '';
     loading.value = true;
     
-    await PartnerPortalService.processOrder({
+    const res = await PartnerPortalService.processOrder({
       requestId: selectedRequest.value._id,
       action: processAction.value,
       pin: pin.value,
+      otp: otp.value,
       notes: notes.value
     });
+
+    if (res && res.requireOtp) {
+      requireOtp.value = true;
+      processSuccess.value = 'Verification code sent to your email.';
+      setTimeout(() => { processSuccess.value = ''; }, 3000);
+      return;
+    }
     
     processSuccess.value = `Order ${processAction.value === 'approve' ? 'approved' : 'rejected'} successfully!`;
     await fetchRequests();

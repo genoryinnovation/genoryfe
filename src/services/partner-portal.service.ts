@@ -50,6 +50,19 @@ export class PartnerPortalService {
     return response.data.data as PartnerStats;
   }
 
+  static async getMonthlyReports() {
+    const response = await api.get('/admin/partner-portal/monthly-reports');
+    return response.data.data as any[];
+  }
+
+  static async exportMonthlyReport(year: number, month: number) {
+    const response = await api.get('/admin/partner-portal/export-report', {
+      params: { year, month },
+      responseType: 'blob'
+    });
+    return response.data;
+  }
+
   /**
    * Employees
    */
@@ -149,6 +162,7 @@ export class PartnerPortalService {
     requestId: string;
     action: 'approve' | 'reject';
     pin?: string;
+    otp?: string;
     notes?: string;
   }) {
     const response = await api.post('/admin/partner-portal/orders/process', data);
@@ -176,13 +190,18 @@ export class PartnerPortalService {
     };
   }
 
-  static async initializeWalletFunding(amount: number) {
-    const response = await api.post('/admin/partner-portal/wallet/initialize-funding', { amount });
+  static async initializeWalletFunding(amount: number, year?: number, month?: number) {
+    const response = await api.post('/admin/partner-portal/wallet/initialize-funding', { amount, year, month });
     return response.data.data;
   }
 
   static async verifyWalletFunding(reference: string) {
     const response = await api.get(`/admin/partner-portal/wallet/verify-funding/${reference}`);
+    return response.data.data;
+  }
+
+  static async requeryTransaction(id: string) {
+    const response = await api.post(`/admin/partner-portal/wallet/transactions/${id}/requery`);
     return response.data.data;
   }
 

@@ -40,9 +40,9 @@ export interface Order {
 }
 
 export class OrderService {
-  static async getOrders(page = 1, limit = 10, status = '', search = ''): Promise<any> {
+  static async getOrders(params: any = { page: 1, limit: 10 }): Promise<any> {
     const response = await api.get('/admin/orders', {
-      params: { page, limit, status, search },
+      params,
     });
     return response.data;
   }

@@ -12,9 +12,9 @@ export interface User {
 }
 
 export class UserService {
-  static async getUsers(page = 1, limit = 10, search = '', status = ''): Promise<any> {
+  static async getUsers(params: any = { page: 1, limit: 10 }): Promise<any> {
     const response = await api.get('/admin/users', {
-      params: { page, limit, search, status },
+      params,
     });
     return response.data;
   }

@@ -189,7 +189,8 @@
               </svg>
             </div>
             <h3 class="text-2xl font-black text-slate-900 italic tracking-tight">Security Clearance</h3>
-            <p class="text-slate-500 text-sm mt-2">Enter your company approval PIN to continue.</p>
+            <p v-if="!requireOtp" class="text-slate-500 text-sm mt-2">Enter your company approval PIN to continue.</p>
+            <p v-else class="text-slate-500 text-sm mt-2">Enter the verification code sent to your email.</p>
             
             <div v-if="processError" class="mt-4 p-3 bg-rose-50 border border-rose-100 rounded-2xl text-rose-600 text-xs font-bold animate-in fade-in slide-in-from-top-1">
               {{ processError }}
@@ -198,7 +199,7 @@
               {{ processSuccess }}
             </div>
 
-            <div class="mt-8 flex justify-center space-x-3">
+            <div v-if="!requireOtp" class="mt-8 flex justify-center space-x-3">
               <input 
                 v-for="i in 4" :key="i"
                 v-model="pinArray[i-1]"
@@ -211,14 +212,26 @@
               />
             </div>
 
+            <div v-if="requireOtp" class="mt-8 space-y-4 animate-in slide-in-from-bottom-4 duration-300">
+               <input 
+                v-model="otp" 
+                type="text" 
+                maxlength="6"
+                placeholder="000000"
+                class="w-full h-16 bg-slate-50 border-2 border-slate-100 rounded-2xl text-center text-3xl font-black tracking-[1em] focus:bg-white focus:border-primary-500 outline-none transition-all placeholder:tracking-normal placeholder:text-slate-200"
+                autofocus 
+              />
+              <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">6-Digit Verification Code</p>
+            </div>
+
             <div class="mt-10 flex space-x-4">
                <button @click="showPinModal = false" class="flex-1 py-4 text-slate-400 font-bold hover:text-slate-600 transition-colors">Cancel</button>
                <button 
                 @click="submitDecision" 
-                :disabled="pinArray.join('').length < 4 || processing"
+                :disabled="(!requireOtp && pinArray.join('').length < 4) || (requireOtp && otp.length < 6) || processing"
                 class="flex-1 py-4 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800 disabled:opacity-50 transition-all shadow-xl shadow-slate-900/20"
                >
-                 {{ processing ? '...' : 'CONFIRM' }}
+                 {{ processing ? '...' : (requireOtp ? 'VERIFY' : 'CONFIRM') }}
                </button>
             </div>
          </div>
@@ -240,6 +253,8 @@ const processing = ref(false);
 const approvalNotes = ref('');
 const processError = ref('');
 const processSuccess = ref('');
+const requireOtp = ref(false);
+const otp = ref('');
 
 // PIN Logic
 const showPinModal = ref(false);
@@ -273,6 +288,8 @@ const fetchRequestDetails = async () => {
 const openApprovalModal = (action: 'approve' | 'reject') => {
   activeAction.value = action;
   pinArray.value = ['', '', '', ''];
+  otp.value = '';
+  requireOtp.value = false;
   processError.value = '';
   processSuccess.value = '';
   showPinModal.value = true;
@@ -298,12 +315,19 @@ const submitDecision = async () => {
     processSuccess.value = '';
     processing.value = true;
     
-    await PartnerPortalService.processOrder({
+    const res = await PartnerPortalService.processOrder({
       requestId: request.value._id,
       action: activeAction.value,
       pin: pinArray.value.join(''),
+      otp: otp.value,
       notes: approvalNotes.value
     });
+
+    if (res.requireOtp) {
+      requireOtp.value = true;
+      processSuccess.value = 'PIN verified. Please enter the OTP sent to your email.';
+      return;
+    }
     
     processSuccess.value = `Order ${activeAction.value === 'approve' ? 'approved' : 'rejected'} successfully!`;
     await fetchRequestDetails(); // Refresh

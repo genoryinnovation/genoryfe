@@ -14,13 +14,13 @@
           <p class="text-xs text-primary-100 uppercase tracking-wider font-semibold">Pending Orders</p>
           <p class="text-2xl font-bold mt-1">{{ stats.pendingOrders }}</p>
         </div>
-        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4">
-          <p class="text-xs text-primary-100 uppercase tracking-wider font-semibold">Wallet Balance</p>
-          <p class="text-2xl font-bold mt-1">₦{{ stats.walletBalance.toLocaleString() }}</p>
+        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10">
+          <p class="text-[10px] text-primary-100 uppercase tracking-widest font-bold">Wallet Balance</p>
+          <p class="text-2xl font-black mt-1 text-white">₦{{ stats.walletBalance.toLocaleString() }}</p>
         </div>
-        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4">
-          <p class="text-xs text-primary-100 uppercase tracking-wider font-semibold">Today's Spend</p>
-          <p class="text-2xl font-bold mt-1">₦{{ stats.todaySpend.toLocaleString() }}</p>
+        <div class="bg-primary-500/50 backdrop-blur-md rounded-xl p-4 border border-white/20 ring-4 ring-white/5">
+          <p class="text-[10px] text-white uppercase tracking-widest font-black">This Month's Spend</p>
+          <p class="text-2xl font-black mt-1 text-white">₦{{ stats.monthSpend.toLocaleString() }}</p>
         </div>
       </div>
     </div>

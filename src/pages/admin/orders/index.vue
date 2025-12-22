@@ -275,12 +275,12 @@ let debounceTimeout: any;
 const fetchOrders = async () => {
   try {
     const [listRes, statsRes] = await Promise.all([
-      OrderService.getOrders(
-        pagination.value.page,
-        pagination.value.limit,
-        statusFilter.value,
-        search.value
-      ),
+      OrderService.getOrders({
+        page: pagination.value.page,
+        limit: pagination.value.limit,
+        status: statusFilter.value,
+        search: search.value
+      }),
       OrderService.getOrderStats(),
     ]);
     orders.value = listRes.data.orders;
