@@ -19,7 +19,10 @@ export interface CreatePartnerDto {
   name: string;
   registrationNumber?: string;
   industry?: string;
-  employeeCount?: number;
+  employeeCount?: number | string;
+  adminFirstName: string;
+  adminLastName: string;
+  adminEmail: string;
 }
 
 export interface PartnerListResponse {

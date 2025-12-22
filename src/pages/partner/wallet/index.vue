@@ -274,7 +274,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { PartnerPortalService } from '../../../services/partner-portal.service';
+
+const route = useRoute();
 
 // State
 const walletStats = ref<any>({
@@ -360,7 +363,11 @@ const initiateTopUp = async () => {
       throw new Error('Payment service is currently unavailable. Please refresh the page.');
     }
 
-    const response = await PartnerPortalService.initializeWalletFunding(topUpAmount.value);
+    const response = await PartnerPortalService.initializeWalletFunding(
+      topUpAmount.value,
+      route.query.year ? Number(route.query.year) : undefined,
+      route.query.month ? Number(route.query.month) : undefined
+    );
     
     // Use Paystack Inline
     const handler = (window as any).PaystackPop.setup({
@@ -394,6 +401,12 @@ const initiateTopUp = async () => {
 
 onMounted(() => {
   fetchData();
+  
+  // Handle auto-funding from reports
+  if (route.query.autoFund === 'true' && route.query.amount) {
+    topUpAmount.value = Number(route.query.amount);
+    showTopUpModal.value = true;
+  }
 });
 </script>
 

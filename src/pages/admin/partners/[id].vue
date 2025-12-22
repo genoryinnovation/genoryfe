@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import { PartnerService } from '../../../services/admin/partner.service';
 import { UserService } from '../../../services/admin/user.service';
 import { OrderService } from '../../../services/admin/order.service';
+import { watchDebounced } from '@vueuse/core';
 
 const route = useRoute();
 const partnerId = route.params.id as string;
@@ -29,6 +30,11 @@ const orderPage = ref(1);
 const orderTotal = ref(0);
 const txPage = ref(1);
 const txTotal = ref(0);
+
+// Filter State
+const orderSearch = ref('');
+const orderStatus = ref('all');
+const orderSort = ref('-createdAt');
 
 const tabs = [
   { id: 'overview', name: 'Overview', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
@@ -61,7 +67,14 @@ const fetchData = async () => {
       employees.value = resp.data.users;
       empTotal.value = resp.data.pagination.total;
     } else if (activeTab.value === 'orders') {
-      const resp = await OrderService.getOrders({ hrCompany: partnerId, page: orderPage.value, limit: 10 });
+      const resp = await OrderService.getOrders({ 
+        hrCompany: partnerId, 
+        page: orderPage.value, 
+        limit: 10,
+        search: orderSearch.value,
+        status: orderStatus.value,
+        sort: orderSort.value
+      });
       orders.value = resp.data.orders;
       orderTotal.value = resp.data.pagination.total;
     } else if (activeTab.value === 'wallet') {
@@ -108,6 +121,22 @@ const handleSaveConfig = async () => {
 onMounted(fetchData);
 watch(activeTab, fetchData);
 watch([empPage, orderPage, txPage], fetchData);
+
+// Filter Watchers
+watchDebounced(orderSearch, () => {
+  orderPage.value = 1;
+  fetchData();
+}, { debounce: 500 });
+
+watch(orderStatus, () => {
+  orderPage.value = 1;
+  fetchData();
+});
+
+watch(orderSort, () => {
+  orderPage.value = 1;
+  fetchData();
+});
 
 const formatDate = (d: string) => new Date(d).toLocaleDateString();
 const formatCurrency = (amount: number) => {
@@ -268,6 +297,36 @@ const formatCurrency = (amount: number) => {
 
       <!-- ORDERS TAB -->
       <div v-if="activeTab === 'orders'" class="bg-white rounded-2xl border border-slate-200 overflow-hidden animate-in fade-in duration-300">
+        <!-- Filters -->
+        <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </span>
+            <input v-model="orderSearch" type="text" placeholder="Search order reference..." class="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-all" />
+          </div>
+          <div class="flex items-center space-x-3">
+            <select v-model="orderSort" class="px-4 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+              <option value="-createdAt">Newest First</option>
+              <option value="createdAt">Oldest First</option>
+              <option value="-totalAmount">Highest Amount</option>
+              <option value="totalAmount">Lowest Amount</option>
+            </select>
+            <select v-model="orderStatus" class="px-4 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="processing">Processing</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="failed">Failed</option>
+            </select>
+          </div>
+        </div>
+
         <div class="overflow-x-auto">
           <table class="w-full text-left">
             <thead class="bg-slate-50 border-b border-slate-100 font-bold text-xs text-slate-500 uppercase">
@@ -281,7 +340,13 @@ const formatCurrency = (amount: number) => {
             <tbody class="divide-y divide-slate-100 text-sm">
               <tr v-for="order in orders" :key="order._id" class="hover:bg-slate-50/50 transition-colors cursor-pointer">
                 <td class="px-6 py-4 font-bold text-slate-900">{{ order.orderNumber }}</td>
-                <td class="px-6 py-4">{{ order.userId.firstName }} {{ order.userId.lastName }}</td>
+                <td class="px-6 py-4">
+                  <div v-if="order.userId">
+                    <p class="font-bold text-slate-900">{{ order.userId.firstName }} {{ order.userId.lastName }}</p>
+                    <p class="text-[10px] text-slate-500">{{ order.userId.email }}</p>
+                  </div>
+                  <span v-else class="text-slate-400 italic text-xs">Deleted User</span>
+                </td>
                 <td class="px-6 py-4 text-right font-black">{{ formatCurrency(order.totalAmount) }}</td>
                 <td class="px-6 py-4 text-center text-[10px] font-bold">
                   <span :class="['px-2 py-0.5 rounded-full uppercase', order.orderStatus === 'delivered' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700']">

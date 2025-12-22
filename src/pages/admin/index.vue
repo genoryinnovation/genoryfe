@@ -1,3 +1,110 @@
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue';
+import api from '../../services/api';
+import VueApexCharts from 'vue3-apexcharts';
+
+const stats = ref<any>({
+  users: { total: 0 },
+  partners: { total: 0 },
+  products: { total: 0, lowStock: 0 },
+  orders: { total: 0, pending: 0 },
+  recentActivity: [],
+  revenueOverview: []
+});
+
+const chartOptions = {
+  chart: {
+    type: 'bar',
+    toolbar: { show: false },
+    sparkline: { enabled: false }
+  },
+  colors: ['#0ea5e9'],
+  plotOptions: {
+    bar: {
+      borderRadius: 6,
+      columnWidth: '60%',
+      distributed: false,
+    }
+  },
+  dataLabels: { enabled: false },
+  xaxis: {
+    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    axisBorder: { show: false },
+    axisTicks: { show: false },
+    labels: {
+      style: {
+        colors: '#64748b',
+        fontSize: '12px'
+      }
+    }
+  },
+  yaxis: {
+    labels: {
+      style: {
+        colors: '#64748b',
+        fontSize: '12px'
+      },
+      formatter: (val: number) => `₦${val.toLocaleString()}`
+    }
+  },
+  grid: {
+    borderColor: '#f1f5f9',
+    strokeDashArray: 4,
+    xaxis: { lines: { show: false } }
+  },
+  tooltip: {
+    theme: 'light',
+    y: {
+      formatter: (val: number) => `₦${val.toLocaleString()}`
+    }
+  }
+};
+
+const series = computed(() => [{
+  name: 'Revenue',
+  data: stats.value.revenueOverview?.map((m: any) => m.revenue) || []
+}]);
+
+const fetchStats = async () => {
+  try {
+    const response = await api.get('/admin/dashboard/stats');
+    if (response.data.success) {
+      stats.value = response.data.data;
+    }
+  } catch (error) {
+    console.error('Failed to fetch dashboard stats', error);
+  }
+};
+
+const formatRelativeTime = (date: string) => {
+  const diff = Date.now() - new Date(date).getTime();
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return 'Just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return new Date(date).toLocaleDateString();
+};
+
+const getStatusColor = (status: string) => {
+  const colors: Record<string, string> = {
+    pending: 'bg-amber-100 text-amber-700',
+    confirmed: 'bg-blue-100 text-blue-700',
+    processing: 'bg-indigo-100 text-indigo-700',
+    shipped: 'bg-violet-100 text-violet-700',
+    delivered: 'bg-emerald-100 text-emerald-700',
+    completed: 'bg-emerald-100 text-emerald-700',
+    cancelled: 'bg-rose-100 text-rose-700',
+    failed: 'bg-rose-100 text-rose-700'
+  };
+  return colors[status.toLowerCase()] || 'bg-slate-100 text-slate-700';
+};
+
+onMounted(() => {
+  fetchStats();
+});
+</script>
+
 <template>
   <div class="space-y-8">
     <!-- Page Header -->
@@ -126,7 +233,7 @@
 
     <!-- Charts & Recent Activity -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Revenue Chart Placeholder -->
+      <!-- Revenue Chart -->
       <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
         <div class="flex items-center justify-between mb-6">
           <div>
@@ -139,12 +246,16 @@
             <button class="px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Yearly</button>
           </div>
         </div>
-        <div class="h-64 flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
-          <div class="text-center">
-            <svg class="w-12 h-12 mx-auto text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            <p class="mt-2 text-sm text-slate-400">Chart visualization</p>
+        <div class="h-64">
+          <VueApexCharts
+            v-if="stats.revenueOverview?.length"
+            height="100%"
+            width="100%"
+            :options="chartOptions"
+            :series="series"
+          />
+          <div v-else class="h-full flex items-center justify-center bg-slate-50 rounded-xl">
+            <p class="text-slate-400 text-sm">Loading chart data...</p>
           </div>
         </div>
       </div>
@@ -153,22 +264,29 @@
       <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-lg font-semibold text-slate-900">Recent Activity</h3>
-          <button class="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors">View all</button>
+          <router-link to="/admin/orders" class="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors">View all</router-link>
         </div>
         <div class="space-y-4">
-          <div v-for="i in 5" :key="i" class="flex items-start space-x-3">
+          <div v-for="order in stats.recentActivity" :key="order.id" class="flex items-start space-x-3">
             <div class="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center">
               <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-slate-900">New order #{{ 1000 + i }}</p>
-              <p class="text-xs text-slate-500">{{ i }} minute{{ i > 1 ? 's' : '' }} ago</p>
+              <p class="text-sm font-medium text-slate-900 line-clamp-1">#{{ order.orderNumber }} - {{ order.user?.firstName }} {{ order.user?.lastName }}</p>
+              <div class="flex items-center space-x-2 mt-0.5">
+                <p class="text-xs text-slate-500 font-bold">₦{{ order.totalAmount.toLocaleString() }}</p>
+                <span class="text-slate-300">|</span>
+                <p class="text-xs text-slate-400">{{ formatRelativeTime(order.createdAt) }}</p>
+              </div>
             </div>
-            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
-              Completed
+            <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider', getStatusColor(order.status)]">
+              {{ order.status }}
             </span>
+          </div>
+          <div v-if="!stats.recentActivity?.length" class="text-center py-8">
+            <p class="text-slate-400 text-sm">No recent activity</p>
           </div>
         </div>
       </div>
@@ -238,28 +356,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import api from '../../services/api';
-
-const stats = ref<any>({});
-
-const fetchStats = async () => {
-  try {
-    const response = await api.get('/admin/dashboard/stats');
-    if (response.data.success) {
-      stats.value = response.data.data;
-    }
-  } catch (error) {
-    console.error('Failed to fetch dashboard stats', error);
-  }
-};
-
-onMounted(() => {
-  fetchStats();
-});
-</script>
 
 <route lang="yaml">
 meta:

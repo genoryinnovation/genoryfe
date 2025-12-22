@@ -9,13 +9,14 @@ const settings = ref({
   paymentSettings: {
     autoApprovalEnabled: false,
     autoApprovalThreshold: 0,
-    approvalWorkflow: 'single',
-    requiresReceiptUpload: false,
     approvalHours: {
       start: '08:00',
       end: '17:00',
       days: [1, 2, 3, 4, 5]
-    }
+    },
+    dailyLimit: 0,
+    monthlyLimit: 0,
+    negativeBalanceLimit: 0
   },
   twoFactorEnabled: false
 });
@@ -27,11 +28,6 @@ const newPin = ref('');
 const alertMessage = ref('');
 const alertType = ref<'success' | 'error'>('success');
 
-const workflowOptions = [
-  { value: 'single', label: 'Single-Tier', description: 'One approval required.' },
-  { value: 'two_tier', label: 'Two-Tier', description: 'Requires two independent approvals.' },
-  { value: 'three_tier', label: 'Three-Tier', description: 'Requires three levels of approval.' }
-];
 
 const dayOptions = [
   { value: 0, label: 'Sun' },
@@ -63,13 +59,14 @@ const fetchSettings = async () => {
       paymentSettings: {
         autoApprovalEnabled: data.paymentSettings?.autoApprovalEnabled || false,
         autoApprovalThreshold: data.paymentSettings?.autoApprovalThreshold || 0,
-        approvalWorkflow: data.paymentSettings?.approvalWorkflow || 'single',
-        requiresReceiptUpload: data.paymentSettings?.requiresReceiptUpload || false,
         approvalHours: {
           start: data.paymentSettings?.approvalHours?.start || '08:00',
           end: data.paymentSettings?.approvalHours?.end || '17:00',
           days: data.paymentSettings?.approvalHours?.days || [1, 2, 3, 4, 5]
-        }
+        },
+        dailyLimit: data.paymentSettings?.dailyLimit || 0,
+        monthlyLimit: data.paymentSettings?.monthlyLimit || 0,
+        negativeBalanceLimit: data.paymentSettings?.negativeBalanceLimit || 0
       },
       twoFactorEnabled: data.twoFactorEnabled || false
     };
@@ -213,41 +210,34 @@ onMounted(fetchSettings);
               <input type="number" v-model="settings.paymentSettings.autoApprovalThreshold" class="pl-8 pr-4 py-2 border border-slate-200 rounded-xl w-32 focus:ring-2 focus:ring-primary-500 outline-none text-sm font-bold" />
             </div>
           </div>
-
-          <!-- Workflow Type -->
-          <div class="space-y-4">
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Approval Workflow Level</p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button 
-                v-for="opt in workflowOptions" 
-                :key="opt.value"
-                @click="settings.paymentSettings.approvalWorkflow = opt.value"
-                :class="[
-                  'p-4 rounded-2xl border text-left transition-all group relative overflow-hidden',
-                  settings.paymentSettings.approvalWorkflow === opt.value ? 'border-primary-600 bg-primary-50/50 ring-1 ring-primary-600' : 'border-slate-100 hover:border-slate-300 bg-slate-50/30'
-                ]"
-              >
-                <div v-if="settings.paymentSettings.approvalWorkflow === opt.value" class="absolute top-0 right-0 p-2">
-                  <svg class="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
-                </div>
-                <p class="font-bold text-sm" :class="[settings.paymentSettings.approvalWorkflow === opt.value ? 'text-primary-700' : 'text-slate-900']">{{ opt.label }}</p>
-                <p class="text-[10px] text-slate-500 mt-1 leading-tight">{{ opt.description }}</p>
-              </button>
-            </div>
+        </div>
+      </div>
+      <!-- Spending Limits (Read Only) -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-slate-900 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Spending Limits
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">Platform-defined spending controls for your company.</p>
           </div>
-
-          <!-- Receipt Requirement -->
-          <div class="flex items-center justify-between pt-4 border-t border-slate-50">
-            <div>
-              <p class="font-bold text-slate-900">Mandatory Receipts</p>
-              <p class="text-xs text-slate-500">Require users to upload proof of purchase/delivery.</p>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" v-model="settings.paymentSettings.requiresReceiptUpload" class="sr-only peer">
-              <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-            </label>
+          <span class="px-3 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full uppercase tracking-wider">Read Only</span>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Daily Limit</label>
+            <p class="text-xl font-black text-slate-900">₦{{ settings.paymentSettings.dailyLimit.toLocaleString() }}</p>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Monthly Limit</label>
+            <p class="text-xl font-black text-slate-900">₦{{ settings.paymentSettings.monthlyLimit.toLocaleString() }}</p>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Overdraft Limit</label>
+            <p class="text-xl font-black text-emerald-600">₦{{ settings.paymentSettings.negativeBalanceLimit.toLocaleString() }}</p>
           </div>
         </div>
       </div>
