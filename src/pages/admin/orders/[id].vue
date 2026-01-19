@@ -23,6 +23,7 @@
                 'bg-blue-100 text-blue-700': order.orderStatus === 'shipped',
                 'bg-amber-100 text-amber-700': order.orderStatus === 'pending',
                 'bg-purple-100 text-purple-700': order.orderStatus === 'processing',
+                'bg-indigo-100 text-indigo-700': order.orderStatus === 'ready_for_pickup',
                 'bg-cyan-100 text-cyan-700': order.orderStatus === 'confirmed',
                 'bg-rose-100 text-rose-700': order.orderStatus === 'cancelled'
               }"
@@ -34,6 +35,7 @@
                   'bg-blue-500': order.orderStatus === 'shipped',
                   'bg-amber-500': order.orderStatus === 'pending',
                   'bg-purple-500': order.orderStatus === 'processing',
+                  'bg-indigo-500': order.orderStatus === 'ready_for_pickup',
                   'bg-cyan-500': order.orderStatus === 'confirmed',
                   'bg-rose-500': order.orderStatus === 'cancelled'
                 }"
@@ -144,6 +146,7 @@
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="processing">Processing</option>
+                <option value="ready_for_pickup">Ready for Pickup</option>
                 <option value="shipped">Shipped</option>
                 <option value="delivered">Delivered</option>
                 <option value="cancelled">Cancelled</option>
@@ -213,6 +216,44 @@
             <p class="text-sm font-medium text-slate-900">{{ order.deliveryAddress.street }}</p>
             <p class="text-sm text-slate-600 mt-1">{{ order.deliveryAddress.city }}, {{ order.deliveryAddress.state }}</p>
             <p class="text-sm text-slate-500">{{ order.deliveryAddress.country }}</p>
+          </div>
+        </div>
+
+        <!-- Pickup Location -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6" v-if="order.pickupLocationSnapshot">
+          <div class="flex items-center space-x-3 mb-5">
+            <div class="p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-900">Pickup Location</h3>
+          </div>
+          <div class="bg-slate-50 rounded-xl p-4 space-y-3">
+             <div>
+              <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Name</p>
+              <p class="text-sm font-semibold text-slate-900">{{ order.pickupLocationSnapshot.name }}</p>
+             </div>
+             <div>
+              <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Address</p>
+              <p class="text-sm text-slate-600">{{ order.pickupLocationSnapshot.address.street }}</p>
+              <p class="text-xs text-slate-500">{{ order.pickupLocationSnapshot.address.city }}, {{ order.pickupLocationSnapshot.address.state }}</p>
+             </div>
+             <div v-if="order.pickupLocationSnapshot.contact">
+                <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Contact</p>
+                <div class="flex items-center mt-1">
+                   <svg class="w-3.5 h-3.5 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                   </svg>
+                   <p class="text-sm text-slate-600">{{ order.pickupLocationSnapshot.contact.name }}</p>
+                </div>
+                 <div class="flex items-center mt-1">
+                   <svg class="w-3.5 h-3.5 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                   </svg>
+                   <p class="text-sm text-slate-600">{{ order.pickupLocationSnapshot.contact.phone }}</p>
+                </div>
+             </div>
           </div>
         </div>
       </div>

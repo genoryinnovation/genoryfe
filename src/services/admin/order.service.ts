@@ -37,6 +37,25 @@ export interface Order {
     latitude?: number;
     longitude?: number;
   };
+  pickupLocationSnapshot?: {
+    name: string;
+    address: {
+      street: string;
+      city: string;
+      state: string;
+      zipCode: string; // or string? Step 632 said zipCode
+      country: string;
+    };
+    contact: {
+      name: string;
+      phone: string;
+      email?: string;
+    };
+    geolocation?: {
+      lat: number;
+      lng: number;
+    };
+  };
 }
 
 export class OrderService {
