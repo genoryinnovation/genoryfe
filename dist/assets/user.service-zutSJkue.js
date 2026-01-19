@@ -1,0 +1,1 @@
+import{a as e}from"./api-4GkiaaGr.js";class n{static async getUsers(s={page:1,limit:10}){return(await e.get("/admin/users",{params:s})).data}static async getUser(s){return(await e.get(`/admin/users/${s}`)).data}static async getUserStats(){return(await e.get("/admin/users/stats")).data}}export{n as U};

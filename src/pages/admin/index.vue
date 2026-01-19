@@ -12,7 +12,9 @@ const stats = ref<any>({
   revenueOverview: []
 });
 
-const chartOptions = {
+import type { ApexOptions } from 'apexcharts';
+
+const chartOptions: ApexOptions = {
   chart: {
     type: 'bar',
     toolbar: { show: false },
