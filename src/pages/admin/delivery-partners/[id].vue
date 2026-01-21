@@ -92,7 +92,30 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
-              <h3 class="text-lg font-semibold text-slate-900">Personal Information</h3>
+              <div class="flex items-center justify-between w-full">
+                <h3 class="text-lg font-semibold text-slate-900">Personal Information</h3>
+                <div class="flex items-center space-x-3">
+                  <span 
+                    v-if="partner.approvals?.personalInfo?.status" 
+                    class="px-2.5 py-0.5 rounded-full text-xs font-bold capitalize border"
+                    :class="{
+                      'bg-emerald-50 text-emerald-700 border-emerald-100': partner.approvals.personalInfo.status === 'approved',
+                      'bg-rose-50 text-rose-700 border-rose-100': partner.approvals.personalInfo.status === 'rejected',
+                      'bg-amber-50 text-amber-700 border-amber-100': partner.approvals.personalInfo.status === 'pending'
+                    }"
+                  >
+                    {{ partner.approvals.personalInfo.status }}
+                  </span>
+                  <div class="flex space-x-2">
+                    <button @click="approveSection('personalInfo')" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Approve Section">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                    </button>
+                    <button @click="rejectSection('personalInfo')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Reject Section">
+                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="p-6 space-y-4">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -269,7 +292,30 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-slate-900">KYC Status</h3>
+            <div class="flex items-center justify-between w-full">
+              <h3 class="text-lg font-semibold text-slate-900">KYC Status</h3>
+              <div class="flex items-center space-x-3">
+                <span 
+                  v-if="partner.approvals?.kyc?.status" 
+                  class="px-2.5 py-0.5 rounded-full text-xs font-bold capitalize border"
+                  :class="{
+                    'bg-emerald-50 text-emerald-700 border-emerald-100': partner.approvals.kyc.status === 'approved',
+                    'bg-rose-50 text-rose-700 border-rose-100': partner.approvals.kyc.status === 'rejected',
+                    'bg-amber-50 text-amber-700 border-amber-100': partner.approvals.kyc.status === 'pending'
+                  }"
+                >
+                  {{ partner.approvals.kyc.status }}
+                </span>
+                <div class="flex space-x-2">
+                  <button @click="approveSection('kyc')" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Approve Section">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                  </button>
+                  <button @click="rejectSection('kyc')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Reject Section">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="p-6 space-y-6">
             <div class="flex items-center justify-between">
@@ -338,7 +384,30 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
                 </svg>
               </div>
-            <h3 class="text-lg font-semibold text-slate-900">Vehicle Details</h3>
+            <div class="flex items-center justify-between w-full">
+              <h3 class="text-lg font-semibold text-slate-900">Vehicle Details</h3>
+              <div class="flex items-center space-x-3">
+                <span 
+                  v-if="partner.approvals?.vehicle?.status" 
+                  class="px-2.5 py-0.5 rounded-full text-xs font-bold capitalize border"
+                  :class="{
+                    'bg-emerald-50 text-emerald-700 border-emerald-100': partner.approvals.vehicle.status === 'approved',
+                    'bg-rose-50 text-rose-700 border-rose-100': partner.approvals.vehicle.status === 'rejected',
+                    'bg-amber-50 text-amber-700 border-amber-100': partner.approvals.vehicle.status === 'pending'
+                  }"
+                >
+                  {{ partner.approvals.vehicle.status }}
+                </span>
+                <div class="flex space-x-2">
+                  <button @click="approveSection('vehicle')" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Approve Section">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                  </button>
+                  <button @click="rejectSection('vehicle')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Reject Section">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="p-6">
             <div v-if="partner.vehicle" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -423,12 +492,23 @@
     <div class="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent shadow-lg shadow-primary-500/20"></div>
     <p class="mt-4 text-sm text-slate-500 font-medium">Fetching partner intelligence...</p>
   </div>
+
+  <ReviewModal
+    :is-open="showReviewModal"
+    :type="reviewType"
+    :title="reviewTitle"
+    :confirm-text="reviewType === 'approve' ? 'Approve' : 'Reject'"
+    @close="showReviewModal = false"
+    @confirm="handleReviewConfirm"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../../../services/api';
+
+import ReviewModal from '@/components/admin/ReviewModal.vue';
 
 const route = useRoute();
 const partner = ref<any>(null);
@@ -438,6 +518,12 @@ const transactions = ref<any[]>([]);
 const orders = ref<any[]>([]);
 const loadingTransactions = ref(false);
 const loadingOrders = ref(false);
+
+// Modal State
+const showReviewModal = ref(false);
+const reviewType = ref<'approve' | 'reject'>('approve');
+const reviewSection = ref('');
+const reviewTitle = ref('');
 
 const tabs = [
   { id: 'overview', name: 'Overview' },
@@ -504,6 +590,36 @@ const rejectApplication = async () => {
     await fetchPartner();
   } catch (error) {
     console.error('Failed to reject', error);
+  }
+};
+
+const approveSection = (section: string) => {
+  reviewType.value = 'approve';
+  reviewSection.value = section;
+  reviewTitle.value = 'Approve Section';
+  showReviewModal.value = true;
+};
+
+const rejectSection = (section: string) => {
+  reviewType.value = 'reject';
+  reviewSection.value = section;
+  reviewTitle.value = 'Reject Section';
+  showReviewModal.value = true;
+};
+
+const handleReviewConfirm = async ({ note, reason }: { note?: string; reason?: string }) => {
+  try {
+    if (reviewType.value === 'approve') {
+      await api.patch(`/admin/delivery-partners/${route.params.id}/approve-section/${reviewSection.value}`, { note });
+    } else {
+      await api.patch(`/admin/delivery-partners/${route.params.id}/reject-section/${reviewSection.value}`, { reason, note });
+    }
+    
+    await fetchPartner();
+    showReviewModal.value = false;
+  } catch (error) {
+    console.error(`Failed to ${reviewType.value} ${reviewSection.value}`, error);
+    alert(`Failed to ${reviewType.value} section`);
   }
 };
 

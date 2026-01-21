@@ -26,17 +26,17 @@
         <router-link
           v-for="item in menuItems"
           :key="item.to"
-          :to="item.to"
+          :to="item.to || ''"
           :class="[
             'group flex items-center px-3 py-2.5 rounded-xl transition-all duration-200',
-            isActiveRoute(item.to) 
+            isActiveRoute(item) 
               ? 'bg-primary-500/10 text-primary-400 shadow-lg shadow-primary-500/5' 
               : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
           ]"
         >
           <div :class="[
             'flex items-center justify-center w-10 h-10 rounded-lg transition-colors',
-            isActiveRoute(item.to) ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30' : 'bg-slate-700/50 group-hover:bg-slate-600'
+            isActiveRoute(item) ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30' : 'bg-slate-700/50 group-hover:bg-slate-600'
           ]">
             <component :is="item.icon" class="w-5 h-5" />
           </div>
@@ -53,25 +53,72 @@
           <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Catalog</p>
         </div>
 
-        <router-link
-          v-for="item in catalogItems"
-          :key="item.to"
-          :to="item.to"
-          :class="[
-            'group flex items-center px-3 py-2.5 rounded-xl transition-all duration-200',
-            isActiveRoute(item.to) 
-              ? 'bg-primary-500/10 text-primary-400 shadow-lg shadow-primary-500/5' 
-              : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
-          ]"
-        >
-          <div :class="[
-            'flex items-center justify-center w-10 h-10 rounded-lg transition-colors',
-            isActiveRoute(item.to) ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30' : 'bg-slate-700/50 group-hover:bg-slate-600'
-          ]">
-            <component :is="item.icon" class="w-5 h-5" />
+        <template v-for="item in catalogItems" :key="item.label">
+          <!-- Single Item -->
+          <router-link
+            v-if="!item.children"
+            :to="item.to!"
+            :class="[
+              'group flex items-center px-3 py-2.5 rounded-xl transition-all duration-200',
+              isActiveRoute(item) 
+                ? 'bg-primary-500/10 text-primary-400 shadow-lg shadow-primary-500/5' 
+                : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
+            ]"
+          >
+            <div :class="[
+              'flex items-center justify-center w-10 h-10 rounded-lg transition-colors',
+              isActiveRoute(item) ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30' : 'bg-slate-700/50 group-hover:bg-slate-600'
+            ]">
+              <component :is="item.icon" class="w-5 h-5" />
+            </div>
+            <span v-if="!sidebarCollapsed" class="ml-3 font-medium">{{ item.label }}</span>
+          </router-link>
+
+          <!-- Parent Item with Children -->
+          <div v-else class="space-y-1">
+            <button
+              @click="toggleMenu(item.label)"
+              :class="[
+                'w-full group flex items-center px-3 py-2.5 rounded-xl transition-all duration-200',
+                isActiveRoute(item) ? 'text-white' : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
+              ]"
+            >
+              <div :class="[
+                'flex items-center justify-center w-10 h-10 rounded-lg transition-colors',
+                isActiveRoute(item) ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30' : 'bg-slate-700/50 group-hover:bg-slate-600'
+              ]">
+                <component :is="item.icon" class="w-5 h-5" />
+              </div>
+              <span v-if="!sidebarCollapsed" class="ml-3 font-medium flex-1 text-left">{{ item.label }}</span>
+               <svg 
+                v-if="!sidebarCollapsed"
+                :class="['w-4 h-4 transition-transform duration-200', expandedMenus[item.label] ? 'rotate-180' : '']" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <!-- Children -->
+            <div v-show="expandedMenus[item.label] && !sidebarCollapsed" class="pl-14 pr-3 space-y-1">
+              <router-link
+                v-for="child in item.children"
+                :key="child.to"
+                :to="child.to!"
+                :class="[
+                  'block py-2 px-3 text-sm rounded-lg transition-colors',
+                  isActiveRoute(child)
+                    ? 'text-primary-400 bg-primary-500/10 font-medium'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-700/30'
+                ]"
+              >
+                {{ child.label }}
+              </router-link>
+            </div>
           </div>
-          <span v-if="!sidebarCollapsed" class="ml-3 font-medium">{{ item.label }}</span>
-        </router-link>
+        </template>
       </nav>
 
       <!-- User Section -->
@@ -250,11 +297,21 @@ const ProductsIcon = {
   }
 };
 
+const SettingsIcon = {
+  render() {
+    return h('svg', { fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+      h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' }),
+      h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z' })
+    ]);
+  }
+};
+
 interface MenuItem {
-  to: string;
+  to?: string;
   label: string;
   icon: any;
   badge?: string | null;
+  children?: MenuItem[];
 }
 
 const menuItems: MenuItem[] = [
@@ -266,16 +323,40 @@ const menuItems: MenuItem[] = [
   { to: '/admin/delivery-partners', label: 'Delivery Partners', icon: DeliveryIcon },
 ];
 
-const catalogItems = [
+const catalogItems: MenuItem[] = [
   { to: '/admin/catalog/categories', label: 'Categories', icon: CategoryIcon },
   { to: '/admin/catalog/products', label: 'Products', icon: ProductsIcon },
+  { 
+    label: 'Configuration', 
+    icon: SettingsIcon,
+    children: [
+      { to: '/admin/configuration/pickup-locations', label: 'Pickup Locations', icon: null },
+      { to: '/admin/configuration/settings', label: 'System Settings', icon: null }
+    ]
+  },
 ];
 
-const isActiveRoute = (path: string) => {
-  if (path === '/admin') {
-    return route.path === '/admin';
+const expandedMenus = ref<Record<string, boolean>>({
+  'Configuration': true // Default open for now
+});
+
+const toggleMenu = (label: string) => {
+  expandedMenus.value[label] = !expandedMenus.value[label];
+};
+
+const isActiveRoute = (item: MenuItem): boolean => {
+  if (item.to) {
+    if (item.to === '/admin') {
+      return route.path === '/admin';
+    }
+    return route.path.startsWith(item.to);
   }
-  return route.path.startsWith(path);
+  
+  if (item.children) {
+    return item.children.some(child => child.to && route.path.startsWith(child.to));
+  }
+  
+  return false;
 };
 
 const breadcrumbs = computed(() => {
