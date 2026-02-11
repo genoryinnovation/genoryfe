@@ -113,12 +113,62 @@
                 </ul>
             </div>
             
+                </ul>
+            </div>
+            
+            <!-- Subscription Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <p class="text-sm font-medium text-slate-500">Total Spend</p>
+                    <p class="mt-1 text-2xl font-bold text-slate-900">₦{{ stats.totalSpend.toLocaleString() }}</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <p class="text-sm font-medium text-slate-500">Total Orders</p>
+                    <p class="mt-1 text-2xl font-bold text-slate-900">{{ stats.totalOrders }}</p>
+                </div>
+                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <p class="text-sm font-medium text-slate-500">Avg. Order Value</p>
+                    <p class="mt-1 text-2xl font-bold text-slate-900">₦{{ stats.avgOrderValue.toLocaleString() }}</p>
+                </div>
+            </div>
+
             <!-- History / Related Orders -->
-            <!-- Placeholder for now, could be implemented by fetching orders filtered by subscriptionId? 
-                 Though frontend service for admin orders doesn't support subscriptionId filter yet specifically on backend, 
-                 we can assume "Subscription Orders" filter we made is broad. 
-                 Ideally, we'd list specific orders generated from this subscription. 
-                 But for now, let's keep it simple. -->
+             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                    <h3 class="text-base font-semibold text-slate-900">Order History</h3>
+                </div>
+                 <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200">
+                    <thead>
+                        <tr class="bg-slate-50">
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Order</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Total</th>
+                        <th scope="col" class="relative px-6 py-3"><span class="sr-only">View</span></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <tr v-for="order in orders" :key="order._id" class="hover:bg-slate-50/50">
+                        <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-primary-600">#{{ order.orderNumber }}</td>
+                        <td class="px-6 py-3 whitespace-nowrap text-sm text-slate-600">{{ new Date(order.createdAt).toLocaleDateString() }}</td>
+                        <td class="px-6 py-3 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 capitalize">
+                            {{ order.orderStatus }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-slate-900">₦{{ order.totalAmount.toLocaleString() }}</td>
+                        <td class="px-6 py-3 whitespace-nowrap text-right text-sm font-medium">
+                            <router-link :to="`/admin/orders/${order._id}`" class="text-primary-600 hover:text-primary-900">View</router-link>
+                        </td>
+                        </tr>
+                        <tr v-if="orders.length === 0">
+                            <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-500">No orders found for this subscription yet.</td>
+                        </tr>
+                    </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- Sidebar -->
@@ -201,19 +251,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { SubscriptionService, Subscription } from '../../../services/admin/subscription.service';
+import { OrderService, Order } from '../../../services/admin/order.service';
 
 const route = useRoute();
 const subscription = ref<Subscription | null>(null);
+const orders = ref<Order[]>([]);
+
+const stats = computed(() => {
+    const totalOrders = orders.value.length;
+    const totalSpend = orders.value.reduce((acc, order) => acc + order.totalAmount, 0);
+    const avgOrderValue = totalOrders > 0 ? totalSpend / totalOrders : 0;
+    
+    return {
+        totalOrders,
+        totalSpend,
+        avgOrderValue
+    };
+});
 
 const fetchSubscription = async () => {
   try {
-    const res = await SubscriptionService.getSubscription(route.params.id as string);
-    subscription.value = res.data;
+    const [subRes, ordersRes] = await Promise.all([
+        SubscriptionService.getSubscription(route.params.id as string),
+        OrderService.getOrders({ subscriptionId: route.params.id, limit: 100 }) // Fetch last 100 orders
+    ]);
+    
+    subscription.value = subRes.data;
+    orders.value = ordersRes.data.orders;
+    
   } catch (error) {
-    console.error('Failed to fetch subscription', error);
+    console.error('Failed to fetch subscription details', error);
   }
 };
 
