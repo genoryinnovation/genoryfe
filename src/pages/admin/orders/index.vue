@@ -104,6 +104,18 @@
         <option value="delivered">Delivered</option>
         <option value="cancelled">Cancelled</option>
       </select>
+      
+      <div 
+        @click="toggleSubscriptionFilter"
+        class="flex items-center space-x-2 bg-white px-4 py-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-all select-none"
+      >
+         <div class="w-4 h-4 rounded border flex items-center justify-center transition-colors" :class="isSubscriptionOrder ? 'bg-primary-600 border-primary-600' : 'border-slate-300 bg-white'">
+            <svg v-if="isSubscriptionOrder" class="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+            </svg>
+         </div>
+         <span class="text-sm font-medium text-slate-700">Subscription Orders</span>
+      </div>
     </div>
 
     <!-- Orders Table -->
@@ -263,6 +275,7 @@ const orders = ref<Order[]>([]);
 const stats = ref<any>({});
 const search = ref('');
 const statusFilter = ref('');
+const isSubscriptionOrder = ref(false);
 const pagination = ref({
   page: 1,
   limit: 10,
@@ -279,7 +292,8 @@ const fetchOrders = async () => {
         page: pagination.value.page,
         limit: pagination.value.limit,
         status: statusFilter.value,
-        search: search.value
+        search: search.value,
+        isSubscriptionOrder: isSubscriptionOrder.value
       }),
       OrderService.getOrderStats(),
     ]);
@@ -304,6 +318,12 @@ const changePage = (page: number) => {
     pagination.value.page = page;
     fetchOrders();
   }
+};
+
+const toggleSubscriptionFilter = () => {
+    isSubscriptionOrder.value = !isSubscriptionOrder.value;
+    pagination.value.page = 1;
+    fetchOrders();
 };
 
 onMounted(() => {
