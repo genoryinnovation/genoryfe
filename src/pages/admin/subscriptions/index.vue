@@ -8,6 +8,27 @@
       </div>
     </div>
 
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4" v-if="stats">
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+            <p class="text-sm font-medium text-slate-500">Total Subscriptions</p>
+            <p class="mt-1 text-2xl font-bold text-slate-900">{{ stats.total }}</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+            <p class="text-sm font-medium text-slate-500">Active</p>
+            <p class="mt-1 text-2xl font-bold text-emerald-600">{{ stats.active }}</p>
+        </div>
+         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+            <p class="text-sm font-medium text-slate-500">Paused</p>
+            <p class="mt-1 text-2xl font-bold text-amber-600">{{ stats.paused }}</p>
+        </div>
+         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+            <p class="text-sm font-medium text-slate-500">Cancelled</p>
+            <p class="mt-1 text-2xl font-bold text-slate-600">{{ stats.cancelled }}</p>
+        </div>
+    </div>
+
     <!-- Filters -->
     <div class="flex flex-col sm:flex-row gap-4">
       <div class="flex-1 relative">
@@ -168,6 +189,7 @@ import { ref, onMounted } from 'vue';
 import { SubscriptionService, Subscription } from '../../../services/admin/subscription.service';
 
 const subscriptions = ref<Subscription[]>([]);
+const stats = ref<any>(null);
 const search = ref('');
 const statusFilter = ref('');
 const pagination = ref({
@@ -187,8 +209,12 @@ const fetchSubscriptions = async () => {
         status: statusFilter.value,
         search: search.value
     });
+    console.log('Subscriptions response:', res.data); // Debug log
     subscriptions.value = res.data.subscriptions;
     pagination.value = res.data.pagination;
+    if (res.data.stats) {
+        stats.value = res.data.stats;
+    }
   } catch (error) {
     console.error('Failed to fetch subscriptions', error);
   }
