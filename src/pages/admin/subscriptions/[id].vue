@@ -113,9 +113,6 @@
                 </ul>
             </div>
             
-                </ul>
-            </div>
-            
             <!-- Subscription Stats -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
