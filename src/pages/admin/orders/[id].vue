@@ -20,10 +20,13 @@
               class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold capitalize"
               :class="{
                 'bg-emerald-100 text-emerald-700': order.orderStatus === 'delivered',
-                'bg-blue-100 text-blue-700': order.orderStatus === 'shipped',
                 'bg-amber-100 text-amber-700': order.orderStatus === 'pending',
                 'bg-purple-100 text-purple-700': order.orderStatus === 'processing',
                 'bg-indigo-100 text-indigo-700': order.orderStatus === 'ready_for_pickup',
+                'bg-teal-100 text-teal-700': order.orderStatus === 'picked_up',
+                'bg-blue-100 text-blue-700': order.orderStatus === 'delivering',
+                'bg-lime-100 text-lime-700': order.orderStatus === 'arrived',
+                'bg-sky-100 text-sky-700': order.orderStatus === 'shipped',
                 'bg-cyan-100 text-cyan-700': order.orderStatus === 'confirmed',
                 'bg-rose-100 text-rose-700': order.orderStatus === 'cancelled'
               }"
@@ -32,10 +35,13 @@
                 class="w-1.5 h-1.5 rounded-full mr-1.5"
                 :class="{
                   'bg-emerald-500': order.orderStatus === 'delivered',
-                  'bg-blue-500': order.orderStatus === 'shipped',
                   'bg-amber-500': order.orderStatus === 'pending',
                   'bg-purple-500': order.orderStatus === 'processing',
                   'bg-indigo-500': order.orderStatus === 'ready_for_pickup',
+                  'bg-teal-500': order.orderStatus === 'picked_up',
+                  'bg-blue-500': order.orderStatus === 'delivering',
+                  'bg-lime-500': order.orderStatus === 'arrived',
+                  'bg-sky-500': order.orderStatus === 'shipped',
                   'bg-cyan-500': order.orderStatus === 'confirmed',
                   'bg-rose-500': order.orderStatus === 'cancelled'
                 }"
@@ -147,6 +153,9 @@
                 <option value="confirmed">Confirmed</option>
                 <option value="processing">Processing</option>
                 <option value="ready_for_pickup">Ready for Pickup</option>
+                <option value="picked_up">Picked Up</option>
+                <option value="delivering">Delivering</option>
+                <option value="arrived">Arrived</option>
                 <option value="shipped">Shipped</option>
                 <option value="delivered">Delivered</option>
                 <option value="cancelled">Cancelled</option>
