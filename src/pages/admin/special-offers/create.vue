@@ -77,13 +77,14 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-2">Original Price (₦)</label>
+            <label class="block text-sm font-medium text-slate-700 mb-2 font-semibold">Original Price (₦)</label>
             <input 
               v-model.number="form.originalPrice" 
               type="number" 
-              min="0"
-              class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+              readonly
+              class="block w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-500 cursor-not-allowed transition-all"
             />
+            <p class="mt-1 text-xs text-slate-400 italic">Automatically calculated from included products</p>
           </div>
 
           <div>
@@ -225,7 +226,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue';
+import { ref, reactive, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { SpecialOfferService } from '../../../services/admin/special_offer.service';
 import { CatalogService } from '../../../services/admin/catalog.service';
@@ -253,6 +254,33 @@ const form = reactive({
   validFrom: '',
   validUntil: '',
   isActive: true,
+});
+
+// Sync original price and default offer price
+watch(() => form.items, (newItems) => {
+  const total = newItems.reduce((sum, item) => {
+    const productPrice = item.product?.price || 0;
+    return sum + (productPrice * item.quantity);
+  }, 0);
+  
+  const oldOriginalPrice = form.originalPrice;
+  form.originalPrice = total;
+  
+  // If creating a new offer or if the price hasn't been customized (matches old original)
+  if (!isEditing.value || form.price === oldOriginalPrice || form.price === 0) {
+    // Only auto-update if it's a new offer or logically hasn't been tweaked yet
+    if (form.price === 0 || form.price === oldOriginalPrice) {
+      form.price = total;
+    }
+  }
+}, { deep: true });
+
+// Enforce single item for SINGLE type
+watch(() => form.type, (newType) => {
+  if (newType === 'SINGLE' && form.items.length > 1) {
+    form.items = [form.items[0]];
+    alert('Single Item offer can only have one product. Removed extra items.');
+  }
 });
 
 const fetchOffer = async () => {
@@ -293,13 +321,16 @@ const searchProducts = () => {
 };
 
 const addProductToOffer = (product: any) => {
-    // Check if exists
+  if (form.type === 'SINGLE') {
+    form.items = [{ product, quantity: 1 }];
+  } else {
     const exists = form.items.find((i) => i.product._id === product._id);
     if (!exists) {
-        form.items.push({ product, quantity: 1 });
+      form.items.push({ product, quantity: 1 });
     }
-    searchResults.value = [];
-    productSearch.value = '';
+  }
+  searchResults.value = [];
+  productSearch.value = '';
 };
 
 const removeItem = (index: number) => {
