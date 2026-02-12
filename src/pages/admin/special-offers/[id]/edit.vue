@@ -4,11 +4,23 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h1 class="text-2xl font-bold text-slate-900">
-          {{ isEditing ? 'Edit Special Offer' : 'Create Special Offer' }}
+          Edit Special Offer
         </h1>
         <p class="mt-1 text-sm text-slate-500">
-          {{ isEditing ? 'Update existing offer details' : 'Configure a new promotional offer' }}
+          Update existing offer details
         </p>
+      </div>
+      <div class="mt-4 sm:mt-0">
+        <router-link
+          :to="`/admin/special-offers/${route.params.id}`"
+          class="inline-flex items-center px-4 py-2.5 text-slate-700 bg-white border border-slate-200 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-all shadow-sm"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+          View Details
+        </router-link>
       </div>
     </div>
 
@@ -66,18 +78,18 @@
         
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-2">Offer Price (₦)</label>
+            <label class="block text-sm font-medium text-slate-700 mb-2 font-semibold text-primary-600">Offer Price (₦)</label>
             <input 
               v-model.number="form.price" 
               type="number" 
               required
               min="0"
-              class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+              class="block w-full px-4 py-3 bg-primary-50/30 border border-primary-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             />
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-2 font-semibold">Original Price (₦)</label>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Original Price (₦)</label>
             <input 
               v-model.number="form.originalPrice" 
               type="number" 
@@ -173,7 +185,7 @@
                     @click="addProductToOffer(product)"
                 >
                     <div class="flex items-center space-x-3">
-                         <img :src="product.images[0] || 'https://via.placeholder.com/32'" class="w-8 h-8 rounded object-cover" />
+                         <img :src="product.images?.[0] || 'https://via.placeholder.com/32'" class="w-8 h-8 rounded object-cover" />
                          <span class="text-sm font-medium">{{ product.title }}</span>
                     </div>
                     <span class="text-xs text-slate-500">{{ product.sku }}</span>
@@ -182,19 +194,25 @@
 
              <!-- Selected Items -->
              <div v-if="form.items.length > 0" class="space-y-2">
-                <div v-for="(item, index) in form.items" :key="index" class="flex items-center justify-between bg-slate-50 p-3 rounded-xl">
+                <div v-for="(item, index) in form.items" :key="index" class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
                     <div class="flex items-center space-x-3">
-                        <span class="text-sm font-medium text-slate-900">{{ item.product.title }}</span>
+                        <img :src="item.product?.images?.[0] || 'https://via.placeholder.com/40'" class="w-10 h-10 rounded-lg object-cover" />
+                        <div>
+                          <p class="text-sm font-semibold text-slate-900">{{ item.product?.title }}</p>
+                          <p class="text-xs text-slate-500">Price: ₦{{ item.product?.price?.toLocaleString() }}</p>
+                        </div>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <label class="text-xs text-slate-500">Qty:</label>
-                        <input 
-                            v-model.number="item.quantity"
-                            type="number"
-                            min="1"
-                            class="w-16 px-2 py-1 bg-white border border-slate-200 rounded text-sm"
-                        />
-                        <button type="button" @click="removeItem(index)" class="text-rose-500 hover:text-rose-700">
+                        <div class="flex items-center bg-white border border-slate-200 rounded-lg overflow-hidden">
+                          <label class="px-2 text-[10px] font-bold text-slate-400 uppercase tracking-tighter border-r border-slate-100">Qty</label>
+                          <input 
+                              v-model.number="item.quantity"
+                              type="number"
+                              min="1"
+                              class="w-12 px-2 py-1 text-sm font-medium focus:outline-none"
+                          />
+                        </div>
+                        <button type="button" @click="removeItem(index)" class="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
@@ -202,12 +220,12 @@
                     </div>
                 </div>
              </div>
-             <p v-else class="text-sm text-slate-500 text-center py-4">No products selected.</p>
+             <p v-else class="text-sm text-slate-500 text-center py-8 bg-slate-50 rounded-xl border border-dashed border-slate-200">No products selected.</p>
         </div>
       </div>
 
       <!-- Actions -->
-      <div class="flex justify-end space-x-3">
+      <div class="flex justify-end space-x-3 pt-6 border-t border-slate-100">
         <router-link
           to="/admin/special-offers"
           class="px-6 py-3 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
@@ -216,9 +234,9 @@
         </router-link>
         <button
           type="submit"
-          class="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all shadow-lg shadow-primary-500/25"
+          class="px-8 py-3 text-sm font-bold text-white bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all shadow-lg shadow-primary-500/25 active:scale-[0.98]"
         >
-          {{ isEditing ? 'Update Offer' : 'Create Offer' }}
+          Update Special Offer
         </button>
       </div>
     </form>
@@ -226,15 +244,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed, watch } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { SpecialOfferService } from '../../../services/admin/special_offer.service';
-import { CatalogService } from '../../../services/admin/catalog.service';
+import { SpecialOfferService } from '../../../../services/admin/special_offer.service';
+import { CatalogService } from '../../../../services/admin/catalog.service';
 
 const route = useRoute();
 const router = useRouter();
 
-const isEditing = computed(() => !!route.params.id);
 const productSearch = ref('');
 const searchResults = ref<any[]>([]);
 let searchTimeout: any;
@@ -243,36 +260,26 @@ const form = reactive({
   title: '',
   description: '',
   image: '',
-  type: 'SINGLE',
+  type: 'SINGLE' as 'SINGLE' | 'COMBO',
   items: [] as { product: any; quantity: number }[],
   price: 0,
   originalPrice: 0,
   criteria: {
     minOrders: 0,
-    targetUser: 'ALL',
+    targetUser: 'ALL' as 'ALL' | 'NEW' | 'EXISTING',
   },
   validFrom: '',
   validUntil: '',
   isActive: true,
 });
 
-// Sync original price and default offer price
+// Sync original price calculation
 watch(() => form.items, (newItems) => {
   const total = newItems.reduce((sum, item) => {
     const productPrice = item.product?.price || 0;
     return sum + (productPrice * item.quantity);
   }, 0);
-  
-  const oldOriginalPrice = form.originalPrice;
   form.originalPrice = total;
-  
-  // If creating a new offer or if the price hasn't been customized (matches old original)
-  if (!isEditing.value || form.price === oldOriginalPrice || form.price === 0) {
-    // Only auto-update if it's a new offer or logically hasn't been tweaked yet
-    if (form.price === 0 || form.price === oldOriginalPrice) {
-      form.price = total;
-    }
-  }
 }, { deep: true });
 
 // Enforce single item for SINGLE type
@@ -284,7 +291,6 @@ watch(() => form.type, (newType) => {
 });
 
 const fetchOffer = async () => {
-    if (!isEditing.value) return;
     try {
         const res = await SpecialOfferService.getOffer(route.params.id as string);
         const data = res.data;
@@ -295,9 +301,16 @@ const fetchOffer = async () => {
         form.items = data.items.map((i: any) => ({ product: i.product, quantity: i.quantity }));
         form.price = data.price;
         form.originalPrice = data.originalPrice || 0;
-        form.criteria = data.criteria;
-        form.validFrom = new Date(data.validFrom).toISOString().slice(0, 16);
-        form.validUntil = new Date(data.validUntil).toISOString().slice(0, 16);
+        form.criteria = data.criteria || { minOrders: 0, targetUser: 'ALL' };
+        
+        // Format dates for datetime-local input
+        if (data.validFrom) {
+          form.validFrom = new Date(data.validFrom).toISOString().slice(0, 16);
+        }
+        if (data.validUntil) {
+          form.validUntil = new Date(data.validUntil).toISOString().slice(0, 16);
+        }
+        
         form.isActive = data.isActive;
     } catch (e) {
         console.error('Failed to fetch offer', e);
@@ -324,7 +337,7 @@ const addProductToOffer = (product: any) => {
   if (form.type === 'SINGLE') {
     form.items = [{ product, quantity: 1 }];
   } else {
-    const exists = form.items.find((i) => i.product._id === product._id);
+    const exists = form.items.find((i) => i.product?._id === product._id);
     if (!exists) {
       form.items.push({ product, quantity: 1 });
     }
@@ -341,16 +354,12 @@ const saveOffer = async () => {
     try {
         const payload = {
             ...form,
-            items: form.items.map(i => ({ product: i.product._id, quantity: i.quantity })),
+            items: form.items.filter(i => i.product).map(i => ({ product: i.product._id, quantity: i.quantity })),
             validFrom: new Date(form.validFrom).toISOString(),
             validUntil: new Date(form.validUntil).toISOString(),
         };
 
-        if (isEditing.value) {
-            await SpecialOfferService.updateOffer(route.params.id as string, payload);
-        } else {
-            await SpecialOfferService.createOffer(payload);
-        }
+        await SpecialOfferService.updateOffer(route.params.id as string, payload);
         router.push('/admin/special-offers');
     } catch (e) {
         console.error('Failed to save offer', e);

@@ -94,6 +94,16 @@
               <td class="px-6 py-4 whitespace-nowrap text-right">
                 <div class="flex items-center justify-end space-x-1">
                   <router-link 
+                    :to="`/admin/special-offers/${offer._id}`" 
+                    class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                    title="View Details"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </router-link>
+                  <router-link 
                     :to="`/admin/special-offers/${offer._id}/edit`" 
                     class="p-2 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"
                     title="Edit"
@@ -103,12 +113,25 @@
                     </svg>
                   </router-link>
                   <button 
-                    @click="deleteOffer(offer._id)" 
-                    class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                    title="Delete"
+                    @click="toggleStatus(offer)" 
+                    :class="[
+                      'p-2 rounded-lg transition-colors',
+                      offer.isActive ? 'text-slate-400 hover:text-amber-600 hover:bg-amber-50' : 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50'
+                    ]"
+                    :title="offer.isActive ? 'Pause' : 'Resume'"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      <path v-if="offer.isActive" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    </svg>
+                  </button>
+                  <button 
+                    @click="deleteOffer(offer._id)" 
+                    class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                    title="Cancel Offer"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
@@ -155,12 +178,22 @@ const fetchOffers = async () => {
 };
 
 const deleteOffer = async (id: string) => {
-  if (!confirm('Are you sure you want to delete this offer?')) return;
+  if (!confirm('Are you sure you want to cancel and delete this offer? This cannot be undone.')) return;
   try {
     await SpecialOfferService.deleteOffer(id);
     await fetchOffers();
   } catch (error) {
     console.error('Failed to delete offer', error);
+  }
+};
+
+const toggleStatus = async (offer: any) => {
+  try {
+    const newStatus = !offer.isActive;
+    await SpecialOfferService.updateOffer(offer._id, { isActive: newStatus });
+    offer.isActive = newStatus;
+  } catch (error) {
+    console.error('Failed to toggle status', error);
   }
 };
 
