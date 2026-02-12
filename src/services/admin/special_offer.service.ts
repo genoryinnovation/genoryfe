@@ -51,4 +51,9 @@ export class SpecialOfferService {
     const response = await api.delete(`/admin/special-offers/${id}`);
     return response.data;
   }
+
+  static async getOfferOrders(id: string, page = 1, limit = 10): Promise<any> {
+    const response = await api.get(`/admin/special-offers/${id}/orders`, { params: { page, limit } });
+    return response.data;
+  }
 }
