@@ -119,7 +119,8 @@
             />
           </div>
           
-           <div>
+          
+            <div>
             <label class="flex items-center space-x-2 cursor-pointer mt-6">
                 <input 
                   v-model="form.isActive" 
@@ -129,6 +130,40 @@
                 <span class="text-sm font-medium text-slate-900">Is Active?</span>
             </label>
            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-3 pt-6 border-t border-slate-100">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Total Quantity</label>
+            <input 
+              v-model.number="form.totalQuantity" 
+              type="number" 
+              min="1"
+              placeholder="Unlimited if empty"
+              class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Remaining Stock</label>
+            <input 
+              v-model.number="form.remainingQuantity" 
+              type="number" 
+              min="0"
+              class="block w-full px-4 py-3 bg-primary-50 border border-primary-200 rounded-xl text-sm font-semibold text-primary-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Maximum per User</label>
+            <input 
+              v-model.number="form.maxPerUser" 
+              type="number" 
+              required
+              min="1"
+              class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+            />
+          </div>
         </div>
       </div>
 
@@ -271,6 +306,9 @@ const form = reactive({
   validFrom: '',
   validUntil: '',
   isActive: true,
+  totalQuantity: undefined as number | undefined,
+  remainingQuantity: undefined as number | undefined,
+  maxPerUser: 1,
 });
 
 // Sync original price calculation
@@ -312,6 +350,9 @@ const fetchOffer = async () => {
         }
         
         form.isActive = data.isActive;
+        form.totalQuantity = data.totalQuantity;
+        form.remainingQuantity = data.remainingQuantity;
+        form.maxPerUser = data.maxPerUser || 1;
     } catch (e) {
         console.error('Failed to fetch offer', e);
     }
