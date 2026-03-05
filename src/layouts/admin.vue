@@ -337,6 +337,7 @@ const menuItems: MenuItem[] = [
   { to: '/admin/orders', label: 'Orders', icon: OrdersIcon, badge: null },
   { to: '/admin/users', label: 'Users', icon: UsersIcon },
   { to: '/admin/wallets', label: 'Wallets', icon: WalletIcon },
+  { to: '/admin/referrals', label: 'Referrals', icon: SpecialOffersIcon },
   { to: '/admin/delivery-partners', label: 'Delivery Partners', icon: DeliveryIcon },
 ];
 
