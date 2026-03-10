@@ -7,6 +7,15 @@ export interface User {
   email: string;
   phone?: string;
   status?: string; // Assuming status field
+  referralStatus: 'regular' | 'agent';
+  agentConfig?: {
+    commissionRate: number;
+    customerDiscountRate: number;
+    maxCommissionPerOrder: number;
+    minOrderAmount: number;
+    totalReferrals: number;
+    totalEarnings: number;
+  };
   createdAt: string;
   // Add other fields as needed
 }

@@ -9,8 +9,12 @@ export interface Agent {
   referralStatus: 'regular' | 'agent';
   agentConfig?: {
     commissionRate: number;
+    customerDiscountRate: number;
+    maxCommissionPerOrder: number;
+    minOrderAmount: number;
     totalReferrals: number;
     totalEarnings: number;
+    totalDiscountsGiven: number;
   };
   createdAt: string;
 }
@@ -34,7 +38,12 @@ export class ReferralService {
     return response.data;
   }
 
-  static async updateAgentConfig(userId: string, data: { commissionRate: number }): Promise<any> {
+  static async updateAgentConfig(userId: string, data: {
+    commissionRate?: number;
+    customerDiscountRate?: number;
+    maxCommissionPerOrder?: number;
+    minOrderAmount?: number;
+  }): Promise<any> {
     const response = await api.patch(`/admin/referrals/agents/${userId}/config`, data);
     return response.data;
   }
@@ -53,6 +62,23 @@ export class ReferralService {
 
   static async getStats(): Promise<any> {
     const response = await api.get('/admin/referrals/stats');
+    return response.data;
+  }
+
+  static async promoteToAgent(userId: string, data: { 
+    commissionRate?: number;
+    customerDiscountRate?: number;
+    maxCommissionPerOrder?: number;
+    minOrderAmount?: number;
+  } = {}): Promise<any> {
+    const response = await api.post(`/admin/referrals/promote/${userId}`, data);
+    return response.data;
+  }
+
+  static async getInvitations(params: any = { page: 1, limit: 10 }): Promise<any> {
+    const response = await api.get('/admin/referrals/invitations', {
+      params,
+    });
     return response.data;
   }
 }

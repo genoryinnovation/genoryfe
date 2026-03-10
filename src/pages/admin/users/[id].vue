@@ -78,15 +78,28 @@
     <div class="space-y-6">
       <div class="flex justify-between items-center">
         <h2 class="text-lg font-semibold text-slate-900">Wallet</h2>
-        <button
-          @click="showTopUpModal = true"
-          class="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/25 transition-all"
-        >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Top Up Wallet
-        </button>
+        <div class="flex items-center space-x-3">
+          <button
+            v-if="user.referralStatus !== 'agent'"
+            @click="showPromoteModal = true"
+            class="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25 transition-all"
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            Promote to Agent
+          </button>
+          
+          <button
+            @click="showTopUpModal = true"
+            class="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/25 transition-all"
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Top Up Wallet
+          </button>
+        </div>
       </div>
 
       <!-- Wallet Balance Cards -->
@@ -263,6 +276,94 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Promote to Agent Modal -->
+    <Teleport to="body">
+      <div v-if="showPromoteModal" class="fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex min-h-screen items-center justify-center p-4">
+          <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" @click="showPromoteModal = false"></div>
+          <div class="relative bg-white rounded-2xl shadow-xl max-w-md w-full p-6 transform transition-all">
+            <div class="flex items-center space-x-3 mb-6">
+              <div class="p-2 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-slate-900">Promote to Agent</h3>
+            </div>
+            
+            <div class="space-y-4">
+              <p class="text-sm text-slate-500">
+                You are about to promote <strong>{{ user.firstName }} {{ user.lastName }}</strong> to an agent. This will allow them to earn commissions on referrals.
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2">Commission Rate (%)</label>
+                  <div class="relative">
+                    <input type="number" v-model="promoteForm.commissionRate" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all" placeholder="e.g. 5">
+                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                      <span class="text-slate-500 text-sm">%</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2">Customer Discount (%)</label>
+                  <div class="relative">
+                    <input type="number" v-model="promoteForm.customerDiscountRate" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all" placeholder="e.g. 10">
+                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                      <span class="text-slate-500 text-sm">%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2">Max Commission (₦)</label>
+                  <div class="relative">
+                    <input type="number" v-model="promoteForm.maxCommissionPerOrder" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all" placeholder="e.g. 5000">
+                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                      <span class="text-slate-500 text-sm">₦</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2">Min Order (₦)</label>
+                  <div class="relative">
+                    <input type="number" v-model="promoteForm.minOrderAmount" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all" placeholder="e.g. 2000">
+                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                      <span class="text-slate-500 text-sm">₦</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex space-x-3 mt-6">
+              <button
+                type="button"
+                class="flex-1 px-4 py-3 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                @click="showPromoteModal = false"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="flex-1 inline-flex justify-center items-center px-4 py-3 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25 transition-all disabled:opacity-50"
+                @click="handlePromote"
+                :disabled="isPromoting"
+              >
+                <svg v-if="isPromoting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ isPromoting ? 'Promoting...' : 'Confirm Promotion' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 
   <!-- Loading State -->
@@ -277,6 +378,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { UserService, User } from '../../../services/admin/user.service';
 import { WalletService } from '../../../services/admin/wallet.service';
+import { ReferralService } from '../../../services/admin/referral.service';
 
 const route = useRoute();
 const router = useRouter();
@@ -288,6 +390,15 @@ const topUpAmount = ref(0);
 const topUpType = ref<'naira' | 'token'>('naira');
 const topUpNotes = ref('');
 const isProcessing = ref(false);
+
+const showPromoteModal = ref(false);
+const promoteForm = ref({
+  commissionRate: 5,
+  customerDiscountRate: 0,
+  maxCommissionPerOrder: 0,
+  minOrderAmount: 0
+});
+const isPromoting = ref(false);
 
 const fetchUser = async () => {
   try {
@@ -338,6 +449,26 @@ const handleTopUp = async () => {
     alert('Failed to top up wallet');
   } finally {
     isProcessing.value = false;
+  }
+};
+
+const handlePromote = async () => {
+  if (promoteForm.value.commissionRate < 0 || promoteForm.value.customerDiscountRate < 0) {
+    alert('Please enter a valid rate');
+    return;
+  }
+
+  isPromoting.value = true;
+  try {
+    await ReferralService.promoteToAgent(route.params.id as string, promoteForm.value);
+    alert('User promoted to agent successfully');
+    showPromoteModal.value = false;
+    await fetchUser();
+  } catch (error: any) {
+    console.error('Failed to promote user', error);
+    alert(error.response?.data?.message || 'Failed to promote user');
+  } finally {
+    isPromoting.value = false;
   }
 };
 
