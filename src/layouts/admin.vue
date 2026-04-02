@@ -348,6 +348,7 @@ const menuItems: MenuItem[] = [
   { to: '/admin/referrals', label: 'Referrals', icon: SpecialOffersIcon },
   { to: '/admin/gift-cards', label: 'Gift Cards', icon: GiftCardIcon },
   { to: '/admin/delivery-partners', label: 'Delivery Partners', icon: DeliveryIcon },
+  { to: '/admin/partners/withdrawals', label: 'Withdrawals', icon: WalletIcon },
 ];
 
 const catalogItems: MenuItem[] = [
