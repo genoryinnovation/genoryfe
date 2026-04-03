@@ -30,6 +30,29 @@ export interface ActivationCode {
   createdAt: string;
 }
 
+export interface AgentApplication {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber?: {
+    countryCode: string;
+    number: string;
+  };
+  agentApplication: {
+    status: 'pending' | 'approved' | 'rejected';
+    appliedAt: string;
+    rejectionReason?: string;
+    kyc: {
+      idType: string;
+      idNumber: string;
+      idImage: string;
+      selfieImage: string;
+    };
+  };
+  createdAt: string;
+}
+
 export class ReferralService {
   static async getAgents(params: any = { page: 1, limit: 10 }): Promise<any> {
     const response = await api.get('/admin/referrals/agents', {
@@ -78,6 +101,33 @@ export class ReferralService {
   static async getInvitations(params: any = { page: 1, limit: 10 }): Promise<any> {
     const response = await api.get('/admin/referrals/invitations', {
       params,
+    });
+    return response.data;
+  }
+
+  static async getAgentApplications(params: any = { page: 1, limit: 10 }): Promise<any> {
+    const response = await api.get('/admin/referrals/applications', {
+      params,
+    });
+    return response.data;
+  }
+
+  static async reviewAgentApplication(userId: string, data: {
+    status: 'approved' | 'rejected';
+    rejectionReason?: string;
+    commissionRate?: number;
+    customerDiscountRate?: number;
+  }): Promise<any> {
+    const response = await api.post(`/admin/referrals/applications/${userId}/review`, data);
+    return response.data;
+  }
+
+  static async getReferredUsers(agentId: string, params: any = { page: 1, limit: 10 }): Promise<any> {
+    const response = await api.get('/admin/users', {
+      params: {
+        ...params,
+        referredBy: agentId,
+      },
     });
     return response.data;
   }
