@@ -73,7 +73,7 @@
     <!-- Tabs -->
     <div class="flex space-x-1 bg-slate-100 p-1 rounded-xl w-fit">
       <button 
-        v-for="tab in ['Agents', 'Activation Codes', 'Invitations', 'Settings']" 
+        v-for="tab in ['Agents', 'Applications', 'Activation Codes', 'Invitations', 'Settings']" 
         :key="tab"
         @click="activeTab = tab"
         :class="[
@@ -135,7 +135,12 @@
                 <span v-else class="text-xs text-slate-400 italic">No code</span>
               </td>
               <td class="px-6 py-4 text-center">
-                <span class="text-sm font-medium text-slate-700">{{ agent.agentConfig?.totalReferrals || 0 }}</span>
+                <button 
+                  @click="viewAgentReferrals(agent)"
+                  class="text-sm font-medium text-primary-600 hover:text-primary-700 underline"
+                >
+                  {{ agent.agentConfig?.totalReferrals || 0 }}
+                </button>
               </td>
               <td class="px-6 py-4 text-center">
                 <span class="text-sm font-medium text-slate-700">{{ agent.agentConfig?.commissionRate || 0 }}%</span>
@@ -158,6 +163,94 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                   </svg>
                 </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Applications Table -->
+    <div v-else-if="activeTab === 'Applications'" class="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+      <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+        <h3 class="font-bold text-slate-900">Agent Applications</h3>
+        <div class="flex space-x-2">
+          <select 
+            v-model="applicationStatusFilter"
+            class="bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 transition-all px-4 py-2"
+          >
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead class="bg-slate-50/50">
+            <tr>
+              <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Applicant</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Applied At</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Status</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">ID Verification</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr v-for="app in applications" :key="app._id" class="hover:bg-slate-50/50 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold">
+                    {{ app.firstName.charAt(0) }}
+                  </div>
+                  <div class="ml-3">
+                    <p class="text-sm font-semibold text-slate-900">{{ app.firstName }} {{ app.lastName }}</p>
+                    <p class="text-xs text-slate-500">{{ app.email }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-sm text-slate-600">
+                {{ new Date(app.agentApplication.appliedAt).toLocaleDateString() }}
+              </td>
+              <td class="px-6 py-4">
+                <span 
+                  :class="[
+                    'px-2.5 py-1 rounded-full text-xs font-bold',
+                    app.agentApplication.status === 'approved' ? 'bg-emerald-50 text-emerald-600' : 
+                    app.agentApplication.status === 'rejected' ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'
+                  ]"
+                >
+                  {{ app.agentApplication.status.toUpperCase() }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm text-slate-600">
+                {{ app.agentApplication.kyc?.idType || 'N/A' }} 
+                <span class="text-xs text-slate-400">({{ app.agentApplication.kyc?.idNumber || 'No ID' }})</span>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <button 
+                  v-if="app.agentApplication.status === 'pending'"
+                  @click="openReviewModal(app)"
+                  class="px-4 py-2 bg-primary-600 text-white rounded-lg text-xs font-bold hover:bg-primary-700 transition-colors"
+                >
+                  Review
+                </button>
+                <button 
+                  v-else
+                  @click="openReviewModal(app)"
+                  class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+            <tr v-if="applications.length === 0">
+              <td colspan="5" class="px-6 py-10 text-center text-slate-500">
+                No agent applications found.
               </td>
             </tr>
           </tbody>
@@ -377,6 +470,168 @@
       </div>
     </div>
 
+    <!-- Referral List Modal -->
+    <div v-if="selectedAgentForReferrals" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+      <div class="bg-white rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[80vh]">
+        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+          <div>
+            <h3 class="text-xl font-bold text-slate-900">Referrals for {{ selectedAgentForReferrals.firstName }}</h3>
+            <p class="text-sm text-slate-500">List of users who signed up using this agent's code.</p>
+          </div>
+          <button @click="selectedAgentForReferrals = null" class="p-2 hover:bg-slate-200 rounded-xl transition-colors">
+            <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6">
+          <div v-if="loadingReferrals" class="flex justify-center py-10">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+          </div>
+          <table v-else-if="referredUsers.length > 0" class="w-full text-left">
+            <thead class="bg-slate-50/50">
+              <tr>
+                <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">User</th>
+                <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Email</th>
+                <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Joined At</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr v-for="user in referredUsers" :key="user._id">
+                <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ user.firstName }} {{ user.lastName }}</td>
+                <td class="px-4 py-3 text-sm text-slate-600">{{ user.email }}</td>
+                <td class="px-4 py-3 text-sm text-slate-500">{{ new Date(user.createdAt).toLocaleDateString() }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p v-else class="text-center py-10 text-slate-500">No referrals found for this agent.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Application Review Modal -->
+    <div v-if="selectedApplication" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+      <div class="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+          <h3 class="text-xl font-bold text-slate-900">Review Agent Application</h3>
+          <button @click="selectedApplication = null" class="p-2 hover:bg-slate-200 rounded-xl transition-colors">
+            <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-8 space-y-8">
+          <!-- Applicant Info -->
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase mb-1">Applicant Name</p>
+              <p class="text-slate-900 font-semibold">{{ selectedApplication.firstName }} {{ selectedApplication.lastName }}</p>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase mb-1">Email Address</p>
+              <p class="text-slate-900 font-semibold">{{ selectedApplication.email }}</p>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase mb-1">Phone Number</p>
+              <p class="text-slate-900 font-semibold">
+                {{ selectedApplication.phoneNumber?.countryCode }}{{ selectedApplication.phoneNumber?.number || 'N/A' }}
+              </p>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase mb-1">Applied At</p>
+              <p class="text-slate-900 font-semibold">{{ new Date(selectedApplication.agentApplication.appliedAt).toLocaleString() }}</p>
+            </div>
+          </div>
+
+          <!-- KYC Details -->
+          <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
+            <h4 class="font-bold text-slate-900 mb-4 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              KYC Documents
+            </h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-xs font-bold text-slate-500 uppercase mb-2">ID Type</p>
+                <p class="text-sm font-medium text-slate-900 p-3 bg-white rounded-xl border border-slate-200">{{ selectedApplication.agentApplication.kyc?.idType || 'N/A' }}</p>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-500 uppercase mb-2">ID Number</p>
+                <p class="text-sm font-medium text-slate-900 p-3 bg-white rounded-xl border border-slate-200">{{ selectedApplication.agentApplication.kyc?.idNumber || 'N/A' }}</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <p class="text-xs font-bold text-slate-500 uppercase mb-2">ID Image</p>
+                <div class="aspect-video rounded-xl overflow-hidden border border-slate-200 bg-white">
+                   <img v-if="selectedApplication.agentApplication.kyc?.idImage" :src="selectedApplication.agentApplication.kyc.idImage" class="w-full h-full object-contain" />
+                   <div v-else class="w-full h-full flex items-center justify-center text-slate-400 text-xs">No Image</div>
+                </div>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-500 uppercase mb-2">Selfie Image</p>
+                <div class="aspect-video rounded-xl overflow-hidden border border-slate-200 bg-white">
+                  <img v-if="selectedApplication.agentApplication.kyc?.selfieImage" :src="selectedApplication.agentApplication.kyc.selfieImage" class="w-full h-full object-contain" />
+                  <div v-else class="w-full h-full flex items-center justify-center text-slate-400 text-xs">No Image</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review Form -->
+          <div v-if="selectedApplication.agentApplication.status === 'pending'" class="space-y-6">
+            <div class="flex space-x-4">
+              <button 
+                @click="reviewStatus = 'approved'"
+                :class="['flex-1 py-3 rounded-2xl font-bold transition-all border-2', reviewStatus === 'approved' ? 'bg-emerald-50 border-emerald-500 text-emerald-700' : 'bg-white border-slate-200 text-slate-500 hover:border-emerald-200']"
+              >
+                Approve
+              </button>
+              <button 
+                @click="reviewStatus = 'rejected'"
+                :class="['flex-1 py-3 rounded-2xl font-bold transition-all border-2', reviewStatus === 'rejected' ? 'bg-rose-50 border-rose-500 text-rose-700' : 'bg-white border-slate-200 text-slate-500 hover:border-rose-200']"
+              >
+                Reject
+              </button>
+            </div>
+
+            <div v-if="reviewStatus === 'approved'" class="grid grid-cols-2 gap-4 animate-fadeIn">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Commission Rate (%)</label>
+                <input v-model="reviewForm.commissionRate" type="number" class="w-full px-4 py-3 bg-slate-50 border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Customer Discount (%)</label>
+                <input v-model="reviewForm.customerDiscountRate" type="number" class="w-full px-4 py-3 bg-slate-50 border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500" />
+              </div>
+            </div>
+
+            <div v-if="reviewStatus === 'rejected'" class="animate-fadeIn">
+              <label class="block text-sm font-semibold text-slate-700 mb-2">Rejection Reason</label>
+              <textarea v-model="reviewForm.rejectionReason" rows="3" class="w-full px-4 py-3 bg-slate-50 border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500" placeholder="Explain why this application was rejected..."></textarea>
+            </div>
+
+            <div class="flex space-x-3 pt-4">
+              <button @click="selectedApplication = null" class="flex-1 px-4 py-4 border border-slate-200 text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-colors">
+                Cancel
+              </button>
+              <button 
+                @click="submitReview"
+                :disabled="isSubmitting"
+                class="flex-1 px-4 py-4 bg-primary-600 text-white font-bold rounded-2xl hover:bg-primary-700 transition-colors shadow-lg shadow-primary-500/25 disabled:opacity-50"
+              >
+                {{ isSubmitting ? 'Processing...' : 'Submit Review' }}
+              </button>
+            </div>
+          </div>
+          <div v-else class="p-6 bg-slate-100 rounded-2xl text-center">
+            <p class="text-slate-600 font-semibold">This application has already been reviewed.</p>
+            <p v-if="selectedApplication.agentApplication.rejectionReason" class="text-sm text-rose-600 mt-2">Reason: {{ selectedApplication.agentApplication.rejectionReason }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Generate Modal -->
     <div v-if="showGenerateModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
       <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
@@ -410,7 +665,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { ReferralService, type Agent, type ActivationCode } from '../../../services/admin/referral.service';
+import { ReferralService, type Agent, type ActivationCode, type AgentApplication } from '../../../services/admin/referral.service';
 import { SystemConfigService } from '../../../services/admin/system-config.service';
 
 const router = useRouter();
@@ -418,11 +673,28 @@ const stats = ref<any>(null);
 const agents = ref<Agent[]>([]);
 const codes = ref<ActivationCode[]>([]);
 const invitations = ref<any[]>([]);
+const applications = ref<AgentApplication[]>([]);
 const activeTab = ref('Agents');
 const search = ref('');
 const invitationSearch = ref('');
+const applicationStatusFilter = ref('');
 const showGenerateModal = ref(false);
 const editingAgent = ref<Agent | null>(null);
+
+// Application Review Refs
+const selectedApplication = ref<AgentApplication | null>(null);
+const reviewStatus = ref<'approved' | 'rejected'>('approved');
+const isSubmitting = ref(false);
+const reviewForm = ref({
+  rejectionReason: '',
+  commissionRate: 5,
+  customerDiscountRate: 0
+});
+
+// Referral List Refs
+const selectedAgentForReferrals = ref<Agent | null>(null);
+const referredUsers = ref<any[]>([]);
+const loadingReferrals = ref(false);
 
 const settings = ref({
   AGENT_FIXED_COMMISSION: 100,
@@ -443,11 +715,12 @@ const generateForm = ref({
 
 const fetchData = async () => {
   try {
-    const [statsRes, agentsRes, codesRes, invRes, configRes] = await Promise.all([
+    const [statsRes, agentsRes, codesRes, invRes, appsRes, configRes] = await Promise.all([
       ReferralService.getStats(),
       ReferralService.getAgents({ search: search.value }),
       ReferralService.getActivationCodes(),
       ReferralService.getInvitations({ search: invitationSearch.value }),
+      ReferralService.getAgentApplications({ status: applicationStatusFilter.value }),
       SystemConfigService.getAll('referral')
     ]);
     
@@ -455,6 +728,7 @@ const fetchData = async () => {
     agents.value = agentsRes.data.agents;
     codes.value = codesRes.data.codes;
     invitations.value = invRes.data.invitations;
+    applications.value = appsRes.data.applications;
 
     // Map config settings
     if (configRes.data) {
@@ -518,6 +792,58 @@ const generateCode = async () => {
     console.error('Failed to generate activation code', err);
   }
 };
+
+const openReviewModal = (app: AgentApplication) => {
+  selectedApplication.value = app;
+  reviewStatus.value = 'approved';
+  reviewForm.value = {
+    rejectionReason: '',
+    commissionRate: app.agentApplication?.kyc?.idType ? 5 : 5, // Default
+    customerDiscountRate: 0
+  };
+};
+
+const submitReview = async () => {
+  if (!selectedApplication.value) return;
+  
+  isSubmitting.value = true;
+  try {
+    await ReferralService.reviewAgentApplication(selectedApplication.value._id, {
+      status: reviewStatus.value,
+      rejectionReason: reviewStatus.value === 'rejected' ? reviewForm.value.rejectionReason : undefined,
+      commissionRate: reviewStatus.value === 'approved' ? reviewForm.value.commissionRate : undefined,
+      customerDiscountRate: reviewStatus.value === 'approved' ? reviewForm.value.customerDiscountRate : undefined
+    });
+    
+    selectedApplication.value = null;
+    fetchData();
+  } catch (err) {
+    console.error('Failed to submit application review', err);
+    alert('Failed to submit review');
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+const viewAgentReferrals = async (agent: Agent) => {
+  selectedAgentForReferrals.value = agent;
+  loadingReferrals.value = true;
+  referredUsers.value = [];
+  
+  try {
+    const res = await ReferralService.getReferredUsers(agent._id, { limit: 100 });
+    referredUsers.value = res.data.users;
+  } catch (err) {
+    console.error('Failed to fetch referred users', err);
+  } finally {
+    loadingReferrals.value = false;
+  }
+};
+
+import { watch } from 'vue';
+watch([applicationStatusFilter, search, invitationSearch], () => {
+  fetchData();
+});
 
 onMounted(fetchData);
 </script>
