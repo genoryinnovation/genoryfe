@@ -7,25 +7,77 @@
     @apply border-gray-200;
   }
   body {
-    @apply bg-secondary-50 text-accent-900;
+    @apply bg-white text-accent-900;
     font-feature-settings: "rlig" 1, "calt" 1;
+    scroll-behavior: smooth;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200;
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl active:scale-95 flex items-center justify-center;
   }
   
   .btn-secondary {
-    @apply bg-white hover:bg-gray-50 text-primary-500 font-medium py-3 px-6 rounded-lg border-2 border-primary-500 transition-colors duration-200;
+    @apply bg-white hover:bg-primary-50 text-accent-900 border border-primary-100 font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl active:scale-95 flex items-center justify-center;
+  }
+  
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-xl rounded-[2.5rem];
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-400 font-bold;
   }
   
   .card {
-    @apply bg-white rounded-xl shadow-lg p-6;
+    @apply bg-white rounded-3xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.05)] p-8 transition-all duration-300 border border-gray-50;
   }
   
   .section-padding {
-    @apply py-16 px-4 sm:px-6 lg:px-8;
+    @apply py-24 px-4 sm:px-6 lg:px-8;
   }
 }
+
+/* Custom Utilities */
+.bg-grid-white {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(15 23 42 / 0.04)'%3E%3Cpath d='M0 .5H31.5V32'/%3E%3C/svg%3E");
+}
+
+  .blur-spot {
+    @apply absolute rounded-full blur-[120px] opacity-20 pointer-events-none;
+  }
+
+  .bg-mesh {
+    background-color: #f8fafc;
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(214, 95%, 93%, 1) 0, transparent 50%), 
+      radial-gradient(at 50% 0%, hsla(187, 92%, 95%, 1) 0, transparent 50%), 
+      radial-gradient(at 100% 0%, hsla(221, 83%, 96%, 1) 0, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(201, 94%, 94%, 1) 0, transparent 50%),
+      radial-gradient(at 50% 100%, hsla(222, 100%, 97%, 1) 0, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(199, 89%, 95%, 1) 0, transparent 50%);
+  }
+
+/* Shimmer Effect */
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Custom Animation Delays */
+.animation-delay-200 { animation-delay: 0.2s; }
+.animation-delay-400 { animation-delay: 0.4s; }
+.animation-delay-600 { animation-delay: 0.6s; }
+.animation-delay-1000 { animation-delay: 1s; }

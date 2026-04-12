@@ -1,136 +1,101 @@
 <template>
-    <section class="relative bg-gradient-to-b from-primary-500/10 to-white overflow-hidden">
+    <section class="relative min-h-screen flex items-center pt-20 overflow-hidden bg-mesh">
         <!-- Background decoration -->
-        <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div class="absolute inset-0 bg-grid-white opacity-40"></div>
+        <div class="blur-spot w-[500px] h-[500px] bg-primary-400 -top-24 -left-24"></div>
+        <div class="blur-spot w-[600px] h-[600px] bg-primary-200 bottom-0 -right-48"></div>
 
-        <div class="relative max-w-7xl mx-auto section-padding">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <!-- Text content -->
-                <div class="text-center lg:text-left lg:col-span-2">
-                    <div class="relative h-[300px] mb-8">
-                        <TransitionGroup name="fade" tag="div" class="absolute inset-0 flex flex-col justify-center">
-                            <div v-for="(slide, index) in slides" :key="index" v-show="currentSlide === index" class="w-full">
-                                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-accent-900 leading-tight mb-6" v-html="slide.headline">
-                                </h1>
-                                <p class="text-xl text-accent-700 max-w-2xl mx-auto lg:mx-0">
-                                    {{ slide.subheadline }}
-                                </p>
-                            </div>
-                        </TransitionGroup>
+                <div class="text-center lg:text-left z-10">
+                    <div class="inline-flex items-center px-4 py-2 rounded-full bg-primary-50 border border-primary-100 text-primary-600 text-sm font-bold mb-8 animate-fade-in">
+                        <span class="relative flex h-2 w-2 mr-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
+                        </span>
+                        Africa's Smartest Food Ecosystem
+                    </div>
+
+                    <div class="relative mb-8">
+                        <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-accent-900 leading-[1.05] mb-8 tracking-tight">
+                            Shop Farm-Fresh Essentials. <span class="text-primary-600">Save More.</span> <br/> 
+                            <span class="block text-primary-500 mt-2">Earn Effortlessly.</span>
+                        </h1>
+                        <p class="text-xl text-accent-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                            Genory connects Nigerians to fresh farm food through smart technology and eﬃcient logistics, reducing costs and ensuring quality food is accessible to every home.
+                        </p>
                     </div>
 
                     <!-- CTA Buttons -->
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <!-- <a href="#download"
-                            class="btn-primary text-lg px-8 py-4 inline-flex items-center justify-center group">
-                            <svg class="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" fill="currentColor"
-                                viewBox="0 0 20 20">
-                                <path
-                                    d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-                            </svg>
-                            Download App
-                        </a> -->
-
-                        <button
-                            class="btn-primary text-white px-6 py-3 rounded-lg flex items-center space-x-3 relative hover:bg-black/30 transition-colors border-2 border-white/20 group">
-                            <svg class="w-8 h-8 group-hover:scale-110 transition-transform" viewBox="0 0 24 24"
-                                fill="currentColor">
+                    <div class="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start mt-12">
+                        <a href="#download"
+                            class="btn-primary !py-5 !px-10 text-lg flex items-center justify-center group relative overflow-hidden">
+                            <div class="absolute inset-0 animate-shimmer pointer-events-none opacity-30"></div>
+                            <svg class="w-6 h-6 mr-3 group-hover:scale-110 transition-transform relative z-10" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
                             </svg>
-                            <div class="text-left">
-                                <div class="text-xs opacity-75">Download</div>
-                                <div class="text-lg font-semibold">Mobile App</div>
+                            <div class="text-left leading-none relative z-10">
+                                <span class="block text-[10px] opacity-80 font-bold uppercase tracking-widest mb-1">Coming soon</span>
+                                <span class="block font-bold">Mobile App</span>
                             </div>
-                            <div
-                                class="absolute -top-2 -right-2 bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
-                                Soon
-                            </div>
-                        </button>
-
+                        </a>
 
                         <a href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank"
-                            class="btn-secondary text-lg px-8 py-4 inline-flex items-center justify-center group">
-                            <svg class="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                            class="btn-secondary !py-5 !px-10 text-lg flex items-center justify-center group h-full">
+                            <svg class="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                             </svg>
-                            Join Waitlist
+                            <span class="font-bold">Join Waitlist</span>
                         </a>
                     </div>
 
                     <!-- Social proof -->
-                    <div class="mt-12 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-8">
+                    <div class="mt-16 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-10 border-t border-gray-100 pt-10">
                         <div class="flex items-center">
-                            <div class="flex -space-x-2">
-                                <img class="w-10 h-10 rounded-full border-2 border-white"
-                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                    alt="">
-                                <img class="w-10 h-10 rounded-full border-2 border-white"
-                                    src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                    alt="">
-                                <img class="w-10 h-10 rounded-full border-2 border-white"
-                                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                    alt="">
-                                <div
-                                    class="w-10 h-10 rounded-full border-2 border-white bg-primary-500 flex items-center justify-center">
-                                    <span class="text-xs font-medium text-white">+10K</span>
+                            <div class="flex -space-x-3">
+                                <img v-for="i in 3" :key="i" 
+                                     class="w-12 h-12 rounded-full border-4 border-white shadow-sm hover:scale-110 transition-transform cursor-pointer"
+                                     :src="`https://i.pravatar.cc/100?u=${i}`"
+                                     alt="User">
+                                <div class="w-12 h-12 rounded-full border-4 border-white bg-primary-500 flex items-center justify-center shadow-sm">
+                                    <span class="text-xs font-bold text-white">+10K</span>
                                 </div>
                             </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-accent-900">Join 10,000+ users</p>
-                                <p class="text-xs text-accent-600">Already saving with Genory</p>
+                            <div class="ml-5">
+                                <p class="text-sm font-bold text-accent-900 leading-none mb-1">Join 10,000+ users</p>
+                                <p class="text-xs text-accent-500">Already saving with Genory</p>
                             </div>
                         </div>
 
-                        <div class="flex items-center space-x-1">
-                            <div class="flex">
-                                <svg v-for="i in 5" :key="i" class="w-5 h-5 text-yellow-400" fill="currentColor"
-                                    viewBox="0 0 20 20">
-                                    <path
-                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        <div class="h-10 w-px bg-gray-200 hidden sm:block"></div>
+
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 mr-3">
+                                <svg v-for="i in 5" :key="i" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                 </svg>
                             </div>
-                            <span class="text-sm font-medium text-accent-900 ml-2">4.9/5 rating</span>
+                            <span class="text-sm font-bold text-accent-900">4.9/5 Success Rate</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Hero image/mockup -->
-                <div class="relative">
-                    <div class="relative z-10 max-w-7xl mx-auto">
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-auto lg:h-[600px]">
-                            <!-- Main Image (Left) -->
-                            <div class="lg:col-span-8 relative rounded-3xl overflow-hidden shadow-2xl animate-fade-in-up group" style="animation-delay: 0s;">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                <img src="/branding1.jpeg" alt="Genory App Main" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out" />
-                            </div>
-
-                            <!-- Side Images (Right) -->
-                            <div class="lg:col-span-4 flex flex-col gap-6 h-full">
-                                <div class="flex-1 relative rounded-3xl overflow-hidden shadow-xl animate-fade-in-right group" style="animation-delay: 0.2s;">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                    <img src="/branding2.jpeg" alt="Genory App Feature" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out" />
-                                </div>
-                                <div class="flex-1 relative rounded-3xl overflow-hidden shadow-xl animate-fade-in-right group" style="animation-delay: 0.4s;">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                    <img src="/branding3.jpeg" alt="Genory App Feature" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out" />
-                                </div>
-                            </div>
-                        </div>
+                <div class="relative lg:block hidden">
+                    <!-- Glassy Backdrop -->
+                    <div class="absolute inset-0 bg-white/10 backdrop-blur-3xl rounded-[3rem] border border-white/20 transform rotate-3 scale-110 -z-10 animate-float-slow"></div>
+                    
+                    <!-- Glowing Aura -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary-400/20 blur-[100px] rounded-full animate-pulse"></div>
+                    
+                    <div class="relative z-10 animate-float-medium">
+                        <img src="/hero_mockup.png" alt="Genory App Mockup" class="w-full h-auto drop-shadow-[0_35px_35px_rgba(46,115,255,0.25)] transform hover:scale-105 transition-transform duration-700" />
                     </div>
 
-
-
-                    <!-- Floating elements -->
-                    <div class="absolute -top-4 -left-4 w-16 h-16 bg-primary-500 rounded-full opacity-20 animate-pulse">
-                    </div>
-                    <div
-                        class="absolute -bottom-6 -right-6 w-24 h-24 bg-yellow-400 rounded-full opacity-20 animate-pulse animation-delay-1000">
-                    </div>
-                    <div
-                        class="absolute top-1/3 -right-8 w-12 h-12 bg-green-400 rounded-full opacity-20 animate-pulse animation-delay-2000">
-                    </div>
+                    <!-- Decorative rings -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] border border-primary-100/50 rounded-full -z-10 animate-pulse"></div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] border border-primary-50/50 rounded-full -z-10 animate-pulse animation-delay-1000"></div>
                 </div>
             </div>
         </div>
@@ -138,53 +103,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-
-const currentSlide = ref(0);
-const slides = [
-    {
-        headline: `Shop Smart. <span class="text-primary-500">Save More.</span> <span class="block">Earn Effortlessly.</span>`,
-        subheadline: `Genory connects Nigerians to fresh farm food through smart technology and eﬃcient logistics, reducing food costs and making quality food accessible every day, because no one should go hungry.`
-    },
-    {
-        headline: `<span class="text-primary-500">Buy Fresh.</span> <span class="text-red-500">Fast Delivery.</span> <span class="block text-primary-500">ENJOY upto 30% more.</span>`,
-        subheadline: `Say goodbye to long market trips. Genory brings the best farm produce to you the same day, while letting you enjoy up to 30% more in value. Fresh, fast, and designed for your convenience.`
-    },
-    {
-        headline: `NO hustle. NO worries. <span class="block">stay relax before <span class="text-blue-600">payday</span>.</span>`,
-        subheadline: `Genory makes it easy for employees to care for their families by delivering fresh, farm-quality food straight to their door—fast, reliable, and stress-free. We help companies keep employees energized and focused while families stay nourished, giving HR teams peace of mind knowing staff welfare is taken care of—all before payday.`
-    }
-];
-
-let intervalId: any;
-
-onMounted(() => {
-    intervalId = setInterval(() => {
-        currentSlide.value = (currentSlide.value + 1) % slides.length;
-    }, 5000);
-});
-
-onUnmounted(() => {
-    if (intervalId) clearInterval(intervalId);
-});
+// Static Hero Section
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: all 0.5s ease;
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     position: absolute;
     width: 100%;
 }
 
-.fade-enter-from {
+.slide-fade-enter-from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateX(30px);
 }
 
-.fade-leave-to {
+.slide-fade-leave-to {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateX(-30px);
 }
 </style>
 
