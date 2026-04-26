@@ -3,9 +3,12 @@
 </template>
 
 <script setup lang="ts">
-// Main app component
-</script>
+import { onMounted } from 'vue'
+import { useTheme } from '@/composables/useTheme'
 
-<style scoped>
-/* App-specific styles */
-</style>
+const { init } = useTheme()
+
+onMounted(() => {
+  init()
+})
+</script>
