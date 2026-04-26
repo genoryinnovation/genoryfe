@@ -1,157 +1,152 @@
 <template>
   <DefaultLayout>
-    <!-- Hero Section -->
+    <!-- Hero -->
     <HeroSection />
 
-    <!-- Trust Ribbon -->
+    <!-- Partner marquee -->
     <LogoCloud />
-    
-    <!-- Core Product: Marketplace -->
-    <FeatureSection
-      id="marketplace"
-      badge="The Platform"
-      title="Dynamic Marketplace for the Digital Age"
-      description="Genory provides a unified interface to browse, discover, and purchase fresh farm produce. We connect local producers with urban consumers through a high-performance logistics network."
-      image="/feat_marketplace_new.png"
-      :points="[
-        { title: 'Optimized Discovery', desc: 'Find exactly what you need with smart filters and AI-driven recommendations.' },
-        { title: 'Real-time Pricing', desc: 'Direct-from-farm prices that save you up to 30% on your monthly groceries.' }
-      ]"
-    >
-      <template #visual-overlay>
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600 font-bold">🛒</div>
-          <p class="text-sm font-black text-slate-900 leading-tight">Fast Checkout <br/><span class="text-xs text-slate-500 font-bold text-[10px] uppercase">Under 60 seconds</span></p>
-        </div>
-      </template>
-    </FeatureSection>
 
-    <!-- Logistics: Subscription -->
-    <FeatureSection
-      id="subscription"
-      badge="Smart Logistics"
-      title="Subscriptions that scale with your life"
-      description="Automate your grocery needs with tailored bundles. Whether for a family of four or a small business, our subscription engine ensures you never run out of essentials."
-      image="/feat_subscription_new.png"
-      :reverse="true"
-      :points="[
-        { title: 'Weekly Bundles', desc: 'Fresh produce delivered every Saturday morning, straight to your door.' },
-        { title: 'Flex-Planning', desc: 'Pause, skip, or modify your food items anytime via the mobile app.' }
-      ]"
-    />
+    <!-- Feature bento grid -->
+    <BentoFeatures />
 
-    <!-- Finance: HR & Wallets -->
-    <FeatureSection
-      id="infrastructure"
-      badge="Financial Infrastructure"
-      title="Integrated Wallets & HR Benefits"
-      description="Food security is financial security. We integrate with corporate payroll systems to provide Buy-Before-Payday access, alongside a secure digital wallet for rewards and tokens."
-      image="/feat_wallet_new.png"
-      :points="[
-        { title: 'Genory Pay', desc: 'Seamless payments using bank transfers, tokens, or gift cards.' },
-        { title: 'Pre-Salary Access', desc: 'Empowering employees with food access when they need it most.' }
-      ]"
-    >
-      <template #visual-overlay>
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 font-bold text-xs">₦</div>
-          <p class="text-sm font-black text-slate-900 leading-tight">Earn Cashback <br/><span class="text-xs text-slate-500 font-bold text-[10px] uppercase">Up to 10% back</span></p>
-        </div>
-      </template>
-    </FeatureSection>
+    <!-- How It Works -->
+    <section id="how-it-works" class="relative py-28 bg-slate-50/80 dark:bg-[#06090F] overflow-hidden transition-colors duration-300">
+      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/8 to-transparent transition-colors duration-300"></div>
 
-    <!-- How It Works (Clean Stripe Style) -->
-    <section id="how-it-works" class="py-40 bg-slate-50/50">
-      <div class="max-w-7xl mx-auto px-4">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-32">
-          <div class="lg:col-span-4">
-            <h2 class="text-4xl md:text-5xl font-black text-slate-900 mb-8 leading-tight tracking-tight">
-              From Farm to <br/> <span class="text-primary-600">Your Table.</span>
-            </h2>
-            <p class="text-xl text-slate-600 mb-12 font-medium">
-              We've abstracted away the complexity of logistics to bring you the freshest food in record time.
-            </p>
-            <a href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank" class="px-8 py-4 bg-slate-900 text-white rounded-xl font-black transition-all hover:bg-slate-800">
-              Start Now
-            </a>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+        <!-- Header -->
+        <div class="text-center mb-20" data-aos="fade-up">
+          <div class="inline-flex items-center px-4 py-2 rounded-full bg-emerald-50 dark:bg-white/5 border border-emerald-100 dark:border-white/10 text-emerald-700 dark:text-emerald-400 text-xs font-semibold mb-6 uppercase tracking-[0.15em] transition-colors duration-300">
+            The Process
           </div>
-          
-          <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div v-for="(step, i) in [
-              { title: 'Unified Data', desc: 'We sync directly with farm inventory to ensure accuracy.', icon: '📊' },
-              { title: 'Smart Batching', desc: 'Orders are batched intelligently to minimize carbon footprint.', icon: '📦' },
-              { title: 'Last-Mile Delivery', desc: 'Our rider network ensures delivery in under 12 hours.', icon: '⚡' },
-              { title: 'Reward Loop', desc: 'Earn points on every buy and redeem for future essentials.', icon: '🎁' }
-            ]" :key="i" class="p-8 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-500">
-              <div class="text-4xl mb-6">{{ step.icon }}</div>
-              <h3 class="text-xl font-black text-slate-900 mb-2">{{ step.title }}</h3>
-              <p class="text-slate-500 font-medium leading-relaxed">{{ step.desc }}</p>
+          <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-5 tracking-tight transition-colors duration-300">
+            From Farm to Your Table
+          </h2>
+          <p class="text-lg text-slate-500 max-w-xl mx-auto leading-relaxed">
+            We've abstracted the complexity of food logistics into a seamless four-step process.
+          </p>
+        </div>
+
+        <!-- Steps grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div
+            v-for="(step, i) in steps"
+            :key="i"
+            class="group bg-white dark:bg-[#0E1219] border border-slate-100 dark:border-white/[0.07] rounded-3xl p-8 hover:border-slate-200 dark:hover:border-white/[0.14] hover:shadow-lg dark:hover:shadow-none transition-all duration-500"
+            data-aos="fade-up"
+            :data-aos-delay="i * 75"
+          >
+            <!-- Step number -->
+            <div class="text-6xl font-black text-slate-900/[0.04] dark:text-white/[0.04] mb-4 leading-none select-none transition-colors duration-300">
+              {{ String(i + 1).padStart(2, '0') }}
             </div>
+            <!-- Icon -->
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center mb-5 transition-colors"
+                 :class="step.iconBg">
+              <span class="text-xl">{{ step.icon }}</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-300">{{ step.title }}</h3>
+            <p class="text-slate-500 text-sm leading-relaxed">{{ step.desc }}</p>
           </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="text-center mt-14" data-aos="fade-up">
+          <a href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank"
+             class="inline-flex items-center gap-2.5 px-8 py-4 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 text-slate-900 dark:text-white rounded-xl font-semibold transition-all">
+            Get Early Access
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+          </a>
         </div>
       </div>
     </section>
-    
-    <!-- Community & Trust (Minimalist) -->
-    <section class="py-40 bg-white">
-      <div class="max-w-7xl mx-auto px-4 text-center">
-        <h2 class="text-4xl md:text-6xl font-black text-slate-900 mb-24 tracking-tight">
-          Tested at <span class="text-primary-600">Scale.</span>
-        </h2>
-        
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-32">
-          <div v-for="(stat, i) in [
-            { label: 'Waitlisted Users', value: '10,000+' },
-            { label: 'Eco-Impact', value: '₦50M+' },
-            { label: 'City Hubs', value: '15+' },
-            { label: 'Uptime', value: '99.9%' }
-          ]" :key="stat.label" class="text-center group" data-aos="fade-up" :data-aos-delay="i * 100">
-            <div class="text-4xl md:text-6xl font-black text-slate-900 mb-4 group-hover:text-primary-600 transition-colors">{{ stat.value }}</div>
-            <div class="text-xs font-black text-slate-400 uppercase tracking-widest">{{ stat.label }}</div>
+
+    <!-- Social Proof: Stats + Testimonials -->
+    <section class="relative py-28 bg-white dark:bg-[#080B14] overflow-hidden transition-colors duration-300">
+      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-100 dark:via-white/8 to-transparent transition-colors duration-300"></div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Stats header -->
+        <div class="text-center mb-16" data-aos="fade-up">
+          <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-5 tracking-tight transition-colors duration-300">
+            Tested at <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-emerald-600 dark:from-primary-400 dark:to-emerald-400">Scale.</span>
+          </h2>
+        </div>
+
+        <!-- Stats grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+          <div
+            v-for="(stat, i) in socialStats"
+            :key="stat.label"
+            class="bg-slate-50 dark:bg-[#0E1219] border border-slate-100 dark:border-white/[0.07] rounded-3xl p-8 text-center group hover:border-slate-200 dark:hover:border-white/[0.12] hover:shadow-md dark:hover:shadow-none transition-all duration-500"
+            data-aos="fade-up"
+            :data-aos-delay="i * 75"
+          >
+            <div class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors duration-300">{{ stat.value }}</div>
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-[0.15em]">{{ stat.label }}</div>
           </div>
         </div>
 
         <!-- Testimonials -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div v-for="(t, i) in [
-            { name: 'Adunni Okafor', text: 'Genory has saved me so much time. The fresh bundles are exactly what my family needs.', img: '21' },
-            { name: 'Chike Okwu', text: 'The ease of buying directly from farms is incredible. Delivery is always on point.', img: '22' },
-            { name: 'Folake Adebayo', text: 'HR integration is a lifesaver. stock up before payday changed everything.', img: '23' }
-          ]" :key="i" class="p-10 bg-slate-50 rounded-[3rem] text-left hover:bg-white hover:shadow-2xl transition-all duration-500 border border-transparent hover:border-slate-100">
-            <div class="flex items-center mb-8">
-              <img :src="`https://i.pravatar.cc/100?u=${t.img}`" class="w-12 h-12 rounded-full" />
-              <div class="ml-4">
-                <h4 class="font-black text-slate-900 leading-none">{{ t.name }}</h4>
-                <p class="text-xs text-slate-400 font-bold mt-1 uppercase">Verified Customer</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div
+            v-for="(t, i) in testimonials"
+            :key="i"
+            class="bg-slate-50 dark:bg-[#0E1219] border border-slate-100 dark:border-white/[0.07] rounded-3xl p-8 hover:border-slate-200 dark:hover:border-white/[0.12] hover:shadow-md dark:hover:shadow-none transition-all duration-500"
+            data-aos="fade-up"
+            :data-aos-delay="i * 75"
+          >
+            <!-- Stars -->
+            <div class="flex gap-1 mb-6">
+              <svg v-for="s in 5" :key="s" class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <p class="text-slate-600 dark:text-slate-400 leading-relaxed mb-8 text-[15px] transition-colors duration-300">"{{ t.text }}"</p>
+            <div class="flex items-center gap-3">
+              <img :src="`https://i.pravatar.cc/80?u=${t.img}`" class="w-10 h-10 rounded-full object-cover" />
+              <div>
+                <h4 class="font-semibold text-slate-900 dark:text-white text-sm transition-colors duration-300">{{ t.name }}</h4>
+                <p class="text-xs text-slate-400 mt-0.5">Verified Customer</p>
               </div>
             </div>
-            <p class="text-lg text-slate-700 font-medium leading-relaxed italic">"{{ t.text }}"</p>
           </div>
         </div>
       </div>
     </section>
-    
-    <!-- Download App Section -->
+
+    <!-- Download App -->
     <DownloadSection />
-    
-    <!-- Final CTA Footer -->
-    <section id="contact" class="py-40 bg-slate-900 relative overflow-hidden">
-      <div class="absolute inset-0 bg-grid-white opacity-5"></div>
-      <div class="max-w-5xl mx-auto px-4 relative z-10 text-center">
-        <h2 class="text-5xl md:text-[5rem] font-black text-white mb-10 leading-[0.9] tracking-tight">
-          Build your <span class="text-primary-400">Kitchen's Future.</span>
+
+    <!-- Final CTA -->
+    <section id="contact" class="relative py-28 bg-slate-50 dark:bg-[#06090F] overflow-hidden transition-colors duration-300">
+      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/8 to-transparent transition-colors duration-300"></div>
+
+      <!-- Glow -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-primary-100 dark:bg-primary-700/15 rounded-full blur-[120px] pointer-events-none transition-colors duration-300"></div>
+
+      <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+        <div class="inline-flex items-center px-4 py-2 rounded-full bg-primary-50 dark:bg-white/5 border border-primary-100 dark:border-white/10 text-primary-600 dark:text-primary-400 text-xs font-semibold mb-8 uppercase tracking-[0.15em] transition-colors duration-300" data-aos="fade-up">
+          Get Started Today
+        </div>
+        <h2 class="text-5xl md:text-6xl font-bold text-slate-900 dark:text-white mb-8 leading-[1.05] tracking-tight transition-colors duration-300" data-aos="fade-up" data-aos-delay="50">
+          Build your Kitchen's <br/>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 via-sky-500 to-emerald-600 dark:from-primary-400 dark:via-sky-300 dark:to-emerald-400">Future.</span>
         </h2>
-        <p class="text-xl text-slate-400 mb-16 max-w-2xl mx-auto font-medium leading-relaxed">
+        <p class="text-lg text-slate-500 mb-12 max-w-xl mx-auto leading-relaxed" data-aos="fade-up" data-aos-delay="100">
           Join Africa's first smart food ecosystem. Freshness delivered, infrastructure secured.
         </p>
-        
-        <div class="flex flex-col sm:flex-row gap-6 justify-center">
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center" data-aos="fade-up" data-aos-delay="150">
           <a href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank"
-             class="px-12 py-5 bg-primary-600 text-white rounded-2xl font-black text-xl hover:bg-primary-500 transition-all shadow-2xl shadow-primary-600/20">
+             class="px-10 py-4 bg-primary-600 hover:bg-primary-500 text-white rounded-xl font-semibold text-lg transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-primary-600/25">
             Join Waitlist
           </a>
-          <a href="mailto:hello@genory.com" 
-             class="px-12 py-5 bg-white/10 text-white border border-white/20 rounded-2xl font-black text-xl hover:bg-white/20 transition-all backdrop-blur-md">
+          <a href="mailto:hello@genory.com"
+             class="px-10 py-4 bg-white hover:bg-slate-50 dark:bg-white/5 dark:hover:bg-white/10 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 rounded-xl font-semibold text-lg transition-all">
             Contact Sales
           </a>
         </div>
@@ -168,14 +163,35 @@ import 'aos/dist/aos.css'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import HeroSection from '@/components/HeroSection.vue'
 import LogoCloud from '@/components/LogoCloud.vue'
-import FeatureSection from '@/components/FeatureSection.vue'
+import BentoFeatures from '@/components/BentoFeatures.vue'
 import DownloadSection from '@/components/DownloadSection.vue'
+
+const steps = [
+  { title: 'Unified Data', desc: 'We sync directly with farm inventory in real time to guarantee freshness and accuracy.', icon: '📊', iconBg: 'bg-primary-100 dark:bg-primary-500/10' },
+  { title: 'Smart Batching', desc: 'Orders are intelligently grouped to minimize delivery time and carbon footprint.', icon: '📦', iconBg: 'bg-amber-100 dark:bg-amber-500/10' },
+  { title: 'Last-Mile Delivery', desc: 'Our verified rider network ensures delivery from farm to door in under 12 hours.', icon: '⚡', iconBg: 'bg-sky-100 dark:bg-sky-500/10' },
+  { title: 'Reward Loop', desc: 'Earn points on every purchase. Redeem them for future orders, cashback, or gifts.', icon: '🎁', iconBg: 'bg-emerald-100 dark:bg-emerald-500/10' },
+]
+
+const socialStats = [
+  { label: 'Waitlisted Users', value: '10,000+' },
+  { label: 'Eco Impact', value: '₦50M+' },
+  { label: 'City Hubs', value: '15+' },
+  { label: 'Uptime', value: '99.9%' },
+]
+
+const testimonials = [
+  { name: 'Adunni Okafor', text: 'Genory has saved me so much time. The fresh bundles are exactly what my family needs every week.', img: '21' },
+  { name: 'Chike Okwu', text: 'The ease of buying directly from farms is incredible. Delivery is always on point.', img: '22' },
+  { name: 'Folake Adebayo', text: 'HR integration is a lifesaver. Stock up before payday completely changed how I manage groceries.', img: '23' },
+]
 
 onMounted(() => {
   AOS.init({
-    duration: 1000,
+    duration: 800,
     once: true,
-    easing: 'ease-out-cubic'
+    easing: 'ease-out-cubic',
+    offset: 60,
   })
 })
 </script>
