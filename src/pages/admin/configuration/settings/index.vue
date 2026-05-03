@@ -72,6 +72,9 @@
                     <template v-else-if="config.type === 'json'">
                          <pre class="text-xs bg-slate-100 p-2 rounded overflow-x-auto">{{ JSON.stringify(config.value, null, 2) }}</pre>
                     </template>
+                    <template v-else-if="config.type === 'html'">
+                         <span class="text-xs text-slate-500 font-mono italic truncate block max-w-xs">HTML Content ({{ config.value?.length || 0 }} chars)</span>
+                    </template>
                     <template v-else>
                         <span class="text-sm text-slate-700 break-words">{{ config.value }}</span>
                     </template>
@@ -98,7 +101,7 @@
 
     <!-- Modal -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold text-slate-900">{{ isEditing ? 'Edit Setting' : 'Add New Setting' }}</h3>
             
             <div class="space-y-4">
@@ -122,6 +125,7 @@
                        <option value="number">Number</option>
                        <option value="boolean">Boolean</option>
                        <option value="json">JSON</option>
+                       <option value="html">HTML (Rich Text)</option>
                    </select>
                 </div>
 
@@ -138,6 +142,11 @@
                     </template>
                     <template v-else-if="form.type === 'json'">
                          <textarea v-model="jsonStringValue" rows="4" class="w-full px-3 py-2 border rounded-xl font-mono text-xs" placeholder='{"key": "value"}'></textarea>
+                    </template>
+                    <template v-else-if="form.type === 'html'">
+                        <div class="h-80 mb-16 border rounded-xl overflow-hidden">
+                             <QuillEditor v-model:content="form.value" contentType="html" theme="snow" toolbar="full" />
+                        </div>
                     </template>
                     <template v-else>
                          <input v-model="form.value" type="text" class="w-full px-3 py-2 border rounded-xl" />
@@ -167,6 +176,8 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { SystemConfigService, type SystemConfig, type UpsertSystemConfigDto } from '@/services/admin/system-config.service';
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 const configs = ref<SystemConfig[]>([]);
 const loading = ref(true);
