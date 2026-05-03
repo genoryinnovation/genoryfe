@@ -5,7 +5,7 @@ export interface SystemConfig {
   key: string;
   value: any;
   group: string;
-  type: 'string' | 'number' | 'boolean' | 'json';
+  type: 'string' | 'number' | 'boolean' | 'json' | 'html';
   description?: string;
   isPublic: boolean;
   createdAt: string;
@@ -16,7 +16,7 @@ export interface UpsertSystemConfigDto {
   key: string;
   value: any;
   group: string;
-  type?: 'string' | 'number' | 'boolean' | 'json';
+  type?: 'string' | 'number' | 'boolean' | 'json' | 'html';
   description?: string;
   isPublic?: boolean;
 }
