@@ -191,6 +191,26 @@
             <h3 class="text-2xl font-black text-slate-900 italic tracking-tight">Security Clearance</h3>
             <p v-if="!requireOtp" class="text-slate-500 text-sm mt-2">Enter your company approval PIN to continue.</p>
             <p v-else class="text-slate-500 text-sm mt-2">Enter the verification code sent to your email.</p>
+
+            <div v-if="activeAction === 'approve' && planType === 'prepaid'" class="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2 text-left">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Current Balance</span>
+                <span :class="['text-xs font-black', walletBalance < request.amount ? 'text-rose-600' : 'text-slate-900']">
+                  ₦{{ walletBalance.toLocaleString() }}
+                </span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Required Amount</span>
+                <span class="text-xs font-black text-slate-900">₦{{ request.amount.toLocaleString() }}</span>
+              </div>
+              
+              <div v-if="walletBalance < request.amount" class="pt-2 flex items-start space-x-2 text-rose-600">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <p class="text-[10px] font-black leading-tight uppercase">Insufficient Funds</p>
+              </div>
+            </div>
             
             <div v-if="processError" class="mt-4 p-3 bg-rose-50 border border-rose-100 rounded-2xl text-rose-600 text-xs font-bold animate-in fade-in slide-in-from-top-1">
               {{ processError }}
@@ -226,9 +246,8 @@
 
             <div class="mt-10 flex space-x-4">
                <button @click="showPinModal = false" class="flex-1 py-4 text-slate-400 font-bold hover:text-slate-600 transition-colors">Cancel</button>
-               <button 
                 @click="submitDecision" 
-                :disabled="(!requireOtp && pinArray.join('').length < 4) || (requireOtp && otp.length < 6) || processing"
+                :disabled="(!requireOtp && pinArray.join('').length < 4) || (requireOtp && otp.length < 6) || processing || (activeAction === 'approve' && planType === 'prepaid' && walletBalance < request.amount)"
                 class="flex-1 py-4 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800 disabled:opacity-50 transition-all shadow-xl shadow-slate-900/20"
                >
                  {{ processing ? '...' : (requireOtp ? 'VERIFY' : 'CONFIRM') }}
@@ -251,10 +270,11 @@ const request = ref<any>(null);
 const loading = ref(true);
 const processing = ref(false);
 const approvalNotes = ref('');
-const processError = ref('');
 const processSuccess = ref('');
 const requireOtp = ref(false);
 const otp = ref('');
+const walletBalance = ref(0);
+const planType = ref('prepaid');
 
 // PIN Logic
 const showPinModal = ref(false);
@@ -274,8 +294,10 @@ const statusClass = computed(() => {
 const fetchRequestDetails = async () => {
   try {
     loading.value = true;
-    const data = await PartnerPortalService.getOrderRequest(route.params.id as string);
-    request.value = data;
+    const res = await PartnerPortalService.getOrderRequest(route.params.id as string);
+    request.value = res.data;
+    walletBalance.value = res.walletBalance || 0;
+    planType.value = res.planType || 'prepaid';
   } catch (error) {
     console.error('Failed to fetch order request', error);
     alert('Failed to load order request details.');
