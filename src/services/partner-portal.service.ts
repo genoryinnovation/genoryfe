@@ -152,12 +152,12 @@ export class PartnerPortalService {
    */
   static async getOrderRequests(params: any = { page: 1, limit: 10 }) {
     const response = await api.get('/admin/partner-portal/orders', { params });
-    return response.data as PaginatedResponse<any>;
+    return response.data as PaginatedResponse<any> & { walletBalance: number, planType: 'prepaid' | 'postpaid' };
   }
 
   static async getOrderRequest(requestId: string) {
     const response = await api.get(`/admin/partner-portal/orders/${requestId}`);
-    return response.data.data;
+    return response.data as { data: any, walletBalance: number, planType: 'prepaid' | 'postpaid' };
   }
 
   static async processOrder(data: {

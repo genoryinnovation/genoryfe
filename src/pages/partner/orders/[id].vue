@@ -246,6 +246,7 @@
 
             <div class="mt-10 flex space-x-4">
                <button @click="showPinModal = false" class="flex-1 py-4 text-slate-400 font-bold hover:text-slate-600 transition-colors">Cancel</button>
+               <button 
                 @click="submitDecision" 
                 :disabled="(!requireOtp && pinArray.join('').length < 4) || (requireOtp && otp.length < 6) || processing || (activeAction === 'approve' && planType === 'prepaid' && walletBalance < request.amount)"
                 class="flex-1 py-4 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800 disabled:opacity-50 transition-all shadow-xl shadow-slate-900/20"
@@ -270,6 +271,7 @@ const request = ref<any>(null);
 const loading = ref(true);
 const processing = ref(false);
 const approvalNotes = ref('');
+const processError = ref('');
 const processSuccess = ref('');
 const requireOtp = ref(false);
 const otp = ref('');

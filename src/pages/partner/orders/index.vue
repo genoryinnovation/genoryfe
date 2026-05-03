@@ -255,6 +255,7 @@ const selectedRequest = ref<any>(null);
 const pin = ref('');
 const otp = ref('');
 const notes = ref('');
+const processError = ref('');
 const processSuccess = ref('');
 const requireOtp = ref(false);
 const walletBalance = ref(0);
