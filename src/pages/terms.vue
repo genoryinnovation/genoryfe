@@ -1,5 +1,5 @@
 <template>
-  <DefaultLayout>
+  <DefaultLayout simpleFooter>
     <section class="relative py-28 bg-white dark:bg-[#080B14] overflow-hidden transition-colors duration-300">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center mb-16" data-aos="fade-up">

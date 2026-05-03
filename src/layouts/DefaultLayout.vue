@@ -111,8 +111,8 @@
 
     <!-- Footer (always dark) -->
     <footer class="bg-slate-900 dark:bg-[#050709] border-t border-white/5 text-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" :class="simpleFooter ? 'py-10' : 'py-20'">
+        <div v-if="!simpleFooter" class="grid grid-cols-1 lg:grid-cols-12 gap-12">
           <!-- Brand -->
           <div class="lg:col-span-5">
             <div class="flex items-center space-x-3 mb-6">
@@ -142,7 +142,7 @@
               </a>
             </div>
           </div>
-
+ 
           <!-- Product Links -->
           <div class="lg:col-span-2">
             <h3 class="text-white font-semibold mb-5 text-sm uppercase tracking-widest">Product</h3>
@@ -153,7 +153,7 @@
               <li><router-link to="/app/partner/onboarding" class="text-slate-500 hover:text-slate-300 transition-colors text-sm">Become a Partner</router-link></li>
             </ul>
           </div>
-
+ 
           <!-- Company Links -->
           <div class="lg:col-span-2">
             <h3 class="text-white font-semibold mb-5 text-sm uppercase tracking-widest">Company</h3>
@@ -164,7 +164,7 @@
               <li><a href="/terms" class="text-slate-500 hover:text-slate-300 transition-colors text-sm">Terms & Conditions</a></li>
             </ul>
           </div>
-
+ 
           <!-- Newsletter -->
           <div class="lg:col-span-3">
             <h3 class="text-white font-semibold mb-5 text-sm uppercase tracking-widest">Stay Updated</h3>
@@ -176,9 +176,9 @@
             </div>
           </div>
         </div>
-
+ 
         <!-- Bottom bar -->
-        <div class="border-t border-white/5 mt-16 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="border-t border-white/5 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4" :class="!simpleFooter && 'mt-16'">
           <p class="text-slate-600 text-sm">
             © {{ currentYear }} Genory. All rights reserved. Made with love in Nigeria.
           </p>
@@ -196,6 +196,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useTheme } from '@/composables/useTheme'
+
+defineProps<{
+  simpleFooter?: boolean
+}>()
 
 const mobileMenuOpen = ref(false)
 const isScrolled = ref(false)
