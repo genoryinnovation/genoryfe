@@ -149,6 +149,26 @@
             {{ processSuccess }}
           </div>
 
+          <div v-if="processAction === 'approve' && planType === 'prepaid'" class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Wallet Balance</span>
+              <span :class="['font-bold', walletBalance < selectedRequest.amount ? 'text-rose-600' : 'text-slate-900']">
+                ₦{{ walletBalance.toLocaleString() }}
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Order Amount</span>
+              <span class="font-bold text-slate-900">₦{{ selectedRequest.amount.toLocaleString() }}</span>
+            </div>
+            
+            <div v-if="walletBalance < selectedRequest.amount" class="pt-2 flex items-start space-x-2 text-rose-600">
+              <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <p class="text-xs font-bold leading-tight">Insufficient balance. Please fund your wallet to approve this order.</p>
+            </div>
+          </div>
+
           <p class="text-slate-600 text-sm">
             {{ processAction === 'approve' 
               ? 'Enter the company approval PIN to confirm this payment.' 
@@ -199,10 +219,11 @@
             </button>
             <button 
               @click="handleProcess"
-              :disabled="loading"
+              :disabled="loading || (processAction === 'approve' && planType === 'prepaid' && walletBalance < selectedRequest.amount)"
               :class="[
                 'flex-1 py-3 text-white font-bold rounded-xl transition-all',
-                processAction === 'approve' ? 'bg-primary-600 hover:bg-primary-700' : 'bg-rose-600 hover:bg-rose-700'
+                processAction === 'approve' ? 'bg-primary-600 hover:bg-primary-700' : 'bg-rose-600 hover:bg-rose-700',
+                (processAction === 'approve' && planType === 'prepaid' && walletBalance < selectedRequest.amount) ? 'opacity-50 cursor-not-allowed grayscale' : ''
               ]"
             >
               {{ loading ? 'Processing...' : (processAction === 'approve' ? 'Confirm Approval' : 'Confirm Rejection') }}
@@ -237,6 +258,8 @@ const notes = ref('');
 const processError = ref('');
 const processSuccess = ref('');
 const requireOtp = ref(false);
+const walletBalance = ref(0);
+const planType = ref('prepaid');
 
 // Pagination & Search
 const searchQuery = ref('');
@@ -249,6 +272,8 @@ const fetchRequests = async (page = 1) => {
     const res = await PartnerPortalService.getOrderRequests({ page, limit: 10, search: searchQuery.value });
     requests.value = res.data;
     meta.value = res.meta;
+    walletBalance.value = res.walletBalance || 0;
+    planType.value = res.planType || 'prepaid';
     
     // Update simple stats from the current list (limited but gives immediate feedback)
     const pending = requests.value.filter(r => r.status === 'pending').length;
