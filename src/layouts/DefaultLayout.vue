@@ -160,8 +160,8 @@
             <ul class="space-y-3">
               <li><a href="#" class="text-slate-500 hover:text-slate-300 transition-colors text-sm">About Us</a></li>
               <li><a href="#" class="text-slate-500 hover:text-slate-300 transition-colors text-sm">Contact</a></li>
-              <li><a href="#" class="text-slate-500 hover:text-slate-300 transition-colors text-sm">Privacy Policy</a></li>
-              <li><a href="#" class="text-slate-500 hover:text-slate-300 transition-colors text-sm">Legal</a></li>
+              <li><a href="/privacy" class="text-slate-500 hover:text-slate-300 transition-colors text-sm">Privacy Policy</a></li>
+              <li><a href="/terms" class="text-slate-500 hover:text-slate-300 transition-colors text-sm">Terms & Conditions</a></li>
             </ul>
           </div>
 
@@ -183,8 +183,8 @@
             © {{ currentYear }} Genory. All rights reserved. Made with love in Nigeria.
           </p>
           <div class="flex gap-6">
-            <a href="#" class="text-slate-600 hover:text-slate-400 text-sm transition-colors">Terms</a>
-            <a href="#" class="text-slate-600 hover:text-slate-400 text-sm transition-colors">Privacy</a>
+            <a href="/terms" class="text-slate-600 hover:text-slate-400 text-sm transition-colors">Terms</a>
+            <a href="/privacy" class="text-slate-600 hover:text-slate-400 text-sm transition-colors">Privacy</a>
             <a href="#" class="text-slate-600 hover:text-slate-400 text-sm transition-colors">Cookies</a>
           </div>
         </div>
