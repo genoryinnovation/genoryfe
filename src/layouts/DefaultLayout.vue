@@ -7,26 +7,54 @@
            : 'bg-transparent py-5']">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-12">
-          <!-- Logo -->
-          <div class="flex items-center">
+          <!-- Logo + Audience Switcher -->
+          <div class="flex items-center gap-4">
             <router-link to="/" class="flex items-center space-x-3 group">
               <div class="w-10 h-10 rounded-full bg-white dark:bg-white/5 border border-slate-100 dark:border-white/10 flex items-center justify-center overflow-hidden shadow-sm group-hover:scale-105 transition-all">
                 <img src="/logo.png" alt="Genory Logo" class="w-[65%] h-[65%] object-contain" />
               </div>
               <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors">Genory</span>
             </router-link>
+
+            <!-- Audience Switcher — visible on main landing pages -->
+            <div v-if="isLandingPage" class="hidden sm:flex items-center bg-slate-100 dark:bg-white/[0.06] border border-slate-200/60 dark:border-white/[0.08] rounded-full p-1 gap-0.5">
+              <router-link to="/"
+                class="px-3.5 py-1 rounded-full text-xs font-semibold tracking-wide transition-all duration-200"
+                :class="!isPartnerPage
+                  ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'">
+                For Customers
+              </router-link>
+              <router-link to="/partners"
+                class="px-3.5 py-1 rounded-full text-xs font-semibold tracking-wide transition-all duration-200"
+                :class="isPartnerPage
+                  ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'">
+                For Partners
+              </router-link>
+            </div>
           </div>
 
           <!-- Desktop Navigation -->
           <div class="hidden md:flex items-center space-x-1">
-            <a href="#features"
-               class="px-4 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium transition-all text-sm">Features</a>
-            <a href="#how-it-works"
-               class="px-4 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium transition-all text-sm">How It Works</a>
-            <a href="#download"
-               class="px-4 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium transition-all text-sm">Download</a>
-            <router-link to="/app/partner/onboarding"
-               class="px-4 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium transition-all text-sm">Partners</router-link>
+            <!-- Customer page links -->
+            <template v-if="!isPartnerPage">
+              <a href="#features"
+                 class="px-4 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium transition-all text-sm">Features</a>
+              <a href="#how-it-works"
+                 class="px-4 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium transition-all text-sm">How It Works</a>
+              <a href="#download"
+                 class="px-4 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium transition-all text-sm">Download</a>
+            </template>
+            <!-- Partner page links -->
+            <template v-else>
+              <a href="#drivers"
+                 class="px-4 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium transition-all text-sm">Drivers</a>
+              <a href="#business"
+                 class="px-4 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium transition-all text-sm">Business</a>
+              <a href="#earnings"
+                 class="px-4 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium transition-all text-sm">Earnings</a>
+            </template>
 
             <div class="w-px h-5 bg-slate-200 dark:bg-white/10 mx-3"></div>
 
@@ -36,19 +64,24 @@
               class="p-2 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
               :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
             >
-              <!-- Moon: shown in light mode to switch to dark -->
               <svg v-if="!isDark" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
               </svg>
-              <!-- Sun: shown in dark mode to switch to light -->
               <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
               </svg>
             </button>
 
-            <a href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank"
+            <!-- CTA adapts to audience -->
+            <a v-if="!isPartnerPage"
+               href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank"
                class="px-5 py-2.5 bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold rounded-full transition-all hover:shadow-lg hover:shadow-primary-600/25 ml-1">
               Join Waitlist
+            </a>
+            <a v-else
+               href="#partner-cta"
+               class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-full transition-all hover:shadow-lg hover:shadow-emerald-600/25 ml-1">
+              Apply as Partner
             </a>
           </div>
 
@@ -90,15 +123,47 @@
       >
         <div v-if="mobileMenuOpen" class="md:hidden bg-white/95 dark:bg-[#0E1219]/95 backdrop-blur-xl border border-slate-100 dark:border-white/8 mt-3 mx-4 rounded-2xl shadow-2xl overflow-hidden">
           <div class="px-2 pt-2 pb-5 space-y-1">
-            <a @click="mobileMenuOpen = false" href="#features" class="block px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-colors">Features</a>
-            <a @click="mobileMenuOpen = false" href="#how-it-works" class="block px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-colors">How It Works</a>
-            <a @click="mobileMenuOpen = false" href="#download" class="block px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-colors">Download App</a>
-            <div class="pt-3 px-4">
-              <a href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank"
-                 class="w-full text-center block px-5 py-3 bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold rounded-xl transition-all">
-                Join Waitlist
-              </a>
+            <!-- Audience switcher (mobile) -->
+            <div v-if="isLandingPage" class="flex items-center bg-slate-100 dark:bg-white/[0.06] border border-slate-200/60 dark:border-white/[0.08] rounded-full p-1 gap-0.5 mx-2 mb-3">
+              <router-link to="/" @click="mobileMenuOpen = false"
+                class="flex-1 text-center px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200"
+                :class="!isPartnerPage
+                  ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400'">
+                For Customers
+              </router-link>
+              <router-link to="/partners" @click="mobileMenuOpen = false"
+                class="flex-1 text-center px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200"
+                :class="isPartnerPage
+                  ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400'">
+                For Partners
+              </router-link>
             </div>
+            <!-- Customer links -->
+            <template v-if="!isPartnerPage">
+              <a @click="mobileMenuOpen = false" href="#features" class="block px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-colors">Features</a>
+              <a @click="mobileMenuOpen = false" href="#how-it-works" class="block px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-colors">How It Works</a>
+              <a @click="mobileMenuOpen = false" href="#download" class="block px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-colors">Download App</a>
+              <div class="pt-3 px-4">
+                <a href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank"
+                   class="w-full text-center block px-5 py-3 bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold rounded-xl transition-all">
+                  Join Waitlist
+                </a>
+              </div>
+            </template>
+            <!-- Partner links -->
+            <template v-else>
+              <a @click="mobileMenuOpen = false" href="#drivers" class="block px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-colors">Drivers</a>
+              <a @click="mobileMenuOpen = false" href="#business" class="block px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-colors">Business</a>
+              <a @click="mobileMenuOpen = false" href="#earnings" class="block px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-colors">Earnings</a>
+              <div class="pt-3 px-4">
+                <a href="#partner-cta"
+                   class="w-full text-center block px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-xl transition-all">
+                  Apply as Partner
+                </a>
+              </div>
+            </template>
           </div>
         </div>
       </transition>
@@ -195,11 +260,16 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
 
 defineProps<{
   simpleFooter?: boolean
 }>()
+
+const route = useRoute()
+const isPartnerPage = computed(() => route.path === '/partners')
+const isLandingPage = computed(() => ['/', '/partners'].includes(route.path))
 
 const mobileMenuOpen = ref(false)
 const isScrolled = ref(false)
