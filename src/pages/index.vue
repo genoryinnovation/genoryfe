@@ -107,7 +107,7 @@
             </div>
             <p class="text-slate-600 dark:text-slate-400 leading-relaxed mb-8 text-[15px] transition-colors duration-300">"{{ t.text }}"</p>
             <div class="flex items-center gap-3">
-              <img :src="`https://i.pravatar.cc/80?u=${t.img}`" class="w-10 h-10 rounded-full object-cover" />
+              <img :src="`/assets/testimonials/${t.img}.png`" class="w-10 h-10 rounded-full object-cover" />
               <div>
                 <h4 class="font-semibold text-slate-900 dark:text-white text-sm transition-colors duration-300">{{ t.name }}</h4>
                 <p class="text-xs text-slate-400 mt-0.5">Verified Customer</p>
@@ -181,9 +181,9 @@ const socialStats = [
 ]
 
 const testimonials = [
-  { name: 'Adunni Okafor', text: 'Genory has saved me so much time. The fresh bundles are exactly what my family needs every week.', img: '21' },
-  { name: 'Chike Okwu', text: 'The ease of buying directly from farms is incredible. Delivery is always on point.', img: '22' },
-  { name: 'Folake Adebayo', text: 'HR integration is a lifesaver. Stock up before payday completely changed how I manage groceries.', img: '23' },
+  { name: 'Adunni Okafor', text: 'Genory has saved me so much time. The fresh bundles are exactly what my family needs every week.', img: '1' },
+  { name: 'Chike Okwu', text: 'The ease of buying directly from farms is incredible. Delivery is always on point.', img: '2' },
+  { name: 'Folake Adebayo', text: 'HR integration is a lifesaver. Stock up before payday completely changed how I manage groceries.', img: '3' },
 ]
 
 onMounted(() => {
