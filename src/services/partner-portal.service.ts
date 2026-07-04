@@ -15,6 +15,10 @@ export interface Employee {
   firstName: string;
   lastName: string;
   email: string;
+  phoneNumber?: {
+    countryCode: string;
+    number: string;
+  };
   hrEmployeeId?: string;
   membership?: {
     status: 'active' | 'suspended';
