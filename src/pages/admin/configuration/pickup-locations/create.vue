@@ -228,6 +228,96 @@
         </div>
       </section>
 
+      <!-- Delivery Zones -->
+      <section>
+        <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Delivery Zones</h2>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Fee formula: (distance × cost/km) <span class="font-semibold text-slate-700">× multiplier</span> + (weight × cost/g). No matching zone → multiplier 1.0.
+            </p>
+          </div>
+          <button
+            type="button"
+            @click="addZone"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 hover:bg-primary-100 text-primary-700 text-sm font-medium rounded-lg transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Add Zone
+          </button>
+        </div>
+
+        <div v-if="form.zones.length === 0" class="flex flex-col items-center py-8 text-center bg-slate-50 border border-dashed border-slate-200 rounded-xl">
+          <svg class="w-8 h-8 text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          </svg>
+          <p class="text-sm text-slate-500">No delivery zones configured.</p>
+          <p class="text-xs text-slate-400 mt-1">All orders from this location will use a multiplier of 1.0.</p>
+        </div>
+
+        <div v-for="(zone, i) in form.zones" :key="i" class="border border-slate-200 rounded-xl p-5 mb-4 bg-slate-50/50">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm font-bold text-slate-700 uppercase tracking-wide">Zone {{ i + 1 }}</span>
+            <button
+              type="button"
+              @click="removeZone(i)"
+              class="text-rose-400 hover:text-rose-600 text-xs font-medium transition-colors"
+            >
+              Remove
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Zone Name</label>
+              <input
+                v-model="zone.name"
+                type="text"
+                placeholder="e.g. IKEJA DIVISION"
+                class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Multiplier</label>
+              <input
+                v-model.number="zone.multiplier"
+                type="number"
+                min="0.1"
+                step="0.01"
+                placeholder="e.g. 1.25"
+                class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-sm"
+              />
+              <p class="mt-1 text-xs text-slate-500">× base distance cost. 1.0 = no change. 1.25 = +25%.</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Areas / Cities</label>
+            <div class="flex flex-wrap gap-2 p-3 bg-white border border-slate-200 rounded-xl min-h-[44px] focus-within:ring-2 focus-within:ring-primary-500 transition-all">
+              <span
+                v-for="(area, j) in zone.areas"
+                :key="j"
+                class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-primary-100 text-primary-800 text-xs font-medium rounded-full"
+              >
+                {{ area }}
+                <button type="button" @click="removeArea(i, j)" class="text-primary-500 hover:text-primary-800 leading-none">×</button>
+              </span>
+              <input
+                :placeholder="zone.areas.length === 0 ? 'Type area name, press Enter or comma to add…' : 'Add more…'"
+                @keydown.enter.prevent="addArea(i, $event)"
+                @keydown.exact.prevent.188="addArea(i, $event)"
+                class="flex-1 min-w-[12rem] bg-transparent outline-none text-sm text-slate-700 placeholder-slate-300"
+              />
+            </div>
+            <p class="mt-1 text-xs text-slate-500">
+              Matched case-insensitively and partially against the delivery city (e.g. "Ikeja" matches "Ikeja GRA").
+            </p>
+          </div>
+        </div>
+      </section>
+
       <!-- Actions -->
       <div class="flex items-center justify-end space-x-4 pt-6 border-t border-slate-100">
         <router-link
@@ -269,7 +359,7 @@ const form = reactive<CreatePickupLocationDto>({
     city: '',
     state: '',
     zipCode: '',
-    country: 'Nigeria', // Default fallback
+    country: 'Nigeria',
     landmark: '',
   },
   contact: {
@@ -283,10 +373,32 @@ const form = reactive<CreatePickupLocationDto>({
   },
   costPerKm: 0,
   costPerGram: 0,
+  zones: [],
 });
 
+// Zone helpers
+const addZone = () => {
+  form.zones.push({ name: '', areas: [], multiplier: 1.0 });
+};
+
+const removeZone = (index: number) => {
+  form.zones.splice(index, 1);
+};
+
+const addArea = (zoneIndex: number, event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const value = input.value.replace(',', '').trim();
+  if (value && !form.zones[zoneIndex].areas.includes(value)) {
+    form.zones[zoneIndex].areas.push(value);
+  }
+  input.value = '';
+};
+
+const removeArea = (zoneIndex: number, areaIndex: number) => {
+  form.zones[zoneIndex].areas.splice(areaIndex, 1);
+};
+
 onMounted(async () => {
-    // Fetch default country from system config
     const defaultCountry = await SystemConfigService.getValue<string>('DEFAULT_COUNTRY');
     if (defaultCountry) {
         form.address.country = defaultCountry;

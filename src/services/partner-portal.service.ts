@@ -15,6 +15,10 @@ export interface Employee {
   firstName: string;
   lastName: string;
   email: string;
+  phoneNumber?: {
+    countryCode: string;
+    number: string;
+  };
   hrEmployeeId?: string;
   membership?: {
     status: 'active' | 'suspended';
@@ -74,6 +78,7 @@ export class PartnerPortalService {
   }
 
   static async inviteEmployee(data: {
+    phoneNumber: string;
     email: string;
     firstName: string;
     lastName: string;
@@ -81,6 +86,11 @@ export class PartnerPortalService {
     orderThreshold?: number;
   }) {
     const response = await api.post('/admin/partner-portal/employees/invite', data);
+    return response.data.data;
+  }
+
+  static async resendEmployeeCredentials(employeeId: string) {
+    const response = await api.post(`/admin/partner-portal/employees/${employeeId}/resend-credentials`);
     return response.data.data;
   }
 

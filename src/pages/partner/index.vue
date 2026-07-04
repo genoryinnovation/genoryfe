@@ -46,7 +46,7 @@
           <p class="text-2xl font-black mt-1 text-white">₦{{ stats.monthSpend.toLocaleString() }}</p>
         </div>
         <div v-if="stats.earningsSettings?.enabled" class="bg-emerald-500/20 backdrop-blur-md rounded-xl p-4 border border-emerald-300/30">
-          <p class="text-xs text-emerald-100 uppercase tracking-wider font-semibold">Total Earnings</p>
+          <p class="text-xs text-emerald-100 uppercase tracking-wider font-semibold">Cashback Earned</p>
           <p class="text-2xl font-black mt-1 text-white">₦{{ stats.earningsBalance.toLocaleString() }}</p>
         </div>
       </div>
