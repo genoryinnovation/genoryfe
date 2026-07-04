@@ -3,8 +3,8 @@
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">Earnings</h1>
-        <p class="mt-1 text-sm text-slate-500">Track your earnings and view transaction history</p>
+        <h1 class="text-2xl font-bold text-slate-900">Cashback</h1>
+        <p class="mt-1 text-sm text-slate-500">Track your cashback earnings and view transaction history</p>
       </div>
       <div class="flex items-center space-x-3">
         <!-- Future: Withdraw Button -->
@@ -16,7 +16,7 @@
       <!-- Total Earnings Balance -->
       <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
         <div class="flex items-center justify-between mb-4">
-          <p class="text-sm font-medium text-slate-500">Available Balance</p>
+          <p class="text-sm font-medium text-slate-500">Cashback Balance</p>
           <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -27,7 +27,7 @@
           ₦{{ walletStats.balance?.toLocaleString() || 0 }}
         </h3>
         <p class="mt-2 text-xs font-medium text-emerald-600">
-          Total Available for Withdrawal
+          Total Cashback Available
         </p>
       </div>
 
@@ -48,7 +48,7 @@
       <!-- Total Earned (Deposits) -->
       <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between mb-4">
-          <p class="text-sm font-medium text-slate-500">Total Earned</p>
+          <p class="text-sm font-medium text-slate-500">Total Cashback Earned</p>
           <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -139,7 +139,7 @@
                     tx.transactionType === 'credit' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-600'
                   ]"
                 >
-                  {{ tx.transactionType === 'credit' ? 'Earnings' : 'Withdrawal' }}
+                  {{ tx.transactionType === 'credit' ? 'Cashback' : 'Withdrawal' }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">

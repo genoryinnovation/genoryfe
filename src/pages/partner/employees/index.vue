@@ -62,7 +62,7 @@
         <thead class="bg-slate-50 border-b border-slate-200">
           <tr>
             <th class="px-6 py-4 text-sm font-semibold text-slate-600">Employee</th>
-            <th class="px-6 py-4 text-sm font-semibold text-slate-600">Email</th>
+            <th class="px-6 py-4 text-sm font-semibold text-slate-600">Phone</th>
             <th class="px-6 py-4 text-sm font-semibold text-slate-600">Status</th>
             <th class="px-6 py-4 text-sm font-semibold text-slate-600">Threshold</th>
             <th class="px-6 py-4 text-sm font-semibold text-slate-600">Actions</th>
@@ -86,7 +86,7 @@
                 </div>
               </router-link>
             </td>
-            <td class="px-6 py-4 text-slate-600 font-medium">{{ emp.email }}</td>
+            <td class="px-6 py-4 text-slate-600 font-medium">{{ emp.phoneNumber ? `${emp.phoneNumber.countryCode}${emp.phoneNumber.number}` : emp.email || '—' }}</td>
             <td class="px-6 py-4">
               <span 
                 :class="[
@@ -103,13 +103,21 @@
               </p>
               <p class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter mt-0.5">Per Order Limit</p>
             </td>
-            <td class="px-6 py-4">
-              <router-link 
+            <td class="px-6 py-4 flex items-center gap-4">
+              <router-link
                 :to="`/partner/employees/${emp._id}`"
                 class="text-blue-600 hover:text-blue-800 font-medium"
               >
                 View Stats
               </router-link>
+              <button
+                @click="resendCredentials(emp._id)"
+                :disabled="resendingId === emp._id"
+                class="text-slate-500 hover:text-slate-800 font-medium disabled:opacity-40 text-sm"
+                title="Resend login credentials"
+              >
+                {{ resendingId === emp._id ? 'Sending...' : 'Resend Creds' }}
+              </button>
             </td>
           </tr>
         </tbody>
@@ -182,15 +190,19 @@
             </div>
           </div>
           <div class="space-y-1">
+            <label class="text-sm font-medium text-slate-700">Phone Number</label>
+            <input v-model="inviteData.phoneNumber" type="tel" required placeholder="e.g. 08012345678" class="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" />
+          </div>
+          <div class="space-y-1">
             <label class="text-sm font-medium text-slate-700">Email Address</label>
-            <input v-model="inviteData.email" type="email" required class="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" />
+            <input v-model="inviteData.email" type="email" required placeholder="employee@company.com" class="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" />
           </div>
           <div class="space-y-1">
             <label class="text-sm font-medium text-slate-700">Staff ID (Optional)</label>
             <input v-model="inviteData.hrEmployeeId" type="text" class="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" />
           </div>
           <div class="space-y-1">
-            <label class="text-sm font-medium text-slate-700">Weekly Threshold (₦)</label>
+            <label class="text-sm font-medium text-slate-700">Per Order Threshold (₦)</label>
             <input v-model="inviteData.orderThreshold" type="number" class="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" />
           </div>
           <div class="pt-4">
@@ -231,7 +243,7 @@
           
           <div class="bg-slate-50 p-4 rounded-xl border border-dashed border-slate-300 text-center relative">
             <p class="text-xs text-slate-500 mb-4 italic">
-              Format: email, firstName, lastName, [staffId], [threshold]
+              Format: phone, email, firstName, lastName, [staffId], [threshold]
             </p>
             <input 
               type="file" 
@@ -258,7 +270,7 @@
             <p class="text-xs mt-1">Successful: {{ bulkResults.successful }} | Failed: {{ bulkResults.failed }}</p>
             <div v-if="bulkResults.errors.length > 0" class="mt-2 text-[10px] space-y-0.5">
               <p v-for="(err, i) in bulkResults.errors.slice(0, 3)" :key="i">
-                • {{ err.email }}: {{ err.error }}
+                • {{ err.phoneNumber }}: {{ err.error }}
               </p>
             </div>
           </div>
@@ -304,6 +316,7 @@ const bulkResults = ref<any>(null);
 const inviteError = ref('');
 const inviteSuccess = ref('');
 const inviting = ref(false);
+const resendingId = ref<string | null>(null);
 
 // Pagination & Search
 const searchQuery = ref('');
@@ -311,6 +324,7 @@ const meta = ref<any>(null);
 const searchTimeout = ref<any>(null);
 
 const inviteData = ref({
+  phoneNumber: '',
   email: '',
   firstName: '',
   lastName: '',
@@ -363,6 +377,7 @@ const handleInvite = async () => {
       inviteSuccess.value = '';
       // Reset form
       inviteData.value = {
+        phoneNumber: '',
         email: '',
         firstName: '',
         lastName: '',
@@ -393,18 +408,19 @@ const handleBulkUpload = async () => {
     const rows = text.split('\n').filter(row => row.trim());
     
     // Skip header if it exists
-    const startIndex = rows[0].toLowerCase().includes('email') ? 1 : 0;
-    
+    const startIndex = rows[0].toLowerCase().includes('phone') ? 1 : 0;
+
     const employeesToInvite = rows.slice(startIndex).map(row => {
-      const [email, firstName, lastName, staffId, threshold] = row.split(',').map(s => s.trim());
+      const [phoneNumber, email, firstName, lastName, staffId, threshold] = row.split(',').map(s => s.trim());
       return {
+        phoneNumber,
         email,
         firstName,
         lastName,
         hrEmployeeId: staffId,
         orderThreshold: threshold ? parseInt(threshold) : 20000
       };
-    }).filter(e => e.email && e.firstName);
+    }).filter(e => e.phoneNumber && e.email && e.firstName);
 
     if (employeesToInvite.length === 0) {
       throw new Error('No valid employee data found in CSV.');
@@ -423,6 +439,18 @@ const handleBulkUpload = async () => {
     inviteError.value = error.response?.data?.message || error.message || 'Failed to process CSV file.';
   } finally {
     uploading.value = false;
+  }
+};
+
+const resendCredentials = async (employeeId: string) => {
+  try {
+    resendingId.value = employeeId;
+    await PartnerPortalService.resendEmployeeCredentials(employeeId);
+    alert('Credentials resent successfully.');
+  } catch (error: any) {
+    alert(error.response?.data?.message || 'Failed to resend credentials.');
+  } finally {
+    resendingId.value = null;
   }
 };
 
