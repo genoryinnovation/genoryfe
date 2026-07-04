@@ -1,5 +1,11 @@
 import api from '../api';
 
+export interface DeliveryZone {
+  name: string;       // e.g. "IKEJA DIVISION"
+  areas: string[];    // city/area names matched against delivery address (case-insensitive, partial)
+  multiplier: number; // route difficulty factor applied to distance cost, e.g. 1.25
+}
+
 export interface PickupLocation {
   _id: string;
   name: string;
@@ -23,6 +29,7 @@ export interface PickupLocation {
   isActive: boolean;
   costPerKm: number;
   costPerGram: number;
+  zones: DeliveryZone[];
   createdAt: string;
   updatedAt: string;
 }
