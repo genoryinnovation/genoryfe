@@ -81,7 +81,13 @@
                   {{ emp.firstName.charAt(0) }}
                 </div>
                 <div class="flex flex-col">
-                  <span class="font-bold text-slate-900 leading-tight">{{ emp.firstName }} {{ emp.lastName }}</span>
+                  <span class="font-bold text-slate-900 leading-tight">
+                    {{ emp.firstName }} {{ emp.lastName }}
+                    <span
+                      v-if="emp.membership?.hrName && emp.membership.hrName !== `${emp.firstName} ${emp.lastName}`"
+                      class="text-slate-400 font-medium text-xs"
+                    >[{{ emp.membership.hrName }}]</span>
+                  </span>
                   <span v-if="emp.membership?.employeeId" class="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-0.5">ID: {{ emp.membership.employeeId }}</span>
                 </div>
               </router-link>

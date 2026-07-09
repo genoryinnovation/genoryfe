@@ -23,6 +23,7 @@ export interface Employee {
   membership?: {
     status: 'active' | 'suspended';
     employeeId?: string;
+    hrName?: string;
     settings: {
       orderThreshold: number;
       requiresApproval: boolean;
