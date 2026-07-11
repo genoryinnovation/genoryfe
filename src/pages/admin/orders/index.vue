@@ -173,18 +173,24 @@
                 <span class="text-sm font-semibold text-slate-900">{{ order.currency }} {{ order.totalAmount.toFixed(2) }}</span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <span class="text-sm text-slate-600 capitalize">{{ order.paymentMethod }}</span>
-                  <span
-                    class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                    :class="{
-                      'bg-emerald-100 text-emerald-700': order.paymentStatus === 'paid',
-                      'bg-amber-100 text-amber-700': order.paymentStatus === 'pending',
-                      'bg-rose-100 text-rose-700': order.paymentStatus === 'failed'
-                    }"
-                  >
-                    {{ order.paymentStatus }}
-                  </span>
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-2">
+                    <span
+                      v-if="order.paymentMethod === 'hrpay'"
+                      class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-violet-100 text-violet-700"
+                    >HR Pay</span>
+                    <span v-else class="text-sm text-slate-600 capitalize">{{ order.paymentMethod }}</span>
+                    <span
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      :class="{
+                        'bg-emerald-100 text-emerald-700': order.paymentStatus === 'paid',
+                        'bg-amber-100 text-amber-700': order.paymentStatus === 'pending',
+                        'bg-rose-100 text-rose-700': order.paymentStatus === 'failed'
+                      }"
+                    >
+                      {{ order.paymentStatus }}
+                    </span>
+                  </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">

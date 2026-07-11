@@ -102,7 +102,7 @@
             </button>
             <button 
               v-if="stats.planType !== 'postpaid'"
-              @click="$router.push('/partner/wallet')" 
+              @click="$router.push('/partner/funding')"
               class="w-full flex items-center px-4 py-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors text-slate-700 font-medium"
             >
               <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

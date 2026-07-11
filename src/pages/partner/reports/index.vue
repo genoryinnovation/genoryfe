@@ -177,9 +177,9 @@ const handleExport = async (year: number, month: number) => {
 const handleReconcile = (report: any) => {
   // Pass the amount and month details to the wallet page for funding
   router.push({
-    path: '/partner/wallet',
-    query: { 
-      amount: report.totalSpent.toString(), 
+    path: '/partner/funding',
+    query: {
+      amount: report.totalSpent.toString(),
       autoFund: 'true',
       year: report._id.year.toString(),
       month: report._id.month.toString()
