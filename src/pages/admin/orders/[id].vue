@@ -210,6 +210,45 @@
           </div>
         </div>
 
+        <!-- HR Pay Info -->
+        <div class="bg-white rounded-2xl shadow-sm border border-violet-100 p-6" v-if="order.paymentMethod === 'hrpay'">
+          <div class="flex items-center space-x-3 mb-5">
+            <div class="p-2 bg-gradient-to-br from-violet-500 to-violet-600 rounded-lg">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-900">HR Pay</h3>
+          </div>
+          <div class="bg-violet-50 rounded-xl p-4 space-y-3">
+            <div v-if="order.hrPaymentRequest?.company">
+              <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Company</p>
+              <p class="text-sm font-semibold text-slate-900">{{ order.hrPaymentRequest.company.name }}</p>
+            </div>
+            <div v-if="order.hrPaymentRequest">
+              <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Approval Status</p>
+              <span
+                class="inline-flex items-center mt-1 px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                :class="{
+                  'bg-emerald-100 text-emerald-700': order.hrPaymentRequest.status === 'approved',
+                  'bg-amber-100 text-amber-700': order.hrPaymentRequest.status === 'pending',
+                  'bg-rose-100 text-rose-700': order.hrPaymentRequest.status === 'rejected',
+                }"
+              >
+                {{ order.hrPaymentRequest.status }}
+              </span>
+            </div>
+            <div v-if="order.hrPaymentRequest?.amount">
+              <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Approved Amount</p>
+              <p class="text-sm font-semibold text-slate-900">{{ order.currency }} {{ order.hrPaymentRequest.amount.toFixed(2) }}</p>
+            </div>
+            <div v-if="order.hrPaymentRequest?.rejectionReason">
+              <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Rejection Reason</p>
+              <p class="text-sm text-rose-600">{{ order.hrPaymentRequest.rejectionReason }}</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Delivery Address -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6" v-if="order.deliveryAddress">
           <div class="flex items-center space-x-3 mb-5">

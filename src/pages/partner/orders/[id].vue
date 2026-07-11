@@ -21,50 +21,36 @@
     <div v-else-if="request" class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <!-- Left Column: Order Info -->
       <div class="lg:col-span-2 space-y-6">
-        <!-- Order Items Card -->
+        <!-- Order Summary Card -->
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-            <h3 class="font-black text-slate-900 uppercase text-sm tracking-widest">Order Composition</h3>
+            <h3 class="font-black text-slate-900 uppercase text-sm tracking-widest">Order Summary</h3>
             <span :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest', statusClass]">
               {{ request.status }}
             </span>
           </div>
-          <div class="p-0">
-            <table class="w-full text-left">
-              <thead>
-                <tr class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-50">
-                  <th class="px-8 py-4">Item Details</th>
-                  <th class="px-8 py-4 text-center">Qty</th>
-                  <th class="px-8 py-4 text-right">Price</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-50">
-                <tr v-for="item in request.order?.items" :key="item._id" class="group">
-                  <td class="px-8 py-5">
-                    <div class="flex items-center space-x-4">
-                      <div class="w-12 h-12 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0">
-                        <img v-if="item.product?.image" :src="item.product.image" class="w-full h-full object-cover" />
-                        <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
-                          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/></svg>
-                        </div>
-                      </div>
-                      <div>
-                        <p class="font-bold text-slate-900 group-hover:text-primary-600 transition-colors">{{ item.product?.title || 'Unknown Item' }}</p>
-                        <p class="text-xs text-slate-400">{{ item.product?.category || 'General' }}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="px-8 py-5 text-center font-bold text-slate-700">x{{ item.quantity }}</td>
-                  <td class="px-8 py-5 text-right font-black text-slate-900">₦{{ (item.price * item.quantity).toLocaleString() }}</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr class="bg-slate-50/30 font-black">
-                  <td colspan="2" class="px-8 py-6 text-slate-500 uppercase text-xs tracking-widest">Grand Total Value</td>
-                  <td class="px-8 py-6 text-right text-xl text-primary-600">₦{{ request.amount.toLocaleString() }}</td>
-                </tr>
-              </tfoot>
-            </table>
+          <div class="p-8 space-y-6">
+            <!-- Privacy notice -->
+            <div class="flex items-start space-x-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <svg class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <p class="text-xs text-slate-500 leading-relaxed">
+                Item details are private to the employee. You can approve or reject based on the total amount and your company policy.
+              </p>
+            </div>
+
+            <!-- Stats row -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-slate-50 rounded-2xl p-5 text-center">
+                <p class="text-3xl font-black text-slate-900">{{ request.order?.items?.length ?? '—' }}</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{{ request.order?.items?.length === 1 ? 'Item' : 'Items' }}</p>
+              </div>
+              <div class="bg-primary-50 rounded-2xl p-5 text-center">
+                <p class="text-3xl font-black text-primary-600">₦{{ request.amount.toLocaleString() }}</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Order Total</p>
+              </div>
+            </div>
           </div>
         </div>
 
