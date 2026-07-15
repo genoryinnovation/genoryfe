@@ -48,7 +48,10 @@
               </div>
               <div class="bg-primary-50 rounded-2xl p-5 text-center">
                 <p class="text-3xl font-black text-primary-600">₦{{ request.amount.toLocaleString() }}</p>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Order Total</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Amount Charged</p>
+                <template v-if="request.metadata?.earningAmount > 0">
+                  <p class="text-[10px] text-slate-500 mt-1">₦{{ request.metadata.baseAmount?.toLocaleString() }} + ₦{{ request.metadata.earningAmount?.toLocaleString() }} fee</p>
+                </template>
               </div>
             </div>
           </div>

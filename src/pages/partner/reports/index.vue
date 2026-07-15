@@ -38,7 +38,7 @@
                   </div>
                   <div>
                     <p class="font-bold text-slate-900">{{ getMonthName(report._id.month) }} {{ report._id.year }}</p>
-                    <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{{ report.planType }} billing cycle</p>
+                    <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{{ report.planType === 'postpaid' ? 'Credit Plan' : 'Prepaid Plan' }} · Billing Cycle</p>
                   </div>
                 </div>
               </td>
@@ -85,10 +85,10 @@
                     (report.status === 'settled' || report.status === 'open') ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-primary-600 text-white hover:bg-primary-700'
                   ]"
                 >
-                  {{ 
-                    report.status === 'settled' ? 'Settled' : 
-                    report.status === 'open' ? 'Cycle Open' : 
-                    'Trigger Payment' 
+                  {{
+                    report.status === 'settled' ? 'Settled' :
+                    report.status === 'open' ? 'Cycle Open' :
+                    'Pay Now'
                   }}
                 </button>
               </td>
@@ -106,9 +106,9 @@
             </svg>
           </div>
           <div>
-            <h4 class="text-sm font-bold text-slate-900">About Monthly Reconciliation</h4>
+            <h4 class="text-sm font-bold text-slate-900">How Monthly Billing Works</h4>
             <p class="mt-1 text-xs text-slate-500 leading-relaxed max-w-2xl">
-              Monthly reports aggregate all employee spendings. The "Trigger Payment" action allows you to fund your company wallet with the total amount for that month, ensuring your account remains in good standing. Cleared status is automatically updated when your wallet balance covers the monthly expenditure.
+              Each month's report shows the total your employees spent using HR Pay. Click "Pay Now" on any unpaid month to top up your wallet and clear the outstanding amount. A billing period is automatically marked as settled once your wallet balance covers the total spend.
             </p>
           </div>
         </div>

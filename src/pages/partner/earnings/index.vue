@@ -12,7 +12,7 @@
     </div>
 
     <!-- Summary Statistics Grid -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
       <!-- Total Earnings Balance -->
       <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
         <div class="flex items-center justify-between mb-4">
@@ -27,22 +27,8 @@
           ₦{{ walletStats.balance?.toLocaleString() || 0 }}
         </h3>
         <p class="mt-2 text-xs font-medium text-emerald-600">
-          Total Cashback Available
+          Available to withdraw
         </p>
-      </div>
-
-      <!-- Total Transactions -->
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-        <div class="flex items-center justify-between mb-4">
-          <p class="text-sm font-medium text-slate-500">Transactions</p>
-          <div class="w-10 h-10 bg-slate-50 text-slate-600 rounded-xl flex items-center justify-center">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-        </div>
-        <h3 class="text-2xl font-bold text-slate-900">{{ walletStats.totalTransactions || 0 }}</h3>
-        <p class="mt-2 text-xs text-slate-400 font-medium">Activity Count</p>
       </div>
 
       <!-- Total Earned (Deposits) -->
@@ -56,7 +42,7 @@
           </div>
         </div>
         <h3 class="text-2xl font-bold text-slate-900">₦{{ walletStats.totalDeposits?.toLocaleString() || 0 }}</h3>
-        <p class="mt-2 text-xs text-slate-400 font-medium">{{ walletStats.depositCount || 0 }} Credits</p>
+        <p class="mt-2 text-xs text-slate-400 font-medium">Lifetime earnings</p>
       </div>
 
       <!-- Total Withdrawn (Deductions) -->
@@ -70,7 +56,7 @@
           </div>
         </div>
         <h3 class="text-2xl font-bold text-slate-900">₦{{ walletStats.totalDeductions?.toLocaleString() || 0 }}</h3>
-        <p class="mt-2 text-xs text-slate-400 font-medium">{{ walletStats.deductionCount || 0 }} Withdrawals</p>
+        <p class="mt-2 text-xs text-slate-400 font-medium">Lifetime withdrawals</p>
       </div>
     </div>
 
@@ -129,8 +115,8 @@
             <tr v-for="tx in transactions" :key="tx._id" class="hover:bg-slate-50/50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-900">#{{ tx.reference?.toUpperCase() || 'N/A' }}</td>
               <td class="px-6 py-4">
-                <div class="text-slate-900 font-semibold mb-0.5">{{ tx.reason }}</div>
-                <div class="text-[11px] text-slate-400 truncate max-w-[200px]">{{ tx.metadata?.notes || 'System transaction' }}</div>
+                <div class="text-slate-900 font-semibold mb-0.5">{{ tx.remarks || tx.reason }}</div>
+                <div v-if="tx.metadata?.notes" class="text-[11px] text-slate-400 truncate max-w-[200px]">{{ tx.metadata.notes }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span 
