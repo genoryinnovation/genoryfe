@@ -186,7 +186,10 @@ export class PartnerPortalService {
    * Wallet
    */
   static async getTransactions(params: any = { page: 1, limit: 10, walletType: 'operating' }) {
-    const response = await api.get('/admin/partner-portal/wallet/transactions', { params });
+    const cleanParams = Object.fromEntries(
+      Object.entries(params).filter(([, v]) => v !== '' && v !== null && v !== undefined)
+    );
+    const response = await api.get('/admin/partner-portal/wallet/transactions', { params: cleanParams });
     return response.data as PaginatedResponse<any> & { balance: number, planType: string };
   }
 

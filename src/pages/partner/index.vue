@@ -8,7 +8,7 @@
           <p class="mt-2 text-primary-100 opacity-90">Here's what's happening with your company account today.</p>
         </div>
         <div v-if="stats.planType" :class="['px-4 py-1.5 rounded-full text-xs font-black border uppercase tracking-widest', stats.planType === 'postpaid' ? 'bg-amber-400/20 border-amber-400 text-amber-200' : 'bg-emerald-400/20 border-emerald-400 text-emerald-100']">
-          {{ stats.planType }} billing
+          {{ stats.planType === 'postpaid' ? 'Credit Plan' : 'Prepaid Plan' }}
         </div>
       </div>
       
@@ -23,7 +23,7 @@
         </div>
         <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 relative group">
           <p class="text-[10px] text-primary-100 uppercase tracking-widest font-bold">
-            {{ stats.planType === 'postpaid' ? 'Monthly Utilization' : 'Wallet Balance' }}
+            {{ stats.planType === 'postpaid' ? 'Amount Owed' : 'Wallet Balance' }}
           </p>
           <p class="text-2xl font-black mt-1 text-white">
             ₦{{ (stats.planType === 'postpaid' ? Math.abs(stats.walletBalance) : stats.walletBalance).toLocaleString() }}

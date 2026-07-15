@@ -4,10 +4,10 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-900">
-          {{ walletStats.planType === 'postpaid' ? 'Spending & Ledger' : 'Operating Wallet' }}
+          {{ walletStats.planType === 'postpaid' ? 'Spending Ledger' : 'Operating Wallet' }}
         </h1>
         <p class="mt-1 text-sm text-slate-500">
-          {{ walletStats.planType === 'postpaid' ? 'Track your cycle spending and view ledger history' : 'Manage your operating funds and view transaction history' }}
+          {{ walletStats.planType === 'postpaid' ? 'Track what your company has spent and review transaction history' : 'Manage your operating funds and view transaction history' }}
         </p>
       </div>
       <div class="flex items-center space-x-3">
@@ -40,7 +40,7 @@
       <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
         <div class="flex items-center justify-between mb-4">
           <p class="text-sm font-medium text-slate-500">
-            {{ walletStats.planType === 'postpaid' ? 'Cycle Spending' : 'Available Balance' }}
+            {{ walletStats.planType === 'postpaid' ? 'Amount Spent This Period' : 'Available Balance' }}
           </p>
           <div :class="['w-10 h-10 rounded-xl flex items-center justify-center', walletStats.planType === 'postpaid' ? 'bg-amber-50 text-amber-600' : 'bg-primary-50 text-primary-600']">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,7 +55,7 @@
           {{ walletStats.netChange >= 0 ? '+' : '' }}₦{{ Math.abs(walletStats.netChange || 0).toLocaleString() }} Net Change
         </p>
         <p v-else class="mt-2 text-xs font-medium text-slate-400">
-          Accumulated for current cycle
+          Total spent in current billing period
         </p>
       </div>
 
@@ -77,7 +77,7 @@
       <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between mb-4">
           <p class="text-sm font-medium text-slate-500">
-            {{ walletStats.planType === 'postpaid' ? 'Total Settlements' : 'Total Deposits' }}
+            {{ walletStats.planType === 'postpaid' ? 'Total Payments Made' : 'Total Deposits' }}
           </p>
           <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,7 +120,16 @@
       </div>
       
       <div class="flex items-center space-x-3">
-        <select 
+        <select
+          v-model="typeFilter"
+          @change="fetchData"
+          class="px-4 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-slate-700"
+        >
+          <option value="">All Types</option>
+          <option value="credit">Credits (Deposits)</option>
+          <option value="debit">Debits (Spending)</option>
+        </select>
+        <select
           v-model="statusFilter"
           @change="fetchData"
           class="px-4 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-slate-700"
@@ -160,8 +169,8 @@
             <tr v-for="tx in transactions" :key="tx._id" class="hover:bg-slate-50/50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-900">#{{ tx.reference?.toUpperCase() || 'N/A' }}</td>
               <td class="px-6 py-4">
-                <div class="text-slate-900 font-semibold mb-0.5">{{ tx.reason }}</div>
-                <div class="text-[11px] text-slate-400 truncate max-w-[200px]">{{ tx.metadata?.notes || 'System transaction' }}</div>
+                <div class="text-slate-900 font-semibold mb-0.5">{{ tx.remarks || tx.reason }}</div>
+                <div v-if="tx.metadata?.notes" class="text-[11px] text-slate-400 truncate max-w-[200px]">{{ tx.metadata.notes }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span 
@@ -322,6 +331,7 @@ const topUpAmount = ref<number | null>(null);
 const loadingTopUp = ref(false);
 const searchQuery = ref('');
 const statusFilter = ref('');
+const typeFilter = ref('');
 
 // Data Fetching
 const fetchStats = async () => {
@@ -341,6 +351,7 @@ const fetchTransactions = async (page = 1) => {
       limit: 10,
       search: searchQuery.value,
       status: statusFilter.value || undefined,
+      transactionType: typeFilter.value || undefined,
       walletType: 'operating'
     });
     transactions.value = response.data;
