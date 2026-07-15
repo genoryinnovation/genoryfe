@@ -10,14 +10,25 @@ export interface Role {
   permissions: any[];
 }
 
+export interface IStaffPermissions {
+  canApproveOrders: boolean;
+  canManageEmployees: boolean;
+  canManageTeam: boolean;
+  canManageWallet: boolean;
+  canViewReports: boolean;
+  canManageSettings: boolean;
+}
+
 export interface AdminUser {
   _id: string;
   email: string;
   firstName: string;
   lastName: string;
   role: Role | string;
-  partner?: string | any; // Renamed from partnerId and made optional
+  partner?: string | any;
   isActive: boolean;
+  mustChangePassword?: boolean;
+  staffPermissions?: IStaffPermissions;
   createdAt: string;
   updatedAt: string;
 }
@@ -29,6 +40,7 @@ export interface LoginResponse {
     admin: AdminUser;
     token: string;
     expiresAt: string;
+    requiresPasswordChange: boolean;
   };
 }
 
@@ -50,5 +62,13 @@ export class AuthService {
   static getUser(): AdminUser | null {
     const userStr = localStorage.getItem('admin_user');
     return userStr ? JSON.parse(userStr) as AdminUser : null;
+  }
+
+  static setUser(user: AdminUser) {
+    localStorage.setItem('admin_user', JSON.stringify(user));
+  }
+
+  static async changePassword(newPassword: string): Promise<void> {
+    await api.post('/admin/auth/change-password', { newPassword });
   }
 }

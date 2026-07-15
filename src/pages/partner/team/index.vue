@@ -195,13 +195,36 @@
           
           <div class="space-y-1">
             <label class="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Work Email</label>
-            <input 
-              v-model="newMember.email" 
-              type="email" 
+            <input
+              v-model="newMember.email"
+              type="email"
               required
               placeholder="john.doe@company.com"
               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none transition-all"
             />
+          </div>
+
+          <!-- Permissions -->
+          <div class="space-y-3">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Permissions</label>
+            <div class="bg-slate-50 rounded-xl border border-slate-200 divide-y divide-slate-100">
+              <label v-for="perm in permissionOptions" :key="perm.key" class="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-slate-100/50 transition-colors first:rounded-t-xl last:rounded-b-xl">
+                <div>
+                  <p class="text-sm font-semibold text-slate-800">{{ perm.label }}</p>
+                  <p class="text-xs text-slate-400">{{ perm.description }}</p>
+                </div>
+                <button
+                  type="button"
+                  @click="newMember.staffPermissions[perm.key] = !newMember.staffPermissions[perm.key]"
+                  :class="[
+                    'relative inline-flex h-5 w-9 flex-shrink-0 rounded-full border-2 border-transparent transition-colors duration-200',
+                    newMember.staffPermissions[perm.key] ? 'bg-primary-600' : 'bg-slate-200'
+                  ]"
+                >
+                  <span :class="['inline-block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200', newMember.staffPermissions[perm.key] ? 'translate-x-4' : 'translate-x-0']"></span>
+                </button>
+              </label>
+            </div>
           </div>
 
           <div class="pt-4 flex space-x-3">
@@ -247,10 +270,27 @@ const searchQuery = ref('');
 const meta = ref<any>(null);
 const searchTimeout = ref<any>(null);
 
+const permissionOptions = [
+  { key: 'canApproveOrders', label: 'Approve Orders', description: 'Can approve or reject employee HR Pay requests' },
+  { key: 'canManageEmployees', label: 'Manage Employees', description: 'Can invite, edit, and manage employee accounts' },
+  { key: 'canManageTeam', label: 'Manage Team', description: 'Can invite, suspend, and manage other portal team members' },
+  { key: 'canManageWallet', label: 'Wallet & Funding', description: 'Can view wallet, fund account, and track cashback' },
+  { key: 'canViewReports', label: 'View Reports & Billing', description: 'Can view monthly reports and export billing data' },
+  { key: 'canManageSettings', label: 'Manage Settings', description: 'Can update company settings and approval PIN' },
+];
+
 const newMember = ref({
   firstName: '',
   lastName: '',
   email: '',
+  staffPermissions: {
+    canApproveOrders: false,
+    canManageEmployees: false,
+    canManageTeam: false,
+    canManageWallet: false,
+    canViewReports: false,
+    canManageSettings: false,
+  },
 });
 
 const fetchTeam = async (page = 1) => {
@@ -291,7 +331,10 @@ const handleInvite = async () => {
     setTimeout(() => {
       showInviteModal.value = false;
       successMessage.value = '';
-      newMember.value = { firstName: '', lastName: '', email: '' };
+      newMember.value = {
+        firstName: '', lastName: '', email: '',
+        staffPermissions: { canApproveOrders: false, canManageEmployees: false, canManageTeam: false, canManageWallet: false, canViewReports: false, canManageSettings: false },
+      };
     }, 1500);
   } catch (error: any) {
     console.error('Failed to invite team member', error);

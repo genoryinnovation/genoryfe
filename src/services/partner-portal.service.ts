@@ -7,7 +7,10 @@ export interface PartnerStats {
   todaySpend: number;
   monthSpend: number;
   planType: 'prepaid' | 'postpaid';
+  companyName?: string;
   paymentSettings?: any;
+  earningsSettings?: any;
+  earningsBalance?: number;
 }
 
 export interface Employee {
@@ -155,6 +158,18 @@ export class PartnerPortalService {
 
   static async toggleTeamMemberSuspension(adminId: string) {
     const response = await api.post(`/admin/partner-portal/team/${adminId}/toggle-suspension`);
+    return response.data.data;
+  }
+
+  static async updateTeamMemberPermissions(adminId: string, permissions: {
+    canApproveOrders?: boolean;
+    canManageEmployees?: boolean;
+    canManageTeam?: boolean;
+    canManageWallet?: boolean;
+    canViewReports?: boolean;
+    canManageSettings?: boolean;
+  }) {
+    const response = await api.patch(`/admin/partner-portal/team/${adminId}/permissions`, permissions);
     return response.data.data;
   }
 
