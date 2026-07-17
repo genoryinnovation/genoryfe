@@ -204,7 +204,7 @@
                 <div class="space-y-2">
                   <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Requires Approval</label>
                   <div class="flex items-center space-x-4 h-[50px]">
-                    <button 
+                    <button
                       type="button"
                       @click="membershipSettings.requiresApproval = !membershipSettings.requiresApproval"
                       :class="['w-12 h-6 rounded-full transition-all relative', membershipSettings.requiresApproval ? 'bg-primary-600' : 'bg-slate-200']"
@@ -213,6 +213,17 @@
                     </button>
                     <span class="text-sm font-bold text-slate-600">{{ membershipSettings.requiresApproval ? 'Yes' : 'No' }}</span>
                   </div>
+                </div>
+
+                <div class="space-y-2">
+                  <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Auto-Approval Amount Limit (₦) <span class="text-[9px] text-slate-300 font-normal">Optional Override</span></label>
+                  <input
+                    v-model="membershipSettings.autoApprovalAmountLimit"
+                    type="number"
+                    placeholder="Use company default"
+                    class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-bold"
+                  />
+                  <p class="text-[10px] text-slate-400 mt-1">Leave blank to use company auto-approval limit. Set a custom amount to override for this employee only.</p>
                 </div>
 
                 <div class="space-y-2">
@@ -281,7 +292,8 @@ const membershipSettings = ref({
   orderThreshold: 20000,
   monthlySpendLimit: 0,
   monthlyRequestsLimit: 0,
-  requiresApproval: true
+  requiresApproval: true,
+  autoApprovalAmountLimit: undefined as number | undefined
 });
 
 const lifetimeSpend = ref(0);

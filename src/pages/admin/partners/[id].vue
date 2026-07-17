@@ -66,6 +66,14 @@ const ensurePartnerFields = (partnerObj: any) => {
       bearer: 'platform'
     };
   }
+  if (!partnerObj.serviceSettings) {
+    partnerObj.serviceSettings = {
+      enabled: false,
+      platformServiceFee: 0,
+      companyServiceFee: 0,
+      companyServiceFeeBearer: 'employee'
+    };
+  }
 };
 
 const fetchData = async () => {
@@ -121,7 +129,8 @@ const handleSaveConfig = async () => {
       paymentSettings: partner.value.paymentSettings,
       planType: partner.value.planType,
       billingCycleSettings: partner.value.billingCycleSettings,
-      earningsSettings: partner.value.earningsSettings
+      earningsSettings: partner.value.earningsSettings,
+      serviceSettings: partner.value.serviceSettings
     };
     await PartnerService.updatePartner(partnerId, payload);
     alertMessage.value = 'Configuration updated successfully';
@@ -491,10 +500,13 @@ const formatCurrency = (amount: number) => {
           </div>
         </div>
 
-        <!-- Earnings Configuration -->
+        <!-- Earnings Configuration (Legacy) -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="p-6 border-b border-slate-100 bg-slate-50/50 font-bold text-slate-900 flex items-center justify-between">
-            <span>Earnings Configuration</span>
+            <div>
+              <span>Earnings Configuration (Legacy)</span>
+              <p class="text-xs font-normal text-slate-500 mt-1">Use Dual-Fee Model below for new setups</p>
+            </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" v-model="partner.earningsSettings.enabled" class="sr-only peer">
               <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-600"></div>
@@ -520,16 +532,136 @@ const formatCurrency = (amount: number) => {
                 <span class="font-bold text-primary-700">Platform Model:</span> The partner earns <span class="font-bold">{{ partner.earningsSettings.percentage }}%</span> of each order. This amount is deducted from the platform's revenue.
               </p>
               <p v-else>
-                <span class="font-bold text-primary-700">Customer Model:</span> A <span class="font-bold">{{ partner.earningsSettings.percentage }}%</span> service fee is added to the customer's total order amount, which is then credited to the partner.
+                <span class="font-bold text-primary-700">Employee Model:</span> A <span class="font-bold">{{ partner.earningsSettings.percentage }}%</span> service fee is added to the employee's order total, which is then credited to the partner.
               </p>
             </div>
           </div>
           <div v-else class="p-6 text-sm text-slate-500 italic">
-            Earnings are currently disabled for this partner. Enable to configure commission parameters.
+            Legacy earnings are currently disabled. Use Dual-Fee Model below instead.
           </div>
         </div>
 
-        <div class="flex justify-end">
+        <!-- Service Fee Configuration (Recommended) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden ring-1 ring-primary-200">
+          <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-primary-50/50 font-bold text-slate-900 flex items-center justify-between">
+            <div>
+              <span class="text-base">Service Fee Configuration</span>
+              <p class="text-xs font-normal text-slate-600 mt-1">Combined platform + company service fees</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" v-model="partner.serviceSettings.enabled" class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-600"></div>
+            </label>
+          </div>
+          <div v-if="partner.serviceSettings.enabled" class="p-6 space-y-6 animate-in slide-in-from-top-2 duration-200">
+            <!-- Service Fee Components -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-slate-500 uppercase">Genory Platform Fee (%)</label>
+                <p class="text-[11px] text-slate-500 mb-2">Fee charged by Genory (e.g., 2%)</p>
+                <div class="relative">
+                  <input type="number" v-model.number="partner.serviceSettings.platformServiceFee" step="0.1" min="0" max="10" class="w-full pl-4 pr-8 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-bold" />
+                  <span class="absolute right-3 top-2 text-slate-400 font-bold">%</span>
+                </div>
+              </div>
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-slate-500 uppercase">Company Service Fee (%)</label>
+                <p class="text-[11px] text-slate-500 mb-2">Fee earned by company (e.g., 3%)</p>
+                <div class="relative">
+                  <input type="number" v-model.number="partner.serviceSettings.companyServiceFee" step="0.1" min="0" max="10" class="w-full pl-4 pr-8 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-bold" />
+                  <span class="absolute right-3 top-2 text-slate-400 font-bold">%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Combined Service Fee Display -->
+            <div class="p-4 bg-primary-50 border border-primary-200 rounded-xl">
+              <p class="text-xs font-bold text-primary-700 uppercase mb-1">Combined Service Fee</p>
+              <p class="text-2xl font-black text-primary-600">
+                {{ (partner.serviceSettings.platformServiceFee + partner.serviceSettings.companyServiceFee).toFixed(1) }}%
+              </p>
+              <p class="text-xs text-primary-600 mt-1">
+                {{ partner.serviceSettings.platformServiceFee }}% platform + {{ partner.serviceSettings.companyServiceFee }}% company
+              </p>
+            </div>
+
+            <!-- Company Fee Bearer Model -->
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-slate-500 uppercase">Company Fee Payment Model</label>
+              <p class="text-[11px] text-slate-500 mb-2">How should the company service fee be handled?</p>
+              <select v-model="partner.serviceSettings.companyServiceFeeBearer" class="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-bold">
+                <option value="employee">💼 Employee-Borne (Employee pays both fees, company visible to employee)</option>
+                <option value="platform">💚 Platform-Borne (Only platform fee shown, Genory absorbs company fee)</option>
+              </select>
+            </div>
+
+            <!-- Live Calculation Preview -->
+            <div class="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+              <p class="text-xs font-bold text-slate-600 uppercase">Example: ₦1,000 Order</p>
+              <div class="space-y-2 text-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-slate-600">Base Amount:</span>
+                  <span class="font-bold text-slate-900">₦1,000</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-slate-600">Service Fee ({{ (partner.serviceSettings.platformServiceFee + partner.serviceSettings.companyServiceFee).toFixed(1) }}%):</span>
+                  <span class="font-bold text-primary-600">
+                    +₦{{ (1000 * (partner.serviceSettings.platformServiceFee + partner.serviceSettings.companyServiceFee) / 100).toFixed(0) }}
+                  </span>
+                </div>
+
+                <!-- Breakdown only shown if there's a company fee -->
+                <div v-if="partner.serviceSettings.companyServiceFee > 0" class="border-t border-slate-200 pt-2 space-y-1">
+                  <p class="text-[11px] font-bold text-slate-500 uppercase">Fee Breakdown:</p>
+                  <div class="text-xs text-slate-600 ml-2 space-y-1">
+                    <div>• Platform: ₦{{ (1000 * partner.serviceSettings.platformServiceFee / 100).toFixed(0) }} ({{ partner.serviceSettings.platformServiceFee }}%)</div>
+                    <div>• Company: ₦{{ (1000 * partner.serviceSettings.companyServiceFee / 100).toFixed(0) }} ({{ partner.serviceSettings.companyServiceFee }}%)</div>
+                  </div>
+                </div>
+
+                <div class="border-t border-slate-200 pt-2 flex items-center justify-between">
+                  <span class="font-bold text-slate-900">
+                    {{ partner.serviceSettings.companyServiceFeeBearer === 'employee' ? 'Employee Pays:' : 'Employee Sees:' }}
+                  </span>
+                  <span class="font-black text-lg text-primary-600">
+                    ₦{{ (partner.serviceSettings.companyServiceFeeBearer === 'employee'
+                      ? 1000 + (1000 * (partner.serviceSettings.platformServiceFee + partner.serviceSettings.companyServiceFee) / 100)
+                      : 1000 + (1000 * partner.serviceSettings.platformServiceFee / 100)
+                    ).toFixed(0) }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Model Explanation -->
+              <div class="mt-4 pt-3 border-t border-slate-200">
+                <div v-if="partner.serviceSettings.companyServiceFeeBearer === 'employee'" class="text-xs">
+                  <p class="font-bold text-slate-900 mb-1">📊 Employee-Borne Model</p>
+                  <p class="text-slate-600">
+                    Employee pays both fees. Company receives
+                    <span class="font-bold">₦{{ (1000 * partner.serviceSettings.companyServiceFee / 100).toFixed(0) }}</span>
+                    to company earnings wallet.
+                  </p>
+                </div>
+                <div v-else class="text-xs">
+                  <p class="font-bold text-emerald-900 mb-1">💚 Platform-Borne Model</p>
+                  <p class="text-emerald-700">
+                    Employee only sees platform fee (₦{{ (1000 * partner.serviceSettings.platformServiceFee / 100).toFixed(0) }}).
+                    Genory absorbs ₦{{ (1000 * partner.serviceSettings.companyServiceFee / 100).toFixed(0) }},
+                    but company still earns it as credit to earnings wallet.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="p-6 text-sm text-slate-500 italic">
+            Service Fee configuration is currently disabled. Enable above to set platform and company service fees.
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button @click="activeTab = 'overview'" class="px-6 py-3 bg-slate-100 text-slate-700 font-bold rounded-2xl hover:bg-slate-200">
+            Cancel
+          </button>
           <button @click="handleSaveConfig" :disabled="saving" class="px-6 py-3 bg-primary-600 text-white font-bold rounded-2xl hover:bg-primary-700 shadow-lg shadow-primary-500/25 disabled:opacity-50">
             {{ saving ? 'Saving...' : 'Save Configuration' }}
           </button>

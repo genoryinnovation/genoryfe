@@ -1,169 +1,211 @@
 <template>
-  <div class="space-y-6 max-w-5xl mx-auto pb-12">
-    <!-- Header -->
-    <div class="flex items-center space-x-4 mb-8">
-      <router-link to="/partner/orders" class="p-2 hover:bg-white rounded-xl transition-colors text-slate-400 hover:text-slate-900 border border-transparent hover:border-slate-200">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-      </router-link>
-      <div>
-        <h1 class="text-2xl font-black text-slate-900 italic uppercase tracking-tight">Order Request Detail</h1>
-        <p class="text-slate-500 text-sm">Reviewing request <span class="font-bold text-slate-700">#{{ request?.order?.orderNumber || '...' }}</span></p>
-      </div>
-    </div>
+  <div class="pb-12">
+    <!-- Status Strip -->
+    <div :class="['h-1 w-full', statusStripClass]"></div>
 
-    <div v-if="loading" class="flex flex-col items-center justify-center py-24 space-y-4">
-      <div class="w-12 h-12 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin"></div>
-      <p class="text-slate-400 font-medium animate-pulse">Retrieving order intelligence...</p>
-    </div>
-
-    <div v-else-if="request" class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <!-- Left Column: Order Info -->
-      <div class="lg:col-span-2 space-y-6">
-        <!-- Order Summary Card -->
-        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-            <h3 class="font-black text-slate-900 uppercase text-sm tracking-widest">Order Summary</h3>
-            <span :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest', statusClass]">
-              {{ request.status }}
-            </span>
-          </div>
-          <div class="p-8 space-y-6">
-            <!-- Privacy notice -->
-            <div class="flex items-start space-x-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-              <svg class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              <p class="text-xs text-slate-500 leading-relaxed">
-                Item details are private to the employee. You can approve or reject based on the total amount and your company policy.
-              </p>
-            </div>
-
-            <!-- Stats row -->
-            <div class="grid grid-cols-2 gap-4">
-              <div class="bg-slate-50 rounded-2xl p-5 text-center">
-                <p class="text-3xl font-black text-slate-900">{{ request.order?.items?.length ?? '—' }}</p>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{{ request.order?.items?.length === 1 ? 'Item' : 'Items' }}</p>
-              </div>
-              <div class="bg-primary-50 rounded-2xl p-5 text-center">
-                <p class="text-3xl font-black text-primary-600">₦{{ request.amount.toLocaleString() }}</p>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Amount Charged</p>
-                <template v-if="request.metadata?.earningAmount > 0">
-                  <p class="text-[10px] text-slate-500 mt-1">₦{{ request.metadata.baseAmount?.toLocaleString() }} + ₦{{ request.metadata.earningAmount?.toLocaleString() }} fee</p>
-                </template>
-              </div>
-            </div>
+    <div class="space-y-6 max-w-5xl mx-auto">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-4 pt-8">
+        <div class="flex items-center space-x-4">
+          <router-link to="/partner/orders" class="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-900">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </router-link>
+          <div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Order Request</p>
+            <h1 class="text-lg font-black text-slate-900 italic">{{ request?.order?.orderNumber || 'Loading...' }}</h1>
           </div>
         </div>
+        <p class="text-[10px] font-bold text-slate-400">{{ request?.createdAt ? new Date(request.createdAt).toLocaleDateString() : '—' }}</p>
+      </div>
 
-        <!-- Delivery & Additional Info -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Delivery Intelligence</h4>
-            <div class="space-y-4">
-              <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase">Destination Address</p>
-                <p class="text-sm font-bold text-slate-900 mt-1">
-                  {{ request.order?.deliveryAddress?.street || 'N/A' }}, 
-                  {{ request.order?.deliveryAddress?.city || '' }}
+      <div v-if="loading" class="flex flex-col items-center justify-center py-24 space-y-4">
+        <div class="w-12 h-12 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin"></div>
+        <p class="text-slate-400 font-medium animate-pulse">Retrieving order details...</p>
+      </div>
+
+      <div v-else-if="request" class="grid grid-cols-1 lg:grid-cols-5 gap-8 px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <!-- Left Column: Financial & Delivery Info -->
+        <div class="lg:col-span-3 space-y-6">
+          <!-- Financial Summary Card -->
+          <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+              <h3 class="font-black text-slate-900 uppercase text-sm tracking-widest">Order Amount</h3>
+              <span :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest', statusClass]">
+                {{ request.status }}
+              </span>
+            </div>
+            <div class="p-8 space-y-6">
+              <!-- Privacy notice -->
+              <div class="flex items-center space-x-2 px-3 py-2 bg-slate-50 rounded-full border border-slate-100 text-[10px] text-slate-500">
+                <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span>Item details are private. Review based on amount and policy.</span>
+              </div>
+
+              <!-- Receipt-style breakdown -->
+              <div class="space-y-3">
+                <!-- Items count -->
+                <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                  <span class="text-slate-600 font-medium">{{ request.order?.items?.length || 0 }} {{ request.order?.items?.length === 1 ? 'Item' : 'Items' }}</span>
+                  <span class="text-slate-400 text-sm">—</span>
+                </div>
+
+                <!-- Base amount -->
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-600 font-medium">Base Amount</span>
+                  <span class="text-slate-900 font-bold">₦{{ (request.metadata?.baseAmount || request.amount).toLocaleString() }}</span>
+                </div>
+
+                <!-- Service fee breakdown -->
+                <div v-if="request.metadata?.totalServiceFeeAmount > 0" class="space-y-2 pb-3 border-b border-slate-100">
+                  <div class="flex justify-between items-center">
+                    <span class="text-slate-600 font-medium">Service Fee</span>
+                    <span class="text-slate-900 font-bold">₦{{ request.metadata.totalServiceFeeAmount.toLocaleString() }} <span class="text-[10px] text-slate-400 ml-1">({{ request.metadata.totalServiceFeePercentage || 0 }}%)</span></span>
+                  </div>
+                  <!-- Platform fee sub-row -->
+                  <div v-if="request.metadata.platformServiceFeeAmount > 0" class="flex justify-between items-center ml-4">
+                    <span class="text-slate-500 text-sm">Platform</span>
+                    <span class="text-slate-700 text-sm">₦{{ request.metadata.platformServiceFeeAmount.toLocaleString() }}</span>
+                  </div>
+                  <!-- Company fee sub-row -->
+                  <div v-if="request.metadata.companyServiceFeeAmount > 0" class="flex justify-between items-center ml-4">
+                    <span class="text-slate-500 text-sm">Company</span>
+                    <span class="text-slate-700 text-sm">₦{{ request.metadata.companyServiceFeeAmount.toLocaleString() }}</span>
+                  </div>
+                </div>
+
+                <!-- Total -->
+                <div class="flex justify-between items-center pt-2 border-t-2 border-slate-200">
+                  <span class="font-black text-slate-900 uppercase tracking-widest text-sm">Total</span>
+                  <span class="text-3xl font-black text-primary-600">₦{{ request.amount.toLocaleString() }}</span>
+                </div>
+              </div>
+
+              <!-- Wallet balance check (prepaid) -->
+              <div v-if="planType === 'prepaid'" class="pt-4 border-t border-slate-100 space-y-2">
+                <div class="flex justify-between items-center text-[10px] font-bold">
+                  <span class="text-slate-400 uppercase tracking-widest">Wallet Balance</span>
+                  <span :class="walletBalance < request.amount ? 'text-rose-600' : 'text-emerald-600'">
+                    ₦{{ walletBalance.toLocaleString() }}
+                  </span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                  <div :class="['h-full rounded-full transition-all', walletBalance < request.amount ? 'bg-rose-500' : 'bg-emerald-500']" :style="{ width: Math.min((walletBalance / request.amount) * 100, 100) + '%' }"></div>
+                </div>
+                <p v-if="walletBalance < request.amount" class="text-[10px] text-rose-600 font-bold">⚠️ Insufficient balance by ₦{{ (request.amount - walletBalance).toLocaleString() }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delivery Card -->
+          <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-start space-x-4">
+              <div class="w-10 h-10 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-600 flex-shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-bold text-slate-900 mb-4">
+                  {{ request.order?.deliveryAddress?.street || 'N/A' }}<br>
+                  {{ request.order?.deliveryAddress?.city }}, {{ request.order?.deliveryAddress?.state || '' }}
                 </p>
-              </div>
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="text-[10px] font-bold text-slate-400 uppercase">Contact Name</p>
-                  <p class="text-sm font-bold text-slate-900 mt-1">{{ request.order?.deliveryAddress?.contactName || request.user?.firstName }}</p>
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Contact</p>
+                    <p class="text-sm font-bold text-slate-900">{{ request.order?.deliveryAddress?.contactName || request.user?.firstName }}</p>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Phone</p>
+                    <p class="text-sm font-bold text-slate-900">{{ request.order?.deliveryAddress?.phone || 'N/A' }}</p>
+                  </div>
                 </div>
-                <div>
-                  <p class="text-[10px] font-bold text-slate-400 uppercase">Phone</p>
-                  <p class="text-sm font-bold text-slate-900 mt-1">{{ request.order?.deliveryAddress?.phone || 'N/A' }}</p>
-                </div>
               </div>
-            </div>
-          </div>
-
-          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-center text-center">
-             <div class="mx-auto w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-600 mb-4">
-               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-               </svg>
-             </div>
-             <h4 class="font-black text-slate-900 uppercase text-xs tracking-widest">Order Strategy</h4>
-             <p class="text-sm text-slate-500 mt-2 px-4">This order will be fulfilled via <span class="font-bold text-slate-700">Genory Logistics</span> upon approval.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: Requested By & Actions -->
-      <div class="space-y-6">
-        <!-- User Profile Card -->
-        <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm text-center">
-          <div class="w-20 h-20 bg-primary-600 rounded-3xl mx-auto mb-4 flex items-center justify-center text-white text-2xl font-black shadow-xl shadow-primary-500/20">
-            {{ request.user?.firstName[0] }}{{ request.user?.lastName[0] }}
-          </div>
-          <h3 class="text-xl font-black text-slate-900 italic">{{ request.user?.firstName }} {{ request.user?.lastName }}</h3>
-          <p class="text-sm text-slate-500 font-medium">{{ request.user?.email }}</p>
-          
-          <div class="mt-8 pt-8 border-t border-slate-100 grid grid-cols-2 gap-4 text-left">
-            <div>
-              <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Staff ID</p>
-              <p class="text-xs font-bold text-slate-900">{{ request.user?.hrEmployeeId || 'GEN-ST-001' }}</p>
-            </div>
-            <div>
-              <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Requested On</p>
-              <p class="text-xs font-bold text-slate-900">{{ new Date(request.createdAt).toLocaleDateString() }}</p>
             </div>
           </div>
         </div>
 
-        <!-- Decision Box -->
-        <div v-if="request.status === 'pending'" class="bg-slate-900 p-8 rounded-3xl shadow-2xl shadow-slate-900/40 relative overflow-hidden group">
-          <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-primary-600 opacity-10 rounded-full blur-3xl group-hover:opacity-20 transition-opacity"></div>
-          <h4 class="text-lg font-black text-white italic uppercase tracking-wider mb-6">Action Protocol</h4>
-          
-          <textarea 
-            v-model="approvalNotes"
-            placeholder="Reviewer notes (optional)..."
-            class="w-full bg-slate-800 border border-slate-700 rounded-2xl p-4 text-white text-sm placeholder:text-slate-500 outline-none focus:border-primary-500 transition-colors mb-6 resize-none h-24"
-          ></textarea>
+        <!-- Right Column: Employee & Decision -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Employee Profile Card -->
+          <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <div :class="['h-1 w-full', 'bg-primary-500']"></div>
+            <div class="p-8 text-center">
+              <div class="w-16 h-16 bg-primary-600 rounded-2xl mx-auto mb-4 flex items-center justify-center text-white text-xl font-black shadow-lg shadow-primary-500/20">
+                {{ request.user?.firstName[0] }}{{ request.user?.lastName[0] }}
+              </div>
+              <h3 class="text-lg font-black text-slate-900 italic">{{ request.user?.firstName }} {{ request.user?.lastName }}</h3>
+              <p class="text-sm text-slate-500 font-medium mt-1">{{ request.user?.email }}</p>
 
-          <div class="space-y-3">
-             <button 
+              <div class="mt-6 pt-6 border-t border-slate-100 grid grid-cols-2 gap-4 text-left">
+                <div>
+                  <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Staff ID</p>
+                  <p class="text-xs font-bold text-slate-900">{{ request.user?.hrEmployeeId || 'N/A' }}</p>
+                </div>
+                <div>
+                  <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Requested</p>
+                  <p class="text-xs font-bold text-slate-900">{{ new Date(request.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Decision Panel (pending) -->
+          <div v-if="request.status === 'pending'" class="space-y-3">
+            <button
               @click="openApprovalModal('approve')"
-              class="w-full py-4 bg-emerald-500 text-white font-black rounded-2xl hover:bg-emerald-600 transition-all flex items-center justify-center space-x-2"
-             >
-               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-               </svg>
-               <span>APPROVE ORDER</span>
-             </button>
-             <button 
+              class="w-full py-4 bg-emerald-500 text-white font-black rounded-2xl hover:bg-emerald-600 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-emerald-500/20"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>APPROVE</span>
+            </button>
+            <button
               @click="openApprovalModal('reject')"
-              class="w-full py-4 bg-slate-800 text-rose-500 font-bold rounded-2xl hover:bg-slate-700 transition-all border border-slate-700"
-             >
-               REJECT REQUEST
-             </button>
+              class="w-full py-4 bg-slate-900 text-rose-400 font-bold rounded-2xl hover:bg-slate-800 transition-all border border-rose-400/20"
+            >
+              REJECT
+            </button>
           </div>
-        </div>
 
-        <!-- Processed Info (if not pending) -->
-        <div v-else class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-           <div class="flex items-center space-x-3 text-slate-500 mb-4">
-             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-             </svg>
-             <span class="text-xs font-black uppercase tracking-widest">{{ request.status === 'approved' ? 'Authorization Confirmed' : 'Authorization Denied' }}</span>
-           </div>
-           <div class="space-y-1">
-             <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Processed By</p>
-             <p class="text-sm font-bold text-slate-900">{{ request.processedBy?.firstName || 'System' }} {{ request.processedBy?.lastName || '' }}</p>
-           </div>
-           <div v-if="request.processedNotes" class="mt-4 p-4 bg-slate-50 rounded-2xl text-xs text-slate-600 italic">
-             "{{ request.processedNotes }}"
-           </div>
-           <div v-if="request.rejectionReason" class="mt-4 p-4 bg-rose-50 rounded-2xl text-xs text-rose-600 italic">
-             Reason: "{{ request.rejectionReason }}"
-           </div>
+          <!-- Resolution Card (processed) -->
+          <div v-else class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div :class="['flex items-center space-x-3 mb-6 pb-6 border-b', request.status === 'approved' ? 'border-emerald-100' : 'border-rose-100']">
+              <div :class="['w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0', request.status === 'approved' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600']">
+                <svg v-if="request.status === 'approved'" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <svg v-else class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <span :class="['text-sm font-black uppercase tracking-widest', request.status === 'approved' ? 'text-emerald-700' : 'text-rose-700']">
+                {{ request.status === 'approved' ? 'Approved' : 'Rejected' }}
+              </span>
+            </div>
+
+            <div class="space-y-3">
+              <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Processed By</p>
+                <p class="text-sm font-bold text-slate-900">{{ request.processedBy?.firstName || 'System' }} {{ request.processedBy?.lastName || '' }}</p>
+              </div>
+              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ new Date(request.updatedAt).toLocaleString() }}</p>
+            </div>
+
+            <div v-if="request.processedNotes" class="mt-6 pt-6 border-t border-slate-100">
+              <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Notes</p>
+              <p class="text-sm text-slate-600 italic">"{{ request.processedNotes }}"</p>
+            </div>
+            <div v-if="request.rejectionReason" class="mt-6 pt-6 border-t border-rose-100 bg-rose-50 rounded-2xl p-4">
+              <p class="text-[10px] font-black text-rose-600 uppercase tracking-widest mb-2">Rejection Reason</p>
+              <p class="text-sm text-rose-700 italic">"{{ request.rejectionReason }}"</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -171,15 +213,26 @@
     <!-- PIN Modal Component (can be shared, but local for now) -->
     <div v-if="showPinModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[100] p-4">
        <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in duration-300">
+         <!-- Action badge -->
+         <div class="px-10 pt-6 pb-4 border-b border-slate-100">
+           <div class="flex items-center justify-between mb-4">
+             <span :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest', activeAction === 'approve' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800']">
+               {{ activeAction === 'approve' ? 'Approving' : 'Rejecting' }}
+             </span>
+             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ request?.order?.orderNumber }}</span>
+           </div>
+           <p class="text-3xl font-black text-slate-900">₦{{ request?.amount.toLocaleString() }}</p>
+         </div>
+
          <div class="p-10 text-center">
             <div class="w-16 h-16 bg-slate-100 rounded-3xl mx-auto mb-6 flex items-center justify-center">
               <svg class="w-8 h-8 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-            <h3 class="text-2xl font-black text-slate-900 italic tracking-tight">Security Clearance</h3>
-            <p v-if="!requireOtp" class="text-slate-500 text-sm mt-2">Enter your company approval PIN to continue.</p>
-            <p v-else class="text-slate-500 text-sm mt-2">Enter the verification code sent to your email.</p>
+            <h3 class="text-2xl font-black text-slate-900 italic tracking-tight">Security Verification</h3>
+            <p v-if="!requireOtp" class="text-slate-500 text-sm mt-2">Enter your approval PIN to continue.</p>
+            <p v-else class="text-slate-500 text-sm mt-2">Enter the 6-digit code from your email.</p>
 
             <div v-if="activeAction === 'approve' && planType === 'prepaid'" class="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2 text-left">
               <div class="flex items-center justify-between">
@@ -279,6 +332,15 @@ const statusClass = computed(() => {
     case 'approved': return 'bg-emerald-100 text-emerald-800';
     case 'rejected': return 'bg-rose-100 text-rose-800';
     default: return 'bg-amber-100 text-amber-800';
+  }
+});
+
+const statusStripClass = computed(() => {
+  if (!request.value) return 'bg-slate-200';
+  switch (request.value.status) {
+    case 'approved': return 'bg-emerald-500';
+    case 'rejected': return 'bg-rose-500';
+    default: return 'bg-amber-500';
   }
 });
 
