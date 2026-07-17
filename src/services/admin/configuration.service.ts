@@ -29,6 +29,8 @@ export interface PickupLocation {
   isActive: boolean;
   costPerKm: number;
   costPerGram: number;
+  radiusKm?: number;
+  baseDeliveryFee?: number;
   zones: DeliveryZone[];
   createdAt: string;
   updatedAt: string;

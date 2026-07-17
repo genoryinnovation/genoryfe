@@ -191,6 +191,30 @@
             />
              <p class="mt-1 text-xs text-slate-500">Additional charge per gram of weight.</p>
           </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Base Delivery Fee (₦)</label>
+            <input
+              v-model.number="form.baseDeliveryFee"
+              type="number"
+              min="0"
+              placeholder="e.g. 500"
+              class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all"
+            />
+            <p class="mt-1 text-xs text-slate-500">Fixed starting fee for any delivery.</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Coverage Radius (KM)</label>
+            <input
+              v-model.number="form.radiusKm"
+              type="number"
+              min="0"
+              placeholder="e.g. 50"
+              class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all"
+            />
+            <p class="mt-1 text-xs text-slate-500">Maximum distance covered by this location.</p>
+          </div>
         </div>
       </section>
 
@@ -380,6 +404,8 @@ const form = reactive<any>({
   },
   costPerKm: 0,
   costPerGram: 0,
+  baseDeliveryFee: 0,
+  radiusKm: 50,
   zones: [] as { name: string; areas: string[]; multiplier: number }[],
 });
 
@@ -424,6 +450,8 @@ const loadData = async () => {
 
         form.costPerKm = location.costPerKm || 0;
         form.costPerGram = location.costPerGram || 0;
+        form.baseDeliveryFee = location.baseDeliveryFee || 0;
+        form.radiusKm = location.radiusKm || 50;
         form.zones = (location.zones || []).map((z: any) => ({
           name: z.name || '',
           areas: [...(z.areas || [])],

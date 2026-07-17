@@ -209,11 +209,10 @@ const handleLogin = async () => {
 
       localStorage.setItem('admin_token', response.data.token);
       localStorage.setItem('admin_user', JSON.stringify(user));
-      
-      // Redirect based on partner association
-      // Partner Owners and Staff with a partner link go to /partner
-      // Superadmins and Platform Staff (no partner link) go to /admin
-      if (user.partner) {
+
+      if (response.data.requiresPasswordChange) {
+        router.push('/change-password');
+      } else if (user.partner) {
         router.push('/partner');
       } else {
         router.push('/admin');
