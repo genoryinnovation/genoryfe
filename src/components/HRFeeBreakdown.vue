@@ -1,5 +1,7 @@
 <script setup lang="ts">
-defineProps({
+import { computed } from 'vue';
+
+const props = defineProps({
   baseAmount: {
     type: Number,
     required: true
@@ -46,15 +48,15 @@ const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(amount);
 };
 
-const totalAmount = () => {
-  if (companyServiceFeeBearer === 'platform') {
+const totalAmount = computed(() => {
+  if (props.companyServiceFeeBearer === 'platform') {
     // Platform absorbs company fee - only platform fee charged
-    return baseAmount + platformServiceFeeAmount;
+    return props.baseAmount + props.platformServiceFeeAmount;
   } else {
     // Employee pays both fees
-    return baseAmount + totalServiceFeeAmount;
+    return props.baseAmount + props.totalServiceFeeAmount;
   }
-};
+});
 </script>
 
 <template>
@@ -112,7 +114,7 @@ const totalAmount = () => {
     <!-- Total -->
     <div v-if="showTotalLabel && totalServiceFeePercentage > 0" class="border-t border-slate-200 pt-3 flex items-center justify-between">
       <span class="font-bold text-slate-900">Total to be Charged:</span>
-      <span class="font-black text-lg text-primary-600">{{ formatCurrency(totalAmount()) }}</span>
+      <span class="font-black text-lg text-primary-600">{{ formatCurrency(totalAmount) }}</span>
     </div>
 
     <!-- Info Message for Platform-Borne -->

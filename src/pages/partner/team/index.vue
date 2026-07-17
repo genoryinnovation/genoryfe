@@ -290,7 +290,7 @@ const newMember = ref({
     canManageWallet: false,
     canViewReports: false,
     canManageSettings: false,
-  },
+  } as Record<string, boolean>,
 });
 
 const fetchTeam = async (page = 1) => {

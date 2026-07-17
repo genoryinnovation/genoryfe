@@ -261,7 +261,7 @@ const permissionOptions = [
   },
 ];
 
-const permissions = ref({
+const permissions = ref<Record<string, boolean>>({
   canApproveOrders: false,
   canManageEmployees: false,
   canManageTeam: false,
