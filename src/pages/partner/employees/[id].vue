@@ -170,82 +170,149 @@
       </div>
 
           <!-- Settings Tab -->
-          <div v-else class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden p-8">
-            <h3 class="text-xl font-black text-slate-900 italic tracking-tight mb-8">Membership Settings</h3>
-            
+          <div v-else class="space-y-6">
             <form @submit.prevent="saveSettings" class="space-y-6">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                  <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Single Order Limit (₦)</label>
-                  <input 
-                    v-model="membershipSettings.orderThreshold" 
-                    type="number"
-                    class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-bold"
-                  />
-                </div>
-                <div class="space-y-2">
-                  <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Monthly Spend Limit (₦)</label>
-                  <input 
-                    v-model="membershipSettings.monthlySpendLimit" 
-                    type="number"
-                    placeholder="No limit"
-                    class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-bold"
-                  />
-                </div>
-                <div class="space-y-2">
-                  <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Monthly Requests Limit</label>
-                  <input 
-                    v-model="membershipSettings.monthlyRequestsLimit" 
-                    type="number"
-                    placeholder="No limit"
-                    class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-bold"
-                  />
-                </div>
-                <div class="space-y-2">
-                  <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Requires Approval</label>
-                  <div class="flex items-center space-x-4 h-[50px]">
-                    <button
-                      type="button"
-                      @click="membershipSettings.requiresApproval = !membershipSettings.requiresApproval"
-                      :class="['w-12 h-6 rounded-full transition-all relative', membershipSettings.requiresApproval ? 'bg-primary-600' : 'bg-slate-200']"
-                    >
-                      <div :class="['w-4 h-4 bg-white rounded-full absolute top-1 transition-all', membershipSettings.requiresApproval ? 'right-1' : 'left-1']"></div>
-                    </button>
-                    <span class="text-sm font-bold text-slate-600">{{ membershipSettings.requiresApproval ? 'Yes' : 'No' }}</span>
-                  </div>
-                </div>
 
-                <div class="space-y-2">
-                  <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Auto-Approval Amount Limit (₦) <span class="text-[9px] text-slate-300 font-normal">Optional Override</span></label>
-                  <input
-                    v-model="membershipSettings.autoApprovalAmountLimit"
-                    type="number"
-                    placeholder="Use company default"
-                    class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-bold"
-                  />
-                  <p class="text-[10px] text-slate-400 mt-1">Leave blank to use company auto-approval limit. Set a custom amount to override for this employee only.</p>
-                </div>
-
-                <div class="space-y-2">
-                  <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Membership Status</label>
-                  <div class="flex items-center space-x-4 h-[50px]">
-                    <button 
-                      type="button"
-                      @click="toggleStatus"
-                      :disabled="toggling"
-                      :class="['w-12 h-6 rounded-full transition-all relative', membershipStatus === 'active' ? 'bg-emerald-500' : 'bg-rose-500']"
-                    >
-                      <div :class="['w-4 h-4 bg-white rounded-full absolute top-1 transition-all', membershipStatus === 'active' ? 'right-1' : 'left-1']"></div>
-                    </button>
-                    <span :class="['text-sm font-bold', membershipStatus === 'active' ? 'text-emerald-600' : 'text-rose-600']">
-                      {{ membershipStatus === 'active' ? 'Active' : 'Suspended' }}
-                    </span>
+              <!-- Single Order Limits -->
+              <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
+                <h4 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 bg-primary-600 rounded-full"></span>
+                  Single Order Controls
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Per-Order Limit (₦)</label>
+                    <input
+                      v-model="membershipSettings.orderThreshold"
+                      type="number"
+                      class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-bold text-lg"
+                    />
+                    <p class="text-[10px] text-slate-400">Maximum amount per individual order</p>
                   </div>
                 </div>
               </div>
 
-              <div class="pt-6 border-t border-slate-100 flex justify-end">
-                <button 
+              <!-- Monthly Limits -->
+              <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
+                <h4 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 bg-amber-600 rounded-full"></span>
+                  Monthly Controls (Current Billing Cycle)
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Monthly Spend Limit (₦)</label>
+                    <input
+                      v-model="membershipSettings.monthlySpendLimit"
+                      type="number"
+                      placeholder="0 = No limit"
+                      class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-bold text-lg"
+                    />
+                    <p class="text-[10px] text-slate-400">Total amount allowed this month</p>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Monthly Request Limit</label>
+                    <input
+                      v-model="membershipSettings.monthlyRequestsLimit"
+                      type="number"
+                      placeholder="0 = No limit"
+                      class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-bold text-lg"
+                    />
+                    <p class="text-[10px] text-slate-400">Number of orders allowed this month</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Lifetime Limits -->
+              <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
+                <h4 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 bg-violet-600 rounded-full"></span>
+                  Lifetime Limits (All-Time)
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Orders Limit</label>
+                    <input
+                      v-model="membershipSettings.totalOrdersLimit"
+                      type="number"
+                      placeholder="0 = No limit"
+                      class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-bold text-lg"
+                    />
+                    <p class="text-[10px] text-slate-400">Maximum approved orders in their lifetime</p>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Spend Limit (₦)</label>
+                    <input
+                      v-model="membershipSettings.totalSpendLimit"
+                      type="number"
+                      placeholder="0 = No limit"
+                      class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-bold text-lg"
+                    />
+                    <p class="text-[10px] text-slate-400">Maximum lifetime spending across all approved orders</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Auto-Approval Settings -->
+              <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
+                <h4 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 bg-emerald-600 rounded-full"></span>
+                  Auto-Approval Settings
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Auto-Approval Amount Limit (₦)</label>
+                    <input
+                      v-model="membershipSettings.autoApprovalAmountLimit"
+                      type="number"
+                      placeholder="Use company default"
+                      class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-bold text-lg"
+                    />
+                    <p class="text-[10px] text-slate-400">Override company auto-approval threshold for this employee only</p>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Requires Manual Approval</label>
+                    <div class="flex items-center space-x-4 h-[50px]">
+                      <button
+                        type="button"
+                        @click="membershipSettings.requiresApproval = !membershipSettings.requiresApproval"
+                        :class="['w-12 h-6 rounded-full transition-all relative', membershipSettings.requiresApproval ? 'bg-primary-600' : 'bg-slate-200']"
+                      >
+                        <div :class="['w-4 h-4 bg-white rounded-full absolute top-1 transition-all', membershipSettings.requiresApproval ? 'right-1' : 'left-1']"></div>
+                      </button>
+                      <span class="text-sm font-bold text-slate-600">{{ membershipSettings.requiresApproval ? 'Yes' : 'No' }}</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400">If Yes, orders always require manual approval regardless of amount</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Membership Status -->
+              <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
+                <h4 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 bg-rose-600 rounded-full"></span>
+                  Account Status
+                </h4>
+                <div class="flex items-center space-x-4">
+                  <button
+                    type="button"
+                    @click="toggleStatus"
+                    :disabled="toggling"
+                    :class="['w-12 h-6 rounded-full transition-all relative', membershipStatus === 'active' ? 'bg-emerald-500' : 'bg-rose-500']"
+                  >
+                    <div :class="['w-4 h-4 bg-white rounded-full absolute top-1 transition-all', membershipStatus === 'active' ? 'right-1' : 'left-1']"></div>
+                  </button>
+                  <div>
+                    <p :class="['text-sm font-bold', membershipStatus === 'active' ? 'text-emerald-600' : 'text-rose-600']">
+                      {{ membershipStatus === 'active' ? 'Active' : 'Suspended' }}
+                    </p>
+                    <p class="text-[10px] text-slate-400">Suspended employees cannot place orders</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Save Button -->
+              <div class="flex justify-end">
+                <button
                   type="submit"
                   :disabled="saving"
                   class="px-8 py-3 bg-primary-600 text-white font-black rounded-2xl hover:bg-primary-700 transition-all shadow-lg shadow-primary-500/25 disabled:opacity-50 flex items-center space-x-2"
@@ -292,6 +359,8 @@ const membershipSettings = ref({
   orderThreshold: 20000,
   monthlySpendLimit: 0,
   monthlyRequestsLimit: 0,
+  totalOrdersLimit: undefined as number | undefined,
+  totalSpendLimit: undefined as number | undefined,
   requiresApproval: true,
   autoApprovalAmountLimit: undefined as number | undefined
 });
