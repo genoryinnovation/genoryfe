@@ -113,7 +113,7 @@
       <div v-if="can('canApproveOrders')" class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
           <div>
-            <h2 class="font-bold text-slate-900 text-sm">Recent Requests</h2>
+            <h2 class="font-bold text-slate-900 text-sm">Recent Orders</h2>
             <p class="text-[11px] text-slate-400 mt-0.5">Latest HR Pay order submissions</p>
           </div>
           <router-link to="/partner/orders" class="text-xs font-bold text-primary-600 hover:text-primary-700 flex items-center">
@@ -144,22 +144,22 @@
 
         <div v-else class="divide-y divide-slate-50">
           <router-link
-            v-for="req in recentOrders"
-            :key="req._id"
-            :to="`/partner/orders/${req._id}`"
+            v-for="order in recentOrders"
+            :key="order._id"
+            :to="`/partner/orders/${order._id}`"
             class="px-6 py-4 flex items-center space-x-3 hover:bg-slate-50/60 transition-colors group"
           >
             <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-xs flex-shrink-0 uppercase">
-              {{ req.user?.firstName?.[0] || 'U' }}
+              {{ order.userId?.firstName?.[0] || 'U' }}
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-semibold text-slate-900 truncate">{{ req.user?.firstName }} {{ req.user?.lastName }}</p>
-              <p class="text-[11px] text-slate-400 truncate">{{ req.order?.orderNumber }} · {{ new Date(req.createdAt).toLocaleDateString() }}</p>
+              <p class="text-sm font-semibold text-slate-900 truncate">{{ order.userId?.firstName }} {{ order.userId?.lastName }}</p>
+              <p class="text-[11px] text-slate-400 truncate">{{ order.orderNumber }} · {{ new Date(order.hrpay?.createdAt || order.createdAt).toLocaleDateString() }}</p>
             </div>
             <div class="text-right flex-shrink-0">
-              <p class="text-sm font-black text-slate-900">₦{{ req.amount.toLocaleString() }}</p>
-              <span :class="['text-[9px] uppercase font-black px-1.5 py-0.5 rounded-full', req.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : req.status === 'rejected' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700']">
-                {{ req.status }}
+              <p class="text-sm font-black text-slate-900">₦{{ (order.hrpay?.amount || 0).toLocaleString() }}</p>
+              <span :class="['text-[9px] uppercase font-black px-1.5 py-0.5 rounded-full', order.hrpay?.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : order.hrpay?.status === 'rejected' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700']">
+                {{ order.hrpay?.status }}
               </span>
             </div>
           </router-link>

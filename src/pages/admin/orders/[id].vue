@@ -221,30 +221,30 @@
             <h3 class="text-lg font-semibold text-slate-900">HR Pay</h3>
           </div>
           <div class="bg-violet-50 rounded-xl p-4 space-y-3">
-            <div v-if="order.hrPaymentRequest?.company">
+            <div v-if="order.company?.name">
               <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Company</p>
-              <p class="text-sm font-semibold text-slate-900">{{ order.hrPaymentRequest.company.name }}</p>
+              <p class="text-sm font-semibold text-slate-900">{{ order.company.name }}</p>
             </div>
-            <div v-if="order.hrPaymentRequest">
+            <div v-if="order.hrpay">
               <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Approval Status</p>
               <span
                 class="inline-flex items-center mt-1 px-2.5 py-0.5 rounded-full text-xs font-semibold"
                 :class="{
-                  'bg-emerald-100 text-emerald-700': order.hrPaymentRequest.status === 'approved',
-                  'bg-amber-100 text-amber-700': order.hrPaymentRequest.status === 'pending',
-                  'bg-rose-100 text-rose-700': order.hrPaymentRequest.status === 'rejected',
+                  'bg-emerald-100 text-emerald-700': order.hrpay.status === 'approved',
+                  'bg-amber-100 text-amber-700': order.hrpay.status === 'pending',
+                  'bg-rose-100 text-rose-700': order.hrpay.status === 'rejected',
                 }"
               >
-                {{ order.hrPaymentRequest.status }}
+                {{ order.hrpay.status }}
               </span>
             </div>
-            <div v-if="order.hrPaymentRequest?.amount">
+            <div v-if="order.hrpay?.amount">
               <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Approved Amount</p>
-              <p class="text-sm font-semibold text-slate-900">{{ order.currency }} {{ order.hrPaymentRequest.amount.toFixed(2) }}</p>
+              <p class="text-sm font-semibold text-slate-900">{{ order.currency }} {{ order.hrpay.amount.toFixed(2) }}</p>
             </div>
-            <div v-if="order.hrPaymentRequest?.rejectionReason">
+            <div v-if="order.hrpay?.rejectionReason">
               <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Rejection Reason</p>
-              <p class="text-sm text-rose-600">{{ order.hrPaymentRequest.rejectionReason }}</p>
+              <p class="text-sm text-rose-600">{{ order.hrpay.rejectionReason }}</p>
             </div>
           </div>
         </div>
