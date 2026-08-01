@@ -93,7 +93,7 @@
         </router-link>
 
         <router-link
-          v-if="can('canViewReports')"
+          v-if="can('canViewReports') && planType === 'postpaid'"
           to="/partner/reports"
           class="flex items-center space-x-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150"
           :class="$route.path.startsWith('/partner/reports') ? 'bg-white/10 text-white' : 'text-slate-400 hover:text-white hover:bg-white/5'"

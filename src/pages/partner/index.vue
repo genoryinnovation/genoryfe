@@ -204,7 +204,7 @@
             </router-link>
 
             <router-link
-              v-if="can('canViewReports')"
+              v-if="can('canViewReports') && stats.planType === 'postpaid'"
               to="/partner/reports"
               class="flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors group"
             >
