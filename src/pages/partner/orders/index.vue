@@ -1,24 +1,53 @@
 <template>
   <div class="space-y-6">
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-900">Employee Orders</h1>
-        <p class="text-slate-500">Track and approve food and grocery orders.</p>
+        <p class="text-slate-500">Track, filter, and approve food and grocery orders.</p>
       </div>
-      <div class="flex space-x-3">
+    </div>
+
+    <!-- Filters & Search Row -->
+    <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+      <!-- Search -->
+      <div class="flex-1">
         <div class="relative">
-          <input 
-            v-model="searchQuery" 
+          <input
+            v-model="searchQuery"
             @input="handleSearch"
-            type="text" 
-            placeholder="Search orders..." 
-            class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none w-64 transition-all"
+            type="text"
+            placeholder="Search by order # or employee name..."
+            class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition-all"
           />
-          <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
       </div>
+
+      <!-- Status Filter -->
+      <select
+        v-model="statusFilter"
+        @change="handleFilterChange"
+        class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium text-slate-600 transition-all whitespace-nowrap"
+      >
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+
+      <!-- Sort -->
+      <select
+        v-model="sortBy"
+        @change="handleFilterChange"
+        class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium text-slate-600 transition-all whitespace-nowrap"
+      >
+        <option value="date-desc">Newest First</option>
+        <option value="date-asc">Oldest First</option>
+        <option value="amount-desc">Highest Amount</option>
+        <option value="amount-asc">Lowest Amount</option>
+      </select>
     </div>
 
     <!-- Stats -->
@@ -53,40 +82,40 @@
             <td colspan="6" class="px-6 py-12 text-center text-slate-500">No order requests found.</td>
           </tr>
           <tr v-for="req in requests" :key="req._id" class="hover:bg-slate-50 transition-colors">
-            <td class="px-6 py-4 font-medium text-slate-900">{{ req.order?.orderNumber || 'N/A' }}</td>
+            <td class="px-6 py-4 font-medium text-slate-900">{{ req.orderNumber || 'N/A' }}</td>
             <td class="px-6 py-4">
-              <p class="text-slate-900 font-medium">{{ req.user?.firstName }} {{ req.user?.lastName }}</p>
-              <p class="text-xs text-slate-500">{{ req.user?.email }}</p>
+              <p class="text-slate-900 font-medium">{{ req.userId?.firstName }} {{ req.userId?.lastName }}</p>
+              <p class="text-xs text-slate-500">{{ req.userId?.email }}</p>
             </td>
-            <td class="px-6 py-4 font-bold text-slate-900">₦{{ req.amount.toLocaleString() }}</td>
+            <td class="px-6 py-4 font-bold text-slate-900">₦{{ (req.totalAmount || 0).toLocaleString() }}</td>
             <td class="px-6 py-4 text-sm text-slate-500">{{ new Date(req.createdAt).toLocaleDateString() }}</td>
             <td class="px-6 py-4">
-              <span 
+              <span
                 :class="[
                   'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                  statusClass(req.status)
+                  statusClass(displayStatus(req))
                 ]"
               >
-                {{ req.status }}
+                {{ displayStatus(req) }}
               </span>
             </td>
             <td class="px-6 py-4">
               <div class="flex space-x-2">
-                <button 
-                  v-if="req.status === 'pending'"
+                <button
+                  v-if="displayStatus(req) === 'pending'"
                   class="px-3 py-1 bg-primary-600 text-white rounded-lg text-sm hover:bg-primary-700 transition-colors"
                   @click="initiateApproval(req)"
                 >
                   Approve
                 </button>
-                <button 
-                  v-if="req.status === 'pending'"
+                <button
+                  v-if="displayStatus(req) === 'pending'"
                   class="px-3 py-1 bg-white border border-rose-200 text-rose-600 rounded-lg text-sm hover:bg-rose-50 transition-colors"
                   @click="initiateRejection(req)"
                 >
                   Reject
                 </button>
-                <router-link 
+                <router-link
                   :to="`/partner/orders/${req._id}`"
                   class="px-3 py-1 border border-slate-200 rounded-lg text-sm hover:bg-slate-50 transition-colors font-bold text-slate-600"
                 >
@@ -152,16 +181,16 @@
           <div v-if="processAction === 'approve' && planType === 'prepaid'" class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
             <div class="flex items-center justify-between">
               <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Wallet Balance</span>
-              <span :class="['font-bold', walletBalance < selectedRequest.amount ? 'text-rose-600' : 'text-slate-900']">
+              <span :class="['font-bold', walletBalance < (selectedRequest.totalAmount || 0) ? 'text-rose-600' : 'text-slate-900']">
                 ₦{{ walletBalance.toLocaleString() }}
               </span>
             </div>
             <div class="flex items-center justify-between">
               <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Order Amount</span>
-              <span class="font-bold text-slate-900">₦{{ selectedRequest.amount.toLocaleString() }}</span>
+              <span class="font-bold text-slate-900">₦{{ (selectedRequest.totalAmount || 0).toLocaleString() }}</span>
             </div>
             
-            <div v-if="walletBalance < selectedRequest.amount" class="pt-2 flex items-start space-x-2 text-rose-600">
+            <div v-if="walletBalance < (selectedRequest.totalAmount || 0)" class="pt-2 flex items-start space-x-2 text-rose-600">
               <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
@@ -219,11 +248,11 @@
             </button>
             <button 
               @click="handleProcess"
-              :disabled="loading || (processAction === 'approve' && planType === 'prepaid' && walletBalance < selectedRequest.amount)"
+              :disabled="loading || (processAction === 'approve' && planType === 'prepaid' && walletBalance < (selectedRequest.totalAmount || 0))"
               :class="[
                 'flex-1 py-3 text-white font-bold rounded-xl transition-all',
                 processAction === 'approve' ? 'bg-primary-600 hover:bg-primary-700' : 'bg-rose-600 hover:bg-rose-700',
-                (processAction === 'approve' && planType === 'prepaid' && walletBalance < selectedRequest.amount) ? 'opacity-50 cursor-not-allowed grayscale' : ''
+                (processAction === 'approve' && planType === 'prepaid' && walletBalance < (selectedRequest.totalAmount || 0)) ? 'opacity-50 cursor-not-allowed grayscale' : ''
               ]"
             >
               {{ loading ? 'Processing...' : (processAction === 'approve' ? 'Confirm Approval' : 'Confirm Rejection') }}
@@ -261,29 +290,52 @@ const requireOtp = ref(false);
 const walletBalance = ref(0);
 const planType = ref('prepaid');
 
-// Pagination & Search
+// Pagination & Search & Filters
 const searchQuery = ref('');
+const statusFilter = ref('');
+const sortBy = ref('date-desc');
 const meta = ref<any>(null);
 const searchTimeout = ref<any>(null);
 
 const fetchRequests = async (page = 1) => {
   try {
     loading.value = true;
-    const res = await PartnerPortalService.getOrderRequests({ page, limit: 10, search: searchQuery.value });
+
+    // Parse sort parameter
+    let sortField = 'createdAt';
+    let sortOrder = -1;
+    if (sortBy.value === 'date-asc') {
+      sortField = 'createdAt';
+      sortOrder = 1;
+    } else if (sortBy.value === 'amount-desc') {
+      sortField = 'amount';
+      sortOrder = -1;
+    } else if (sortBy.value === 'amount-asc') {
+      sortField = 'amount';
+      sortOrder = 1;
+    }
+
+    const res = await PartnerPortalService.getOrderRequests({
+      page,
+      limit: 10,
+      search: searchQuery.value,
+      status: statusFilter.value || undefined,
+      sortField,
+      sortOrder
+    });
+
     requests.value = res.data;
     meta.value = res.meta;
     walletBalance.value = res.walletBalance || 0;
     planType.value = res.planType || 'prepaid';
-    
-    // Update simple stats from the current list (limited but gives immediate feedback)
-    const pending = requests.value.filter(r => r.status === 'pending').length;
-    const approved = requests.value.filter(r => r.status === 'approved').length;
-    const rejected = requests.value.filter(r => r.status === 'rejected').length;
-    
-    orderStats.value[0].value = meta.value?.total.toString() || '0';
-    orderStats.value[1].value = pending.toString();
-    orderStats.value[2].value = approved.toString();
-    orderStats.value[3].value = rejected.toString();
+
+    // Update stats
+    if (meta.value?.stats) {
+      orderStats.value[0].value = meta.value.stats.total?.toString() || '0';
+      orderStats.value[1].value = meta.value.stats.pending?.toString() || '0';
+      orderStats.value[2].value = meta.value.stats.approved?.toString() || '0';
+      orderStats.value[3].value = meta.value.stats.rejected?.toString() || '0';
+    }
   } catch (error) {
     console.error('Failed to fetch requests', error);
   } finally {
@@ -298,6 +350,10 @@ const handleSearch = () => {
   }, 500);
 };
 
+const handleFilterChange = () => {
+  fetchRequests(1);
+};
+
 const changePage = (page: number) => {
   fetchRequests(page);
 };
@@ -308,6 +364,16 @@ const statusClass = (status: string) => {
     case 'approved': return 'bg-emerald-100 text-emerald-800';
     case 'rejected': return 'bg-rose-100 text-rose-800';
     default: return 'bg-slate-100 text-slate-800';
+  }
+};
+
+// Orders use orderStatus values (pending/confirmed/cancelled); this page's UI
+// speaks in HR approval terms (pending/approved/rejected), so translate here.
+const displayStatus = (order: any) => {
+  switch (order.orderStatus) {
+    case 'confirmed': return 'approved';
+    case 'cancelled': return 'rejected';
+    default: return 'pending';
   }
 };
 

@@ -122,15 +122,15 @@
                   class="hover:bg-slate-50/50 transition-colors group"
                 >
                   <td class="px-8 py-4">
-                    <p class="text-slate-900 font-bold">{{ order.order?.orderNumber || 'Pending Order' }}</p>
+                    <p class="text-slate-900 font-bold">{{ order.orderNumber || 'Pending Order' }}</p>
                     <p class="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">REF: {{ order._id.slice(-8).toUpperCase() }}</p>
                   </td>
                   <td class="px-8 py-4">
-                    <p class="text-slate-900 font-black italic">₦{{ order.amount.toLocaleString() }}</p>
+                    <p class="text-slate-900 font-black italic">₦{{ (order.hrpay?.amount || 0).toLocaleString() }}</p>
                   </td>
                   <td class="px-8 py-4">
-                    <span :class="['px-2 py-1 rounded text-[10px] font-bold uppercase tracking-tighter', statusClass(order.status)]">
-                      {{ order.status }}
+                    <span :class="['px-2 py-1 rounded text-[10px] font-bold uppercase tracking-tighter', statusClass(order.hrpay?.status)]">
+                      {{ order.hrpay?.status }}
                     </span>
                   </td>
                   <td class="px-8 py-4 text-right">

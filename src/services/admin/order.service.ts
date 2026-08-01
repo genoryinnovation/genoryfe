@@ -37,14 +37,13 @@ export interface Order {
     latitude?: number;
     longitude?: number;
   };
-  hrPaymentRequest?: {
-    _id: string;
+  company?: { _id: string; name: string };
+  hrpay?: {
     status: 'pending' | 'approved' | 'rejected';
     amount: number;
     reason?: string;
     rejectionReason?: string;
     processedAt?: string;
-    company?: { _id: string; name: string };
   };
   approvedByUser?: string;
   pickupLocationSnapshot?: {
