@@ -7,7 +7,25 @@
       </div>
     </div>
 
+    <!-- Prepaid companies fund a wallet upfront and pay per-order — there's
+         no monthly invoice to reconcile, so this page is postpaid-only. -->
+    <div v-if="!loading && planType !== 'postpaid'" class="bg-white rounded-2xl border border-slate-100 shadow-sm p-12 text-center">
+      <div class="w-12 h-12 bg-primary-50 text-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+      </div>
+      <h3 class="text-sm font-bold text-slate-900">Not applicable on the Prepaid plan</h3>
+      <p class="mt-1 text-xs text-slate-500 max-w-sm mx-auto">
+        Your company funds a wallet upfront and orders debit it immediately, so there's no monthly invoice to reconcile here. Manage your balance from Wallet & Funding instead.
+      </p>
+      <router-link to="/partner/funding" class="mt-5 inline-flex items-center px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-xl hover:bg-primary-700 transition-colors">
+        Go to Wallet & Funding
+      </router-link>
+    </div>
+
     <!-- Monthly Summary Table -->
+    <template v-if="loading || planType === 'postpaid'">
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-slate-200">
@@ -130,6 +148,7 @@
         </svg>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
@@ -141,10 +160,17 @@ import { PartnerPortalService } from '../../../services/partner-portal.service';
 const router = useRouter();
 const reports = ref<any[]>([]);
 const loading = ref(true);
+const planType = ref('prepaid');
 
 const fetchReports = async () => {
   try {
     loading.value = true;
+    const stats = await PartnerPortalService.getStats();
+    planType.value = stats.planType || 'prepaid';
+
+    // Skip fetching billing-cycle data entirely for prepaid companies —
+    // this page (Pay Now / payment-due reconciliation) doesn't apply to them.
+    if (planType.value !== 'postpaid') return;
     const data = await PartnerPortalService.getMonthlyReports();
     reports.value = data;
   } catch (error) {

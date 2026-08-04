@@ -17,7 +17,7 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
       <div class="relative overflow-hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
         <div class="flex items-center justify-between">
           <div>
@@ -41,6 +41,20 @@
           <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200">
             <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative overflow-hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-500">Confirmed</p>
+            <p class="mt-2 text-3xl font-bold text-blue-600">{{ (stats.confirmed || 0).toLocaleString() }}</p>
+          </div>
+          <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
         </div>
@@ -299,7 +313,10 @@ const fetchOrders = async () => {
         limit: pagination.value.limit,
         status: statusFilter.value,
         search: search.value,
-        isSubscriptionOrder: isSubscriptionOrder.value
+        // Only send this when the checkbox is on ("show subscription orders
+        // only"). Sending `false` explicitly filters to isSubscriptionOrder:
+        // false, which excludes older orders where the field was never set.
+        ...(isSubscriptionOrder.value && { isSubscriptionOrder: true })
       }),
       OrderService.getOrderStats(),
     ]);
