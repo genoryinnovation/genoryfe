@@ -47,13 +47,13 @@
 
           <!-- CTAs -->
           <div class="flex flex-col sm:flex-row gap-4 mb-8">
-            <a href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank"
+            <router-link to="/download"
                class="px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white rounded-xl font-semibold text-base transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-primary-600/30 flex items-center justify-center gap-2.5 group">
-              Join the Waitlist
+              Download App
               <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
               </svg>
-            </a>
+            </router-link>
             <a href="#features"
                class="px-8 py-4 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 rounded-xl font-semibold text-base transition-all flex items-center justify-center gap-2.5">
               Explore Platform
@@ -168,7 +168,7 @@ onUnmounted(() => {
 })
 
 const stats = [
-  { value: '10K+', label: 'Waitlisted' },
+  { value: '10K+', label: 'Downloads' },
   { value: '15+', label: 'City Hubs' },
   { value: '12h', label: 'Delivery SLA' },
   { value: '99.9%', label: 'Uptime' },

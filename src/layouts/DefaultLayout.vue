@@ -73,11 +73,11 @@
             </button>
 
             <!-- CTA adapts to audience -->
-            <a v-if="!isPartnerPage"
-               href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank"
+            <router-link v-if="!isPartnerPage"
+               to="/download"
                class="px-5 py-2.5 bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold rounded-full transition-all hover:shadow-lg hover:shadow-primary-600/25 ml-1">
-              Join Waitlist
-            </a>
+              Download App
+            </router-link>
             <a v-else
                href="#partner-cta"
                class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-full transition-all hover:shadow-lg hover:shadow-emerald-600/25 ml-1">
@@ -146,10 +146,10 @@
               <a @click="mobileMenuOpen = false" href="#how-it-works" class="block px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-colors">How It Works</a>
               <a @click="mobileMenuOpen = false" href="#download" class="block px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-colors">Download App</a>
               <div class="pt-3 px-4">
-                <a href="https://forms.gle/sPs2phRxP5KhGLuRA" target="_blank"
-                   class="w-full text-center block px-5 py-3 bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold rounded-xl transition-all">
-                  Join Waitlist
-                </a>
+                <router-link to="/download"
+                   class="w-full text-center block px-5 py-3 bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold rounded-xl transition-all" @click="mobileMenuOpen = false">
+                  Download App
+                </router-link>
               </div>
             </template>
             <!-- Partner links -->
