@@ -45,7 +45,7 @@
 
             <!-- QR Code -->
             <div class="flex items-center gap-4 mb-16 p-4 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 w-fit">
-              <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://genory.co/download" alt="Download QR Code" class="w-20 h-20 rounded-xl" />
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://genory.co/%23download" alt="Download QR Code" class="w-20 h-20 rounded-xl" />
               <div>
                 <p class="text-sm font-bold text-slate-900 dark:text-white">Scan to Download</p>
                 <p class="text-xs text-slate-500">Get the app instantly on your phone</p>
