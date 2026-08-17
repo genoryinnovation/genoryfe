@@ -53,13 +53,13 @@
 
         <!-- CTA -->
         <div class="text-center mt-14" data-aos="fade-up">
-          <router-link to="/download"
+          <a href="#download"
              class="inline-flex items-center gap-2.5 px-8 py-4 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 text-slate-900 dark:text-white rounded-xl font-semibold transition-all">
             Download App
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
             </svg>
-          </router-link>
+          </a>
         </div>
       </div>
     </section>
@@ -141,10 +141,10 @@
         </p>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center" data-aos="fade-up" data-aos-delay="150">
-          <router-link to="/download"
+          <a href="#download"
              class="px-10 py-4 bg-primary-600 hover:bg-primary-500 text-white rounded-xl font-semibold text-lg transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-primary-600/25">
             Download App
-          </router-link>
+          </a>
           <a href="mailto:hello@genory.com"
              class="px-10 py-4 bg-white hover:bg-slate-50 dark:bg-white/5 dark:hover:bg-white/10 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 rounded-xl font-semibold text-lg transition-all">
             Contact Sales
