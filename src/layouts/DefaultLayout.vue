@@ -227,6 +227,7 @@
               <li><a href="#" class="text-slate-500 hover:text-slate-300 transition-colors text-sm">Contact</a></li>
               <li><a href="/privacy" class="text-slate-500 hover:text-slate-300 transition-colors text-sm">Privacy Policy</a></li>
               <li><a href="/terms" class="text-slate-500 hover:text-slate-300 transition-colors text-sm">Terms & Conditions</a></li>
+              <li><a href="/delete-account" class="text-slate-500 hover:text-slate-300 transition-colors text-sm">Delete My Account</a></li>
             </ul>
           </div>
  
