@@ -125,21 +125,40 @@
         <div class="p-6 space-y-6">
           <div class="flex gap-4">
             <div class="flex-1 relative">
-              <input 
-                v-model="newImageUrl" 
-                type="url" 
-                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all" 
-                placeholder="Paste image URL here..." 
+              <input
+                v-model="newImageUrl"
+                type="url"
+                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                placeholder="Paste image URL here..."
                 @keypress.enter.prevent="addImage"
               />
             </div>
-            <button 
-              type="button" 
+            <button
+              type="button"
               @click="addImage"
               class="px-5 py-2.5 bg-slate-900 text-white text-sm font-semibold rounded-xl hover:bg-slate-800 transition-colors"
             >
               Add URL
             </button>
+            <button
+              type="button"
+              @click="fileInputRef?.click()"
+              :disabled="uploadingImage"
+              class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg v-if="uploadingImage" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ uploadingImage ? 'Uploading...' : 'Upload Image' }}
+            </button>
+            <input
+              ref="fileInputRef"
+              type="file"
+              accept="image/png,image/jpeg,image/jpg"
+              class="hidden"
+              @change="handleFileSelect"
+            />
           </div>
 
           <!-- Image Preview Grid -->
@@ -238,11 +257,33 @@ const form = reactive({
 });
 
 const newImageUrl = ref('');
+const fileInputRef = ref<HTMLInputElement | null>(null);
+const uploadingImage = ref(false);
 
 const addImage = () => {
   if (newImageUrl.value && !form.images.includes(newImageUrl.value)) {
     form.images.push(newImageUrl.value);
     newImageUrl.value = '';
+  }
+};
+
+const handleFileSelect = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+
+  uploadingImage.value = true;
+  try {
+    const url = await CatalogService.uploadProductImage(file);
+    if (!form.images.includes(url)) {
+      form.images.push(url);
+    }
+  } catch (error: any) {
+    console.error('Failed to upload image', error);
+    alert(error.response?.data?.message || 'Failed to upload image');
+  } finally {
+    uploadingImage.value = false;
+    input.value = '';
   }
 };
 
