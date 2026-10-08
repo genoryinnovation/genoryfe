@@ -78,13 +78,13 @@
 
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-2 font-semibold">Original Price (₦)</label>
-            <input 
-              v-model.number="form.originalPrice" 
-              type="number" 
-              readonly
-              class="block w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-500 cursor-not-allowed transition-all"
+            <input
+              v-model.number="form.originalPrice"
+              type="number"
+              min="0"
+              class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             />
-            <p class="mt-1 text-xs text-slate-400 italic">Automatically calculated from included products</p>
+            <p class="mt-1 text-xs text-slate-400 italic">Defaults to the sum of included product prices; edit to set a custom "was" price</p>
           </div>
 
           <div>
@@ -283,23 +283,26 @@ const form = reactive({
   maxPerUser: 1,
 });
 
-// Sync original price and default offer price
+// Default original price and offer price from selected products, without
+// clobbering a value the admin has manually customized. `lastAutoTotal`
+// tracks what we last auto-filled so we can tell a customized value apart
+// from one that's simply still following the product total.
+const lastAutoTotal = ref(0);
 watch(() => form.items, (newItems) => {
   const total = newItems.reduce((sum, item) => {
     const productPrice = item.product?.price || 0;
     return sum + (productPrice * item.quantity);
   }, 0);
-  
-  const oldOriginalPrice = form.originalPrice;
-  form.originalPrice = total;
-  
-  // If creating a new offer or if the price hasn't been customized (matches old original)
-  if (!isEditing.value || form.price === oldOriginalPrice || form.price === 0) {
-    // Only auto-update if it's a new offer or logically hasn't been tweaked yet
-    if (form.price === 0 || form.price === oldOriginalPrice) {
-      form.price = total;
-    }
+
+  if (form.originalPrice === 0 || form.originalPrice === lastAutoTotal.value) {
+    form.originalPrice = total;
   }
+
+  if (form.price === 0 || form.price === lastAutoTotal.value) {
+    form.price = total;
+  }
+
+  lastAutoTotal.value = total;
 }, { deep: true });
 
 // Enforce single item for SINGLE type

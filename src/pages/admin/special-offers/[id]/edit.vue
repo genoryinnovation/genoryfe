@@ -90,13 +90,13 @@
 
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-2">Original Price (₦)</label>
-            <input 
-              v-model.number="form.originalPrice" 
-              type="number" 
-              readonly
-              class="block w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-500 cursor-not-allowed transition-all"
+            <input
+              v-model.number="form.originalPrice"
+              type="number"
+              min="0"
+              class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             />
-            <p class="mt-1 text-xs text-slate-400 italic">Automatically calculated from included products</p>
+            <p class="mt-1 text-xs text-slate-400 italic">Defaults to the sum of included product prices; edit to set a custom "was" price</p>
           </div>
 
           <div>
@@ -311,13 +311,22 @@ const form = reactive({
   maxPerUser: 1,
 });
 
-// Sync original price calculation
+// Default original price from selected products, without clobbering a value
+// the admin has manually customized. `lastAutoTotal` tracks what we last
+// auto-filled so we can tell a customized value apart from one that's simply
+// still following the product total.
+const lastAutoTotal = ref(0);
+const calcItemsTotal = (items: typeof form.items) => items.reduce((sum, item) => {
+  const productPrice = item.product?.price || 0;
+  return sum + (productPrice * item.quantity);
+}, 0);
+
 watch(() => form.items, (newItems) => {
-  const total = newItems.reduce((sum, item) => {
-    const productPrice = item.product?.price || 0;
-    return sum + (productPrice * item.quantity);
-  }, 0);
-  form.originalPrice = total;
+  const total = calcItemsTotal(newItems);
+  if (form.originalPrice === 0 || form.originalPrice === lastAutoTotal.value) {
+    form.originalPrice = total;
+  }
+  lastAutoTotal.value = total;
 }, { deep: true });
 
 // Enforce single item for SINGLE type
@@ -339,6 +348,7 @@ const fetchOffer = async () => {
         form.items = data.items.map((i: any) => ({ product: i.product, quantity: i.quantity }));
         form.price = data.price;
         form.originalPrice = data.originalPrice || 0;
+        lastAutoTotal.value = calcItemsTotal(form.items);
         form.criteria = data.criteria || { minOrders: 0, targetUser: 'ALL' };
         
         // Format dates for datetime-local input

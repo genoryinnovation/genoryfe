@@ -72,6 +72,13 @@ export class CatalogService {
     return response.data;
   }
 
+  static async uploadProductImage(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await api.post('/admin/catalog/products/upload-image', formData);
+    return response.data.data.url;
+  }
+
   static async getProduct(id: string): Promise<any> {
     const response = await api.get(`/admin/catalog/products/${id}`);
     return response.data;
