@@ -1,10 +1,11 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
+// No default Content-Type here: axios already sets `application/json` for
+// plain-object payloads automatically, and leaves FormData requests alone so
+// the browser can set the multipart boundary itself. A preset default here
+// would leak through on FormData uploads and break file parsing server-side.
 const api = axios.create({
   baseURL: (import.meta as any).env.VITE_API_URL || 'http://localhost:3002/api/v1',
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // Request interceptor to add auth token
